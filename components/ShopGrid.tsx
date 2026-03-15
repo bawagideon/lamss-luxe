@@ -16,7 +16,7 @@ const products = [
     id: 2,
     name: "Midnight Silk Two-Piece",
     price: "$145",
-    imageDefault: "https://images.unsplash.com/photo-1521017430030-cce21855a901?q=80&w=800&auto=format&fit=crop",
+    imageDefault: "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?q=80&w=800&auto=format&fit=crop",
     imageLifestyle: "https://images.unsplash.com/photo-1518049362265-d5b2a6467637?q=80&w=800&auto=format&fit=crop",
   },
   {
@@ -46,7 +46,7 @@ export function ShopGrid() {
               Curated elegance for the modern woman. Wear it during the day, slay it through the night.
             </p>
           </div>
-          <Link href="#" className="mt-6 md:mt-0 text-primary font-bold hover:underline transition-all">
+          <Link href="/collections" className="mt-6 md:mt-0 text-primary font-bold hover:underline transition-all">
             View All Collections &rarr;
           </Link>
         </div>
