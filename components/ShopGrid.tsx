@@ -9,14 +9,14 @@ const products = [
     id: 1,
     name: "The Soft Life Slip Dress",
     price: "$120",
-    imageDefault: "https://images.unsplash.com/photo-1542289139-44b41662fbfe?q=80&w=800&auto=format&fit=crop",
+    imageDefault: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop",
     imageLifestyle: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: 2,
     name: "Midnight Silk Two-Piece",
     price: "$145",
-    imageDefault: "https://images.unsplash.com/photo-1434389678369-1ae14c4abf8d?q=80&w=800&auto=format&fit=crop",
+    imageDefault: "https://images.unsplash.com/photo-1521017430030-cce21855a901?q=80&w=800&auto=format&fit=crop",
     imageLifestyle: "https://images.unsplash.com/photo-1518049362265-d5b2a6467637?q=80&w=800&auto=format&fit=crop",
   },
   {
@@ -24,14 +24,14 @@ const products = [
     name: "Luxe Corset Top",
     price: "$85",
     imageDefault: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop",
-    imageLifestyle: "https://images.unsplash.com/photo-1529139574466-a303027c028b?q=80&w=800&auto=format&fit=crop",
+    imageLifestyle: "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: 4,
     name: "Elegance Maxi Dress",
     price: "$160",
     imageDefault: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=800&auto=format&fit=crop",
-    imageLifestyle: "https://images.unsplash.com/photo-1515347619145-c0528ef3c8df?q=80&w=800&auto=format&fit=crop",
+    imageLifestyle: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop",
   },
 ];
 
@@ -67,6 +67,7 @@ export function ShopGrid() {
                   src={product.imageDefault} 
                   alt={product.name}
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover transition-opacity duration-500 group-hover:opacity-0"
                 />
                 {/* Lifestyle Hover Image */}
@@ -74,6 +75,7 @@ export function ShopGrid() {
                   src={product.imageLifestyle} 
                   alt={`${product.name} Lifestyle`}
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 scale-105 group-hover:scale-100 transition-transform"
                 />
                 

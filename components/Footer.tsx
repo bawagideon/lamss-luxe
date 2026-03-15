@@ -19,20 +19,20 @@ export function Footer() {
           <div>
             <h3 className="font-bold mb-4 uppercase text-sm tracking-wider">Shop</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><Link href="#" className="hover:text-primary transition-colors">Tops</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Two-Piece</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Dresses</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">New Arrivals</Link></li>
+              <li><Link href="/shop/tops" className="hover:text-primary transition-colors">Tops</Link></li>
+              <li><Link href="/shop/two-piece" className="hover:text-primary transition-colors">Two-Piece</Link></li>
+              <li><Link href="/shop/dresses" className="hover:text-primary transition-colors">Dresses</Link></li>
+              <li><Link href="/collections" className="hover:text-primary transition-colors">New Arrivals</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-bold mb-4 uppercase text-sm tracking-wider">Company</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><Link href="#" className="hover:text-primary transition-colors">About & Founder Story</Link></li>
-              <li><Link href="#community" className="hover:text-primary transition-colors">Soft Life Queens Night</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Contact</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Shipping & Returns</Link></li>
+              <li><Link href="/about" className="hover:text-primary transition-colors">About & Founder Story</Link></li>
+              <li><Link href="/community" className="hover:text-primary transition-colors">Soft Life Queens Night</Link></li>
+              <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
+              <li><Link href="/shipping-returns" className="hover:text-primary transition-colors">Shipping & Returns</Link></li>
             </ul>
           </div>
 
@@ -59,9 +59,9 @@ export function Footer() {
         <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Lamssé Luxe. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="#" className="hover:text-primary transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Terms of Service</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Instagram</Link>
+            <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
+            <Link href="/contact" className="hover:text-primary transition-colors">Instagram</Link>
           </div>
         </div>
       </div>

@@ -38,13 +38,13 @@ export function Navbar() {
               {/* Dropdown Menu */}
               <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="bg-white shadow-xl rounded-lg py-2 w-48 flex flex-col">
-                  <Link href="#" className="px-4 py-2 hover:bg-gray-50 hover:text-primary transition-colors">Tops</Link>
-                  <Link href="#" className="px-4 py-2 hover:bg-gray-50 hover:text-primary transition-colors">Two-Piece</Link>
-                  <Link href="#" className="px-4 py-2 hover:bg-gray-50 hover:text-primary transition-colors">Dresses</Link>
+                  <Link href="/shop/tops" className="px-4 py-2 hover:bg-gray-50 hover:text-primary transition-colors">Tops</Link>
+                  <Link href="/shop/two-piece" className="px-4 py-2 hover:bg-gray-50 hover:text-primary transition-colors">Two-Piece</Link>
+                  <Link href="/shop/dresses" className="px-4 py-2 hover:bg-gray-50 hover:text-primary transition-colors">Dresses</Link>
                 </div>
               </div>
             </div>
-            <Link href="#" className="hover:text-primary transition-colors">Collections</Link>
+            <Link href="/collections" className="hover:text-primary transition-colors">Collections</Link>
           </div>
 
           {/* Center Logo */}
@@ -56,7 +56,7 @@ export function Navbar() {
 
           {/* Right Navigation */}
           <div className="hidden lg:flex items-center space-x-6 text-sm font-medium tracking-wide">
-            <Link href="#community" className="hover:text-primary transition-colors">Soft Life Queens</Link>
+            <Link href="/community" className="hover:text-primary transition-colors">Soft Life Queens</Link>
             <div className="flex items-center space-x-4 ml-4 border-l border-gray-200 pl-4">
               <button className="hover:text-primary transition-colors" aria-label="Account">
                 <User className="w-5 h-5" />
@@ -94,11 +94,11 @@ export function Navbar() {
             className="fixed inset-0 z-40 bg-white pt-24 px-6 lg:hidden"
           >
             <div className="flex flex-col space-y-6 text-lg font-medium">
-              <Link href="#" className="border-b pb-4 shrink-0 hover:text-primary transition-colors">Shop Tops</Link>
-              <Link href="#" className="border-b pb-4 shrink-0 hover:text-primary transition-colors">Shop Two-Piece</Link>
-              <Link href="#" className="border-b pb-4 shrink-0 hover:text-primary transition-colors">Shop Dresses</Link>
-              <Link href="#" className="border-b pb-4 shrink-0 hover:text-primary transition-colors">Collections</Link>
-              <Link href="#community" className="border-b pb-4 shrink-0 hover:text-primary transition-colors text-primary">Soft Life Queens</Link>
+              <Link href="/shop/tops" className="border-b pb-4 shrink-0 hover:text-primary transition-colors">Shop Tops</Link>
+              <Link href="/shop/two-piece" className="border-b pb-4 shrink-0 hover:text-primary transition-colors">Shop Two-Piece</Link>
+              <Link href="/shop/dresses" className="border-b pb-4 shrink-0 hover:text-primary transition-colors">Shop Dresses</Link>
+              <Link href="/collections" className="border-b pb-4 shrink-0 hover:text-primary transition-colors">Collections</Link>
+              <Link href="/community" className="border-b pb-4 shrink-0 hover:text-primary transition-colors text-primary">Soft Life Queens</Link>
               <Link href="#" className="pt-4 flex items-center space-x-2 shrink-0 hover:text-primary transition-colors">
                 <User className="w-5 h-5" />
                 <span>Account</span>
