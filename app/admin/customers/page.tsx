@@ -4,16 +4,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Download, UserPlus } from "lucide-react";
-
-// Mock Data
-const customers = [
-  { id: "CUS-001", name: "Sarah Jenkins", email: "sarah@example.com", joined: "2026-03-01", orders: 4, spent: "$645.00", status: "Active" },
-  { id: "CUS-002", name: "Amara Okonkwo", email: "amara.ok@example.com", joined: "2026-03-15", orders: 1, spent: "$170.00", status: "Active" },
-  { id: "CUS-003", name: "Chloe Davies", email: "chloe@example.com", joined: "2026-02-28", orders: 2, spent: "$230.00", status: "Inactive" },
-  { id: "CUS-004", name: "Vanessa Wu", email: "vwu99@example.com", joined: "2026-03-10", orders: 1, spent: "$120.00", status: "Active" },
-];
+import { useEffect, useState } from "react";
+import { getCustomers } from "@/app/actions/admin";
 
 export default function AdminCustomersPage() {
+  const [liveCustomers, setLiveCustomers] = useState<any[]>([]);
+
+  useEffect(() => {
+    getCustomers().then(setLiveCustomers);
+  }, []);
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -50,7 +50,12 @@ export default function AdminCustomersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {customers.map((customer) => (
+            {liveCustomers.length === 0 && (
+              <TableRow>
+                 <TableCell colSpan={4} className="text-center py-6 text-gray-500 font-medium">No customers found linked to real transactions.</TableCell>
+              </TableRow>
+            )}
+            {liveCustomers.map((customer: any) => (
               <TableRow key={customer.id} className="border-gray-50 hover:bg-gray-50/50 transition-colors cursor-pointer">
                 <TableCell>
                   <div className="font-medium text-black">{customer.name}</div>

@@ -1,20 +1,23 @@
 "use client";
 
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, ShoppingBag, Package, Users } from "lucide-react";
-
-// Mock Data
-const recentOrders = [
-  { id: "ORD-9021", customer: "Sarah Jenkins", date: "2026-03-19", amount: "$145.00", status: "Paid" },
-  { id: "ORD-9022", customer: "Amara Okonkwo", date: "2026-03-18", amount: "$320.00", status: "Shipped" },
-  { id: "ORD-9023", customer: "Chloe Davies", date: "2026-03-18", amount: "$85.00", status: "Pending" },
-  { id: "ORD-9024", customer: "Vanessa Wu", date: "2026-03-17", amount: "$120.00", status: "Shipped" },
-  { id: "ORD-9025", customer: "Elena Rostova", date: "2026-03-15", amount: "$290.00", status: "Paid" },
-];
+import { useEffect, useState } from "react";
+import { getAdminMetrics, getAdminRecentOrders } from "@/app/actions/admin";
 
 export default function AdminOverviewPage() {
+  const [metrics, setMetrics] = useState({ totalRevenue: "0.00", ordersCount: 0, activeProducts: 0, waitlistCount: 0 });
+  const [orders, setOrders] = useState<any[]>([]);
+
+  useEffect(() => {
+    getAdminMetrics().then(setMetrics);
+    getAdminRecentOrders().then(setOrders);
+  }, []);
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
@@ -29,18 +32,18 @@ export default function AdminOverviewPage() {
             <DollarSign className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-black tracking-tight">$45,231.89</div>
-            <p className="text-xs text-green-600 mt-1 font-medium">+20.1% from last month</p>
+            <div className="text-3xl font-black tracking-tight">${metrics.totalRevenue}</div>
+            <p className="text-xs text-green-600 mt-1 font-medium">Real-time DB pull</p>
           </CardContent>
         </Card>
         <Card className="rounded-xl border-gray-100 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-bold uppercase text-gray-500">Orders This Month</CardTitle>
+            <CardTitle className="text-sm font-bold uppercase text-gray-500">Orders Lifecycle</CardTitle>
             <ShoppingBag className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-black tracking-tight">+350</div>
-            <p className="text-xs text-green-600 mt-1 font-medium">+15.2% from last month</p>
+            <div className="text-3xl font-black tracking-tight">{metrics.ordersCount}</div>
+            <p className="text-xs text-green-600 mt-1 font-medium">Active Database Row Count</p>
           </CardContent>
         </Card>
         <Card className="rounded-xl border-gray-100 shadow-sm">
@@ -49,18 +52,18 @@ export default function AdminOverviewPage() {
             <Package className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-black tracking-tight">12</div>
-            <p className="text-xs text-gray-400 mt-1 font-medium">3 low in stock</p>
+            <div className="text-3xl font-black tracking-tight">{metrics.activeProducts}</div>
+            <p className="text-xs text-green-600 mt-1 font-medium">Synced from Stock Value</p>
           </CardContent>
         </Card>
         <Card className="rounded-xl border-gray-100 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-bold uppercase text-gray-500">Waitlist Signups</CardTitle>
+            <CardTitle className="text-sm font-bold uppercase text-gray-500">Known Customers</CardTitle>
             <Users className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-black tracking-tight">2,405</div>
-            <p className="text-xs text-green-600 mt-1 font-medium">+180 this week</p>
+            <div className="text-3xl font-black tracking-tight">{metrics.waitlistCount}</div>
+            <p className="text-xs text-green-600 mt-1 font-medium">Database Extractions</p>
           </CardContent>
         </Card>
       </div>
@@ -82,21 +85,29 @@ export default function AdminOverviewPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {recentOrders.map((order) => (
+                {orders.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-6 text-gray-500 font-medium">
+                      No active transactions found on database.
+                    </TableCell>
+                  </TableRow>
+                ) : orders.map((order: any) => (
                   <TableRow key={order.id} className="border-gray-50 group hover:bg-gray-50/50 transition-colors">
-                    <TableCell className="font-medium text-black">{order.id}</TableCell>
-                    <TableCell className="text-gray-600">{order.customer}</TableCell>
-                    <TableCell className="text-gray-500">{order.date}</TableCell>
-                    <TableCell className="text-right font-medium">{order.amount}</TableCell>
+                    <TableCell className="font-medium text-black">
+                      {order.id.slice(0, 8).toUpperCase()}...
+                    </TableCell>
+                    <TableCell className="text-gray-600">{order.customer_email || 'Guest User'}</TableCell>
+                    <TableCell className="text-gray-500">{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-right font-medium">${order.total_amount}</TableCell>
                     <TableCell className="text-right">
-                      <Badge variant={order.status === "Paid" ? "default" : order.status === "Shipped" ? "secondary" : "outline"}
+                      <Badge variant="outline"
                         className={
-                          order.status === "Paid" ? "bg-black text-white" : 
-                          order.status === "Shipped" ? "bg-green-100 text-green-800" : 
+                          order.status === "paid" ? "bg-black text-white" : 
+                          order.status === "shipped" ? "bg-green-100 text-green-800 border-green-200" : 
                           "text-gray-500 border-gray-200"
                         }
                       >
-                        {order.status}
+                        {order.status.toUpperCase()}
                       </Badge>
                     </TableCell>
                   </TableRow>

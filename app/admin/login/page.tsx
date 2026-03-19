@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -18,22 +19,41 @@ export default function AdminLoginPage() {
     e.preventDefault();
     if (!email) return;
     setIsLoading(true);
-    // Simulate Supabase signInWithOtp API delay
-    setTimeout(() => {
-      setIsLoading(false);
+    
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false },
+    });
+    
+    if (error) {
+      console.error(error);
+      alert("Failed to send Authorization Link. Ensure this email has Admin rights in Supabase.");
+    } else {
       setStep(2);
-    }, 800);
+    }
+    setIsLoading(false);
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (pin.length !== 6) return;
     setIsLoading(true);
-    // Simulate Supabase verifyOtp API delay
-    setTimeout(() => {
-      setIsLoading(false);
+    
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({ 
+      email, 
+      token: pin, 
+      type: 'email' 
+    });
+    
+    if (error) {
+      console.error(error);
+      alert("Invalid Security PIN.");
+    } else {
       router.push("/admin");
-    }, 1000);
+    }
+    setIsLoading(false);
   };
 
   return (

@@ -8,15 +8,16 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search } from "lucide-react";
 import Image from "next/image";
-
-// Mock Data
-const products = [
-  { id: "PRD-01", name: "The Soft Life Slip Dress", category: "Dresses", price: "$120.00", stock: 50, image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200&auto=format&fit=crop" },
-  { id: "PRD-02", name: "Midnight Silk Two-Piece", category: "Two-Piece", price: "$145.00", stock: 12, image: "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?q=80&w=200&auto=format&fit=crop" },
-  { id: "PRD-03", name: "Luxe Corset Top", category: "Tops", price: "$85.00", stock: 0, image: "https://images.unsplash.com/photo-1518049362265-d5b2a6467637?q=80&w=200&auto=format&fit=crop" },
-];
+import { useEffect, useState } from "react";
+import { getAdminProducts, addProduct } from "@/app/actions/admin";
 
 export default function AdminProductsPage() {
+  const [liveProducts, setLiveProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    getAdminProducts().then(setLiveProducts);
+  }, []);
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -36,28 +37,28 @@ export default function AdminProductsPage() {
               <SheetTitle className="text-2xl font-black uppercase tracking-tight">New Drop</SheetTitle>
               <SheetDescription>Configure a new product entry for the catalog.</SheetDescription>
             </SheetHeader>
-            <form className="space-y-6">
+            <form action={async (formData) => { await addProduct(formData); getAdminProducts().then(setLiveProducts); }} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-xs uppercase font-bold text-gray-500">Product Name</Label>
-                <Input id="name" placeholder="e.g. The Velvet Evening Gown" className="border-gray-200 focus-visible:ring-black" />
+                <Input id="name" name="name" required placeholder="e.g. The Velvet Evening Gown" className="border-gray-200 focus-visible:ring-black" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="desc" className="text-xs uppercase font-bold text-gray-500">Description</Label>
-                <textarea id="desc" rows={4} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="A stunning piece for queens..."></textarea>
+                <textarea id="desc" name="description" rows={4} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="A stunning piece for queens..."></textarea>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="price" className="text-xs uppercase font-bold text-gray-500">Price (CAD)</Label>
-                  <Input id="price" type="number" placeholder="100.00" className="border-gray-200 focus-visible:ring-black" />
+                  <Input id="price" name="price" required type="number" step="0.01" placeholder="100.00" className="border-gray-200 focus-visible:ring-black" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="stock" className="text-xs uppercase font-bold text-gray-500">Initial Stock</Label>
-                  <Input id="stock" type="number" placeholder="50" className="border-gray-200 focus-visible:ring-black" />
+                  <Input id="stock" name="stock" required type="number" placeholder="50" className="border-gray-200 focus-visible:ring-black" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label className="text-xs uppercase font-bold text-gray-500">Category</Label>
-                <Select>
+                <Select name="category">
                   <SelectTrigger className="w-full border-gray-200 focus:ring-black">
                     <SelectValue placeholder="Select classification" />
                   </SelectTrigger>
@@ -69,7 +70,7 @@ export default function AdminProductsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="button" className="w-full bg-black hover:bg-black/80 font-bold uppercase tracking-wide h-12">Submit Product</Button>
+              <Button type="submit" className="w-full bg-black hover:bg-black/80 font-bold uppercase tracking-wide h-12">Submit Product</Button>
             </form>
           </SheetContent>
         </Sheet>
@@ -93,16 +94,16 @@ export default function AdminProductsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((p) => (
+            {liveProducts.map((p: any) => (
               <TableRow key={p.id} className="border-gray-50 group hover:bg-gray-50/50 transition-colors cursor-pointer">
                 <TableCell>
                   <div className="w-12 h-14 relative bg-gray-100 rounded-md overflow-hidden border border-gray-100">
-                    <Image src={p.image} alt={p.name} fill sizes="48px" className="object-cover" />
+                    <Image src={p.image_url || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200"} alt={p.name} fill sizes="48px" className="object-cover" />
                   </div>
                 </TableCell>
                 <TableCell className="font-medium text-black">{p.name}</TableCell>
-                <TableCell className="text-gray-500">{p.category}</TableCell>
-                <TableCell className="text-right font-medium">{p.price}</TableCell>
+                <TableCell className="text-gray-500 capitalize">{p.category || 'N/A'}</TableCell>
+                <TableCell className="text-right font-medium">${p.price}</TableCell>
                 <TableCell className="text-right">
                   <span className={p.stock > 0 ? "text-gray-600" : "text-red-500 font-bold"}>
                     {p.stock > 0 ? p.stock : "Out of Stock"}

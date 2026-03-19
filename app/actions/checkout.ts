@@ -62,7 +62,7 @@ async function stripeOrderIntegration(price: number, quantity: number) {
    return await supabase
     .from('orders')
     .insert({
-      total: price * quantity,
+      total_amount: price * quantity,
     })
     .select()
     .single();

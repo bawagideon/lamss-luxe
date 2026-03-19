@@ -1,24 +1,23 @@
 "use client";
 
 import { useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-// Mock Data
-const mockOrders = [
-  { id: "ORD-9021", customer: "Sarah Jenkins", email: "sarah@example.com", items: "1x Soft Life Slip Dress", amount: "$120.00", date: "2026-03-19", status: "Paid" },
-  { id: "ORD-9022", customer: "Amara Okonkwo", email: "amara.ok@example.com", items: "2x Luxe Corset Top", amount: "$170.00", date: "2026-03-18", status: "Shipped" },
-  { id: "ORD-9023", customer: "Chloe Davies", email: "chloe@example.com", items: "1x Midnight Silk Two-Piece", amount: "$145.00", date: "2026-03-18", status: "Pending" },
-  { id: "ORD-9024", customer: "Vanessa Wu", email: "vwu99@example.com", items: "1x Soft Life Slip Dress", amount: "$120.00", date: "2026-03-17", status: "Paid" },
-];
+import { useEffect } from "react";
+import { getAdminAllOrders, updateOrderStatus } from "@/app/actions/admin";
 
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState(mockOrders);
+  const [orders, setOrders] = useState<any[]>([]);
 
-  const handleStatusChange = (orderId: string, newStatus: string) => {
+  useEffect(() => {
+    getAdminAllOrders().then(setOrders);
+  }, []);
+
+  const handleStatusChange = async (orderId: string, newStatus: string) => {
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-    // In production, this would fire an async Server Action to update Supabase row
+    await updateOrderStatus(orderId, newStatus);
   };
 
   return (
@@ -41,22 +40,27 @@ export default function AdminOrdersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders.map((o) => (
+            {orders.length === 0 && (
+              <TableRow>
+                 <TableCell colSpan={6} className="text-center py-6 text-gray-500 font-medium">No active transactions.</TableCell>
+              </TableRow>
+            )}
+            {orders.map((o: any) => (
               <TableRow key={o.id} className="border-gray-50 hover:bg-gray-50/50 transition-colors">
-                <TableCell className="font-bold text-black">{o.id}</TableCell>
+                <TableCell className="font-bold text-black">{o.id.slice(0, 8)}</TableCell>
                 <TableCell>
-                  <div className="font-medium text-black">{o.customer}</div>
-                  <div className="text-xs text-gray-400">{o.email}</div>
+                  <div className="font-medium text-black">Guest Customer</div>
+                  <div className="text-xs text-gray-400">{o.customer_email || 'guest@anonymous.com'}</div>
                 </TableCell>
-                <TableCell className="text-gray-600 text-sm">{o.items}</TableCell>
-                <TableCell className="text-right font-medium">{o.amount}</TableCell>
+                <TableCell className="text-gray-600 text-sm">See Stripe ID</TableCell>
+                <TableCell className="text-right font-medium">${o.total_amount}</TableCell>
                 <TableCell className="text-right">
                   <Badge variant="outline" className={
-                    o.status === "Paid" ? "bg-black text-white" : 
-                    o.status === "Shipped" ? "bg-green-100 text-green-800 border-green-200" : 
+                    o.status === "paid" ? "bg-black text-white" : 
+                    o.status === "shipped" ? "bg-green-100 text-green-800 border-green-200" : 
                     "text-gray-500"
                   }>
-                    {o.status}
+                    {o.status.toUpperCase()}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -65,10 +69,10 @@ export default function AdminOrdersPage() {
                       <SelectValue placeholder="Update Status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Pending">Pending</SelectItem>
-                      <SelectItem value="Paid">Mark as Paid</SelectItem>
-                      <SelectItem value="Shipped">Mark as Shipped</SelectItem>
-                      <SelectItem value="Cancelled">Cancel Order</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="paid">Mark as Paid</SelectItem>
+                      <SelectItem value="shipped">Mark as Shipped</SelectItem>
+                      <SelectItem value="cancelled">Cancel Order</SelectItem>
                     </SelectContent>
                   </Select>
                 </TableCell>

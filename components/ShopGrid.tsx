@@ -1,8 +1,13 @@
 "use client";
 
+"use client";
+
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getActiveProducts } from "@/app/actions/products";
+import { createCheckoutSession } from "@/app/actions/checkout";
 
 const products = [
   {
@@ -36,6 +41,23 @@ const products = [
 ];
 
 export function ShopGrid() {
+  const [liveProducts, setLiveProducts] = useState<any[]>(products);
+
+  useEffect(() => {
+    getActiveProducts().then((dbProducts) => {
+      if (dbProducts && dbProducts.length > 0) {
+        setLiveProducts(dbProducts.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          price: `$${p.price}`,
+          rawPrice: p.price, // keep raw for calculations if needed
+          imageDefault: p.image_url,
+          imageLifestyle: p.image_url // duplicate if missing second image
+        })));
+      }
+    });
+  }, []);
+
   return (
     <section className="py-24 bg-white" id="shop">
       <div className="container mx-auto px-6 lg:px-12">
@@ -52,7 +74,7 @@ export function ShopGrid() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map((product, index) => (
+          {liveProducts.map((product, index) => (
             <motion.div 
               key={product.id}
               initial={{ opacity: 0, y: 30 }}
@@ -78,13 +100,14 @@ export function ShopGrid() {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 scale-105 group-hover:scale-100 transition-transform"
                 />
-                
-                {/* Quick Add Button Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                  <button className="w-full bg-white/95 backdrop-blur-sm text-black py-3 px-4 font-bold text-sm tracking-wide shadow-lg hover:bg-primary hover:text-white transition-colors rounded-sm">
+                {/* Quick Add Button Overlay connected to Server Action */}
+                <form action={createCheckoutSession} className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                  <input type="hidden" name="productId" value={product.id} />
+                  <input type="hidden" name="quantity" value="1" />
+                  <button type="submit" className="w-full bg-white/95 backdrop-blur-sm text-black py-3 px-4 font-bold text-sm tracking-wide shadow-lg hover:bg-primary hover:text-white transition-colors rounded-sm">
                     Add To Cart &mdash; {product.price}
                   </button>
-                </div>
+                </form>
               </div>
               
               <div className="flex justify-between items-start mt-4">
