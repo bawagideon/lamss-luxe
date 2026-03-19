@@ -1,6 +1,7 @@
 import { CommunityWaitlist } from "@/components/CommunityWaitlist";
 import { Gallery } from "@/components/Gallery";
 import { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Soft Life Queens Network",
@@ -30,8 +31,8 @@ export default function CommunityPage() {
               &quot;Women gathered for a relaxed evening of conversation, style, and connection. An unforgettable experience that seamlessly blended our love for fashion and our drive for success.&quot;
             </p>
             <div className="flex items-center justify-center space-x-4">
-              <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden relative">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" alt="Attendee" className="object-cover w-full h-full" />
+              <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+                <Image src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" alt="Attendee" fill sizes="48px" className="object-cover" />
               </div>
               <div className="text-left">
                 <p className="font-bold text-sm">Sarah Jenkins</p>

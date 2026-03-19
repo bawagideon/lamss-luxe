@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Our Story",
@@ -15,11 +16,14 @@ export default function AboutPage() {
         </div>
         
         <div className="prose prose-lg mx-auto prose-headings:font-black prose-headings:tracking-tight prose-a:text-primary">
-          <img 
-            src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1200&auto=format&fit=crop" 
-            alt="Fashion Forward Women" 
-            className="w-full rounded-2xl mb-12 shadow-lg"
-          />
+          <div className="relative w-full h-[600px] mb-12 rounded-2xl overflow-hidden shadow-lg">
+            <Image 
+              src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1200&auto=format&fit=crop" 
+              alt="Fashion Forward Women" 
+              fill
+              className="object-cover"
+            />
+          </div>
 
           <h2 className="text-2xl mt-8 mb-4">Our Story</h2>
           <p className="mb-8 text-gray-600 leading-relaxed">
