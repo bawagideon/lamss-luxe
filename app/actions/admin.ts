@@ -1,12 +1,17 @@
 'use server';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createClient } from '@/lib/supabase/server';
+import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
+
+const getAdminSupabase = () => createSupabaseAdmin(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 import { revalidatePath } from 'next/cache';
 
 // 1. Dashboard Metrics
 export async function getAdminMetrics() {
-  const supabase = createClient();
+  const supabase = getAdminSupabase();
   
   let totalRevenue = 0;
   const { data: revenueData } = await supabase.from('orders').select('total_amount').eq('status', 'paid');
@@ -29,21 +34,21 @@ export async function getAdminMetrics() {
 }
 
 export async function getAdminRecentOrders() {
-  const supabase = createClient();
+  const supabase = getAdminSupabase();
   const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(6);
   return data || [];
 }
 
 // 2. General Orders Engine
 export async function updateOrderStatus(orderId: string, status: string) {
-  const supabase = createClient();
+  const supabase = getAdminSupabase();
   await supabase.from('orders').update({ status }).eq('id', orderId);
   revalidatePath('/admin/orders');
   revalidatePath('/admin');
 }
 
 export async function getAdminAllOrders() {
-  const supabase = createClient();
+  const supabase = getAdminSupabase();
   const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
   return data || [];
 }
@@ -58,7 +63,7 @@ export async function addProduct(formData: FormData) {
   // default placeholder for new products if empty image
   const image_url = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200&auto=format&fit=crop"; 
 
-  const supabase = createClient();
+  const supabase = getAdminSupabase();
   await supabase.from('products').insert({
     name, description, price, stock, category, image_url
   });
@@ -68,14 +73,14 @@ export async function addProduct(formData: FormData) {
 }
 
 export async function getAdminProducts() {
-  const supabase = createClient();
+  const supabase = getAdminSupabase();
   const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
   return data || [];
 }
 
 // 4. Customers Tracking
 export async function getCustomers() {
-  const supabase = createClient();
+  const supabase = getAdminSupabase();
   const { data } = await supabase.from('orders').select('customer_email, total_amount, created_at');
   
   if (!data) return [];

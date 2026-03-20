@@ -1,7 +1,7 @@
 'use server';
 
 import Stripe from 'stripe';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy', { apiVersion: '2026-02-25.clover' });
@@ -10,7 +10,10 @@ export async function createCheckoutSession(formData: FormData) {
   const productId = formData.get('productId') as string;
   const quantity = Number(formData.get('quantity') || 1);
 
-  const supabase = createClient();
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
   const { data: product, error } = await supabase
     .from('products')
     .select('*')
