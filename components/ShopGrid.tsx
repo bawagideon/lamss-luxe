@@ -8,8 +8,6 @@ import { useEffect, useState } from "react";
 import { getActiveProducts } from "@/app/actions/products";
 import { createCheckoutSession } from "@/app/actions/checkout";
 
-const products: any[] = [];
-
 export function ShopGrid() {
   const [liveProducts, setLiveProducts] = useState<any[]>([]);
 
