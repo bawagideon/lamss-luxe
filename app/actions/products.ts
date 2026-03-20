@@ -5,21 +5,30 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function getActiveProducts() {
   noStore();
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (!url || !key) {
+      console.error("[CRITICAL] Missing Vercel Environment Variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is perfectly undefined.");
+      return [];
+    }
+
+    const supabase = createClient(url, key, {
       auth: { persistSession: false },
       global: { fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }) }
+    });
+    
+    const { data, error } = await supabase.from('products').select('*');
+    
+    if (error) {
+      console.error("Error fetching products:", error);
+      return [];
     }
-  );
-  
-  const { data, error } = await supabase.from('products').select('*');
-  
-  if (error) {
-    console.error("Error fetching products:", error);
-    return null;
+    
+    return data || [];
+  } catch (err) {
+    console.error("Fatal Server Action Runtime Crash in getActiveProducts:", err);
+    return [];
   }
-  
-  return data;
 }
