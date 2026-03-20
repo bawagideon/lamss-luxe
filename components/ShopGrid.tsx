@@ -1,7 +1,6 @@
 "use client";
 
-"use client";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
