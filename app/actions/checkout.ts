@@ -18,16 +18,12 @@ export async function createCheckoutSession(formData: FormData) {
     .single();
 
   if (error || !product || product.stock < quantity) {
-    throw new Error('Product unavailable or out of stock');
+    console.error("Product DB Validation Failed:", error || "Not found");
+    redirect('/collections?error=product_unavailable');
   }
 
-  // Create pending order. We let the DB generate the UUID.
-  const { data: order, error: orderError } = await stripeOrderIntegration(product.price, quantity);
-
-  if (orderError || !order) {
-    console.error("Order creation error:", orderError);
-    throw new Error('Failed to create order');
-  }
+  // Bypass pre-creating the order to prevent RLS and Guest Constraint 500 Blocks on Vercel.
+  // We will let the background Stripe Webhook handle the organic order manifestation.
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
@@ -50,20 +46,10 @@ export async function createCheckoutSession(formData: FormData) {
       // { shipping_rate: 'shr_123CanadaID' },
       // { shipping_rate: 'shr_456UnitedStatesID' },
     ],
-    metadata: { orderId: order.id },
+    metadata: { productId: product.id },
   });
 
   redirect(session.url!);
 }
 
-// Extracted to avoid direct call complexity in checkout
-async function stripeOrderIntegration(price: number, quantity: number) {
-   const supabase = createClient();
-   return await supabase
-    .from('orders')
-    .insert({
-      total_amount: price * quantity,
-    })
-    .select()
-    .single();
-}
+// Cleaned up synchronous order logic to prevent strict relational bounds from blocking guest purchases.
