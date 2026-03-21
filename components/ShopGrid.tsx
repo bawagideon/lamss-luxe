@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getActiveProducts } from "@/app/actions/products";
-import { createCheckoutSession } from "@/app/actions/checkout";
 
 export function ShopGrid() {
   const [liveProducts, setLiveProducts] = useState<any[]>([]);
@@ -27,7 +26,7 @@ export function ShopGrid() {
   }, []);
 
   return (
-    <section className="py-24 bg-white" id="shop">
+    <section className="py-24 bg-background" id="shop">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12">
           <div>
@@ -73,14 +72,12 @@ export function ShopGrid() {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     className="object-cover absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 scale-105 group-hover:scale-100 transition-transform"
                   />
-                  {/* Quick Add Button Overlay connected to Server Action */}
-                  <form action={createCheckoutSession} className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                    <input type="hidden" name="productId" value={product.id} />
-                    <input type="hidden" name="quantity" value="1" />
-                    <button type="submit" className="w-full bg-white/95 backdrop-blur-sm text-black py-3 px-4 font-bold text-sm tracking-wide shadow-lg hover:bg-primary hover:text-white transition-colors rounded-sm">
-                      Add To Cart &mdash; {product.price}
-                    </button>
-                  </form>
+                  {/* Quick View Button linking to the PDP */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                    <Link href={`/product/${product.id}`} className="block text-center w-full bg-background/95 backdrop-blur-sm text-foreground py-3 px-4 font-bold text-sm tracking-wide shadow-lg hover:bg-primary hover:text-primary-foreground transition-colors rounded-sm">
+                      View Details &mdash; {product.price}
+                    </Link>
+                  </div>
                 </div>
                 
                 <div className="flex justify-between items-start mt-4">

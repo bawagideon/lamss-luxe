@@ -33,11 +33,11 @@ export default function AdminCustomersPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-gray-100 shadow-sm rounded-xl overflow-hidden">
+      <div className="bg-card text-card-foreground border border-border shadow-sm rounded-xl overflow-hidden">
         <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex space-x-2">
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input placeholder="Search customers by name or email..." className="pl-10 border-gray-200 bg-white focus-visible:ring-black h-9" />
+            <Input placeholder="Search customers by name or email..." className="pl-10 border-border bg-background focus-visible:ring-primary h-9" />
           </div>
         </div>
         

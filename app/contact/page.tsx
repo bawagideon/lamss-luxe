@@ -9,7 +9,7 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <main className="flex min-h-screen flex-col w-full bg-white pt-32 pb-24">
+    <main className="flex min-h-screen flex-col w-full bg-background pt-32 pb-24">
       <div className="container mx-auto px-6 max-w-5xl">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">Get in Touch</h1>
@@ -76,7 +76,7 @@ export default function ContactPage() {
                     id="message" 
                     required 
                     rows={5}
-                    className="w-full rounded-md border border-input bg-white px-3 py-2 text-base shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-base shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     placeholder="How can we help you today?"
                   />
                 </div>

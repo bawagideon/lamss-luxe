@@ -8,18 +8,18 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="flex min-h-screen flex-col w-full bg-white pt-32 pb-24">
+    <main className="flex min-h-screen flex-col w-full bg-background pt-32 pb-24">
       <div className="container mx-auto px-6 max-w-3xl">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">About Lamssé Luxe</h1>
           <p className="text-xl text-muted-foreground">The intersection of fashion, confidence, and community.</p>
         </div>
-        
+
         <div className="prose prose-lg mx-auto prose-headings:font-black prose-headings:tracking-tight prose-a:text-primary">
           <div className="relative w-full h-[600px] mb-12 rounded-2xl overflow-hidden shadow-lg">
-            <Image 
-              src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1200&auto=format&fit=crop" 
-              alt="Fashion Forward Women" 
+            <Image
+              src="/Lammy-about.jpeg"
+              alt="Lamssé Luxe Founder"
               fill
               className="object-cover"
             />

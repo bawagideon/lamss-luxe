@@ -57,6 +57,35 @@ export default function AdminProductsPage() {
                   <Input id="stock" name="stock" required type="number" placeholder="50" className="border-gray-200 focus-visible:ring-black" />
                 </div>
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="sizes" className="text-xs uppercase font-bold text-gray-500">Sizes (Comma-Separated)</Label>
+                  <Input id="sizes" name="sizes" placeholder="XS, S, M, L, XL" className="border-gray-200 focus-visible:ring-black" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="colors" className="text-xs uppercase font-bold text-gray-500">Colors (Comma-Separated)</Label>
+                  <Input id="colors" name="colors" placeholder="Midnight Black, Taupe" className="border-gray-200 focus-visible:ring-black" />
+                </div>
+              </div>
+              <div className="space-y-4 border-t border-gray-100 pt-4">
+                <h4 className="text-sm font-bold uppercase tracking-tight">Multi-Angle Image URLs</h4>
+                <div className="space-y-2">
+                  <Label htmlFor="image_main" className="text-xs text-gray-500">Main Image (Default/Cover)</Label>
+                  <Input id="image_main" name="image_main" placeholder="https://..." className="border-gray-200 focus-visible:ring-black" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="image_front" className="text-xs text-gray-500">Front Angle</Label>
+                  <Input id="image_front" name="image_front" placeholder="https://..." className="border-gray-200 focus-visible:ring-black" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="image_side" className="text-xs text-gray-500">Side Angle</Label>
+                  <Input id="image_side" name="image_side" placeholder="https://..." className="border-gray-200 focus-visible:ring-black" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="image_back" className="text-xs text-gray-500">Back Angle</Label>
+                  <Input id="image_back" name="image_back" placeholder="https://..." className="border-gray-200 focus-visible:ring-black" />
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label className="text-xs uppercase font-bold text-gray-500">Category</Label>
                 <Select name="category">
@@ -77,11 +106,11 @@ export default function AdminProductsPage() {
         </Sheet>
       </div>
 
-      <div className="bg-white border border-gray-100 shadow-sm rounded-xl overflow-hidden">
+      <div className="bg-card text-card-foreground border border-border shadow-sm rounded-xl overflow-hidden">
         <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex space-x-2">
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input placeholder="Search inventory..." className="pl-10 border-gray-200 bg-white focus-visible:ring-black h-9" />
+            <Input placeholder="Search inventory..." className="pl-10 border-border bg-background focus-visible:ring-primary h-9" />
           </div>
         </div>
         <Table>

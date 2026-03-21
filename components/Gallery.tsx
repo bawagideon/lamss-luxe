@@ -14,13 +14,14 @@ const images = [
 
 export function Gallery() {
   return (
-    <section className="py-24 bg-white" id="gallery">
+    <section className="py-24 bg-background" id="gallery">
       <div className="container mx-auto px-6 overflow-hidden">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">Queens In The Wild</h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Tag @LamssLuxe or #SoftLifeQueens to be featured in our community gallery.
-          </p>
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">Community Moments</h2>
+          <div className="text-muted-foreground text-lg max-w-2xl mx-auto space-y-2">
+            <p>Tag @LamssLuxe or use #LamsséNetwork to be featured.</p>
+            <p>We love seeing how you show up, express yourself, and embrace your style.</p>
+          </div>
         </div>
 
         {/* Masonry Layout Simulation using multiple columns */}

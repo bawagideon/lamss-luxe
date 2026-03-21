@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
+import { sendShippingConfirmationEmail } from '@/lib/resend';
 
 const getAdminSupabase = () => createSupabaseAdmin(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -51,6 +52,15 @@ export async function updateOrderStatus(orderId: string, status: string) {
   noStore();
   const supabase = getAdminSupabase();
   await supabase.from('orders').update({ status }).eq('id', orderId);
+
+  // Dispatch shipping confirmation using Resend
+  if (status === 'shipped') {
+    const { data: order } = await supabase.from('orders').select('customer_email').eq('id', orderId).single();
+    if (order?.customer_email) {
+      await sendShippingConfirmationEmail(order.customer_email, { id: orderId });
+    }
+  }
+
   revalidatePath('/admin/orders');
   revalidatePath('/admin');
 }
@@ -70,12 +80,22 @@ export async function addProduct(formData: FormData) {
   const price = Number(formData.get('price'));
   const stock = Number(formData.get('stock'));
   const category = formData.get('category') as string;
-  // default placeholder for new products if empty image
-  const image_url = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200&auto=format&fit=crop"; 
+  const sizesStr = formData.get('sizes') as string || "";
+  const colorsStr = formData.get('colors') as string || "";
+  const image_main = formData.get('image_main') as string || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200&auto=format&fit=crop"; 
+  const image_front = formData.get('image_front') as string || null;
+  const image_side = formData.get('image_side') as string || null;
+  const image_back = formData.get('image_back') as string || null;
+
+  const sizes = sizesStr.split(',').map(s => s.trim()).filter(Boolean);
+  const colors = colorsStr.split(',').map(c => c.trim()).filter(Boolean);
 
   const supabase = getAdminSupabase();
   await supabase.from('products').insert({
-    name, description, price, stock, category, image_url
+    name, description, price, stock, category, 
+    image_url: image_main,
+    image_front, image_side, image_back,
+    sizes, colors
   });
 
   revalidatePath('/admin/products');

@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
+import { sendOrderConfirmationEmail } from '@/lib/resend';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy', { apiVersion: '2026-02-25.clover' });
 
@@ -39,13 +40,22 @@ export async function POST(req: Request) {
         .insert({
           total_amount: amountTotal,
           status: 'paid',
-          customer_email: customerEmail
+          customer_email: customerEmail,
+          selected_size: session.metadata?.size || null,
+          selected_color: session.metadata?.color || null
         });
 
       if (error) {
         console.error('Failed to create background order fulfillment:', error);
       } else {
         console.log(`Checkout ${session.id} organically processed into database.`);
+        // Emit Resend Email
+        await sendOrderConfirmationEmail(customerEmail, {
+          id: session.id,
+          amount: amountTotal.toFixed(2),
+          size: session.metadata?.size,
+          color: session.metadata?.color
+        });
       }
     }
   }

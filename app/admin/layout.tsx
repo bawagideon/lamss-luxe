@@ -24,9 +24,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 flex-col md:flex-row">
+    <div className="flex min-h-screen bg-background flex-col md:flex-row">
       {/* Mobile Topbar */}
-      <div className="md:hidden flex items-center justify-between bg-black p-4 text-white">
+      <div className="md:hidden flex items-center justify-between bg-card text-card-foreground p-4 border-b border-border">
         <span className="font-bold tracking-widest uppercase">Lamssé Admin</span>
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -36,13 +36,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar Navigation */}
       <aside
         className={cn(
-          "bg-black text-white w-full md:w-64 flex-col justify-between transition-transform duration-300 z-50 fixed md:sticky top-0 h-screen overflow-y-auto",
+          "bg-card text-card-foreground w-full md:w-64 flex-col justify-between transition-transform duration-300 z-50 fixed md:sticky top-0 h-screen overflow-y-auto border-r border-border",
           mobileMenuOpen ? "flex" : "hidden md:flex"
         )}
       >
         <div>
-          <div className="p-6 md:p-8 border-b border-gray-800">
-            <Link href="/admin" className="font-black text-xl tracking-widest uppercase hover:text-gray-300 transition-colors">
+          <div className="p-6 md:p-8 border-b border-border">
+            <Link href="/admin" className="font-black text-xl tracking-widest uppercase hover:text-primary transition-colors">
               Lamssé Luxe
             </Link>
           </div>
@@ -56,12 +56,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   className={cn(
                     "flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all group",
                     isActive
-                      ? "bg-white text-black"
-                      : "text-gray-400 hover:bg-gray-900 hover:text-white"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <item.icon className={cn("w-5 h-5", isActive ? "text-black" : "text-gray-400 group-hover:text-white")} />
+                  <item.icon className={cn("w-5 h-5", isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground")} />
                   <span>{item.title}</span>
                 </Link>
               );
@@ -69,8 +69,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
         </div>
 
-        <div className="p-4 border-t border-gray-800">
-          <button className="flex w-full items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-900 hover:text-white transition-all">
+        <div className="p-4 border-t border-border">
+          <button className="flex w-full items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all">
             <LogOut className="w-5 h-5" />
             <span>Sign Out</span>
           </button>

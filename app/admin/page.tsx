@@ -27,8 +27,8 @@ export default function AdminOverviewPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="rounded-xl border-gray-100 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-bold uppercase text-gray-500">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-black" />
+            <CardTitle className="text-sm font-bold uppercase text-muted-foreground">Total Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black tracking-tight">${metrics.totalRevenue}</div>
@@ -37,8 +37,8 @@ export default function AdminOverviewPage() {
         </Card>
         <Card className="rounded-xl border-gray-100 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-bold uppercase text-gray-500">Orders Lifecycle</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-black" />
+            <CardTitle className="text-sm font-bold uppercase text-muted-foreground">Orders Lifecycle</CardTitle>
+            <ShoppingBag className="h-4 w-4 text-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black tracking-tight">{metrics.ordersCount}</div>
@@ -47,8 +47,8 @@ export default function AdminOverviewPage() {
         </Card>
         <Card className="rounded-xl border-gray-100 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-bold uppercase text-gray-500">Active Products</CardTitle>
-            <Package className="h-4 w-4 text-black" />
+            <CardTitle className="text-sm font-bold uppercase text-muted-foreground">Active Products</CardTitle>
+            <Package className="h-4 w-4 text-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black tracking-tight">{metrics.activeProducts}</div>
@@ -57,8 +57,8 @@ export default function AdminOverviewPage() {
         </Card>
         <Card className="rounded-xl border-gray-100 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-bold uppercase text-gray-500">Known Customers</CardTitle>
-            <Users className="h-4 w-4 text-black" />
+            <CardTitle className="text-sm font-bold uppercase text-muted-foreground">Known Customers</CardTitle>
+            <Users className="h-4 w-4 text-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black tracking-tight">{metrics.waitlistCount}</div>
@@ -91,8 +91,8 @@ export default function AdminOverviewPage() {
                     </TableCell>
                   </TableRow>
                 ) : orders.map((order: any) => (
-                  <TableRow key={order.id} className="border-gray-50 group hover:bg-gray-50/50 transition-colors">
-                    <TableCell className="font-medium text-black">
+                  <TableRow key={order.id} className="border-border group hover:bg-muted/50 transition-colors">
+                    <TableCell className="font-medium text-foreground">
                       {order.id.slice(0, 8).toUpperCase()}...
                     </TableCell>
                     <TableCell className="text-gray-600">{order.customer_email || 'Guest User'}</TableCell>
@@ -101,8 +101,8 @@ export default function AdminOverviewPage() {
                     <TableCell className="text-right">
                       <Badge variant="outline"
                         className={
-                          order.status === "paid" ? "bg-black text-white" : 
-                          order.status === "shipped" ? "bg-green-100 text-green-800 border-green-200" : 
+                          order.status === "paid" ? "bg-primary text-primary-foreground" : 
+                          order.status === "shipped" ? "bg-green-100/20 text-green-500 border-green-500/30" : 
                           "text-gray-500 border-gray-200"
                         }
                       >

@@ -47,7 +47,7 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
             className="mt-10 flex flex-col sm:flex-row gap-4"
           >
-            <Button size="lg" className="bg-white text-black hover:bg-gray-100 px-8 py-6 text-base rounded-full font-bold uppercase tracking-wider transition-transform hover:scale-105" asChild>
+            <Button size="lg" className="bg-background text-foreground hover:bg-muted px-8 py-6 text-base rounded-full font-bold uppercase tracking-wider transition-transform hover:scale-105" asChild>
               <Link href="/collections">Shop The Drop</Link>
             </Button>
             <Button size="lg" className="bg-primary text-white hover:bg-primary/90 px-8 py-6 text-base rounded-full font-bold uppercase tracking-wider transition-transform hover:scale-105" asChild>

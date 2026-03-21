@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 
 export function Footer() {
   return (
-    <footer className="bg-gray-50 pt-20 pb-10 border-t border-gray-200">
+    <footer className="bg-secondary pt-20 pb-10 border-t border-border">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Info */}
@@ -46,17 +46,17 @@ export function Footer() {
               <Input 
                 type="email" 
                 placeholder="Email Address" 
-                className="bg-white" 
+                className="bg-background text-foreground" 
                 required 
               />
-              <Button type="submit" className="bg-black hover:bg-black/80 text-white w-full">
+              <Button type="submit" className="bg-primary hover:bg-primary/80 text-primary-foreground w-full">
                 Subscribe
               </Button>
             </form>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground">
+        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Lamssé Luxe. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>

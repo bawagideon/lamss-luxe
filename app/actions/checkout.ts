@@ -9,6 +9,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy', { apiVers
 export async function createCheckoutSession(formData: FormData) {
   const productId = formData.get('productId') as string;
   const quantity = Number(formData.get('quantity') || 1);
+  const size = formData.get('size') as string || '';
+  const color = formData.get('color') as string || '';
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,7 +51,7 @@ export async function createCheckoutSession(formData: FormData) {
       // { shipping_rate: 'shr_123CanadaID' },
       // { shipping_rate: 'shr_456UnitedStatesID' },
     ],
-    metadata: { productId: product.id },
+    metadata: { productId: product.id, size, color },
   });
 
   redirect(session.url!);

@@ -28,7 +28,7 @@ export default function AdminOrdersPage() {
         <p className="text-gray-500 text-sm mt-1">Review orders and dispatch shipping updates.</p>
       </div>
 
-      <div className="bg-white border border-gray-100 shadow-sm rounded-xl overflow-hidden">
+      <div className="bg-card text-card-foreground border border-border shadow-sm rounded-xl overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-gray-100 hover:bg-transparent bg-gray-50/50">

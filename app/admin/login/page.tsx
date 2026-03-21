@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-6">
-      <div className="w-full max-w-sm bg-white border border-gray-100 shadow-sm rounded-2xl p-8">
+      <div className="w-full max-w-sm bg-card text-card-foreground border border-border shadow-sm rounded-2xl p-8">
         <div className="flex flex-col items-center justify-center space-y-4 mb-8">
           <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
             <ShieldAlert className="w-6 h-6 text-white" />
