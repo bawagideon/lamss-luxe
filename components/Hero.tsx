@@ -13,16 +13,16 @@ export function Hero() {
         loop 
         muted 
         playsInline 
-        className="absolute inset-0 w-full h-full object-cover -z-20"
+        className="absolute inset-0 w-full h-full object-cover z-0"
       >
         <source src="/home-video.mp4" type="video/mp4" />
       </video>
 
       {/* Dark Overlay for Text Readability */}
-      <div className="absolute inset-0 bg-black/40 -z-10" />
+      <div className="absolute inset-0 bg-black/40 z-10" />
 
       {/* Center Overlay Content */}
-      <div className="text-center px-6 md:px-12 flex flex-col items-center z-10 w-full max-w-5xl mx-auto">
+      <div className="text-center px-6 md:px-12 flex flex-col items-center z-20 w-full max-w-5xl mx-auto">
         <motion.h1 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
