@@ -5,8 +5,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Heart } from "lucide-react";
 import { createCheckoutSession } from "@/app/actions/checkout";
+import { useWishlist } from "@/hooks/useWishlist";
 
 export function ProductDisplay({ product }: { product: any }) {
   // Aggregate images into a clean array, filtering out nulls
@@ -25,8 +26,14 @@ export function ProductDisplay({ product }: { product: any }) {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
 
+  const { wishlistIds, toggleWishlist, mounted } = useWishlist();
+  const isWished = mounted && wishlistIds.includes(product.id);
+
   const sizes = product.sizes && product.sizes.length > 0 ? product.sizes : ["XS", "S", "M", "L", "XL"];
   const colors = product.colors && product.colors.length > 0 ? product.colors : ["Midnight Black", "Taupe"];
+  const colorCodes = product.color_codes && product.color_codes.length === colors.length 
+    ? product.color_codes 
+    : colors.map(() => "#000000");
 
   return (
     <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row gap-12 lg:gap-24">
@@ -97,23 +104,28 @@ export function ProductDisplay({ product }: { product: any }) {
           
           {/* Color Selector */}
           <div>
-            <div className="flex justify-between items-center mb-3">
-              <span className="font-bold uppercase tracking-wider text-sm">Color</span>
-              <span className="text-muted-foreground text-sm">{selectedColor || "Select a color"}</span>
+            <div className="flex justify-between items-center mb-4">
+              <span className="font-bold uppercase tracking-wider text-sm flex items-center gap-2">
+                Color
+              </span>
+              <span className="text-muted-foreground text-sm font-medium">{selectedColor || "Select a color"}</span>
             </div>
-            <div className="flex flex-wrap gap-3">
-              {colors.map((c: string) => (
+            <div className="flex flex-wrap gap-4">
+              {colors.map((c: string, idx: number) => (
                 <button
                   key={c}
                   type="button"
                   onClick={() => setSelectedColor(c)}
-                  className={`px-4 py-3 border rounded-sm font-bold text-sm tracking-wide transition-colors ${
+                  className={`relative w-12 h-12 rounded-full border-2 shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
                     selectedColor === c 
-                      ? "border-primary bg-primary text-primary-foreground" 
-                      : "border-border bg-background hover:border-primary text-foreground"
+                      ? "border-foreground scale-110 shadow-md ring-2 ring-offset-2 ring-foreground" 
+                      : "border-border/50 hover:scale-105 hover:border-muted-foreground"
                   }`}
+                  style={{ backgroundColor: colorCodes[idx] }}
+                  title={c}
+                  aria-label={`Select color ${c}`}
                 >
-                  {c}
+                  <span className="sr-only">{c}</span>
                 </button>
               ))}
             </div>
@@ -143,13 +155,23 @@ export function ProductDisplay({ product }: { product: any }) {
             </div>
           </div>
 
-          <button 
-            type="submit" 
-            disabled={!selectedSize || !selectedColor || product.stock <= 0}
-            className="w-full bg-foreground text-background py-5 px-6 font-black text-lg tracking-widest uppercase hover:opacity-90 transition-opacity rounded-sm disabled:opacity-50 disabled:cursor-not-allowed mt-8"
-          >
-            {product.stock <= 0 ? "Out of Stock" : "Add to Bag"}
-          </button>
+          <div className="flex gap-4 mt-8">
+            <button 
+              type="submit" 
+              disabled={!selectedSize || !selectedColor || product.stock <= 0}
+              className="flex-1 bg-foreground text-background py-5 px-6 font-black text-lg tracking-widest uppercase hover:opacity-90 transition-opacity rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {product.stock <= 0 ? "Out of Stock" : "Add to Bag"}
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleWishlist(product.id)}
+              className="w-16 shrink-0 flex items-center justify-center border border-border rounded-sm hover:border-foreground transition-colors group"
+              aria-label="Toggle Wishlist"
+            >
+              <Heart className={`w-6 h-6 transition-colors ${isWished ? "text-red-500 fill-current" : "text-muted-foreground group-hover:text-foreground"}`} />
+            </button>
+          </div>
           
           <div className="border-t border-border pt-6 mt-8">
             <div className="flex items-center text-sm text-muted-foreground mb-2">

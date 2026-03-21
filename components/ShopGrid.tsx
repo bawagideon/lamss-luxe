@@ -6,9 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getActiveProducts } from "@/app/actions/products";
+import { Heart } from "lucide-react";
+import { useWishlist } from "@/hooks/useWishlist";
 
 export function ShopGrid() {
   const [liveProducts, setLiveProducts] = useState<any[]>([]);
+  const { wishlistIds, toggleWishlist, mounted } = useWishlist();
 
   useEffect(() => {
     getActiveProducts().then((dbProducts) => {
@@ -73,11 +76,25 @@ export function ShopGrid() {
                     className="object-cover absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 scale-105 group-hover:scale-100 transition-transform"
                   />
                   {/* Quick View Button linking to the PDP */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-20">
                     <Link href={`/product/${product.id}`} className="block text-center w-full bg-background/95 backdrop-blur-sm text-foreground py-3 px-4 font-bold text-sm tracking-wide shadow-lg hover:bg-primary hover:text-primary-foreground transition-colors rounded-sm">
                       View Details &mdash; {product.price}
                     </Link>
                   </div>
+                  {/* Guest Wishlist Heart Overlay */}
+                  {mounted && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleWishlist(product.id);
+                      }}
+                      className="absolute top-4 right-4 z-30 p-2.5 rounded-full backdrop-blur-md bg-background/70 hover:bg-background text-muted-foreground hover:text-red-500 transition-all shadow-sm group/heart"
+                      aria-label="Toggle Wishlist"
+                    >
+                      <Heart className={`w-4 h-4 transition-colors ${wishlistIds.includes(product.id) ? "fill-red-500 text-red-500" : "group-hover/heart:text-red-500"}`} />
+                    </button>
+                  )}
                 </div>
                 
                 <div className="flex justify-between items-start mt-4">

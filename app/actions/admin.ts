@@ -81,21 +81,35 @@ export async function addProduct(formData: FormData) {
   const stock = Number(formData.get('stock'));
   const category = formData.get('category') as string;
   const sizesStr = formData.get('sizes') as string || "";
-  const colorsStr = formData.get('colors') as string || "";
+  const rawColorNames = formData.getAll('color_names') as string[];
+  const rawColorCodes = formData.getAll('color_codes') as string[];
+  const material = formData.get('material') as string || null;
+  const occasion = formData.get('occasion') as string || null;
+  
   const image_main = formData.get('image_main') as string || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200&auto=format&fit=crop"; 
   const image_front = formData.get('image_front') as string || null;
   const image_side = formData.get('image_side') as string || null;
   const image_back = formData.get('image_back') as string || null;
 
   const sizes = sizesStr.split(',').map(s => s.trim()).filter(Boolean);
-  const colors = colorsStr.split(',').map(c => c.trim()).filter(Boolean);
+  
+  const colors: string[] = [];
+  const color_codes: string[] = [];
+
+  rawColorNames.forEach((name, idx) => {
+    if (name.trim() !== '') {
+      colors.push(name.trim());
+      color_codes.push(rawColorCodes[idx] || "#000000");
+    }
+  });
 
   const supabase = getAdminSupabase();
   await supabase.from('products').insert({
     name, description, price, stock, category, 
     image_url: image_main,
     image_front, image_side, image_back,
-    sizes, colors
+    sizes, colors, color_codes,
+    material, occasion
   });
 
   revalidatePath('/admin/products');

@@ -15,12 +15,20 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
+    // Trigger once on mount to get initial scroll position
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   if (pathname.startsWith("/admin")) return null;
+
+  const isHome = pathname === "/";
+  const isTransparent = isHome && !isScrolled;
+  const navTextColor = isTransparent ? "text-white" : "text-primary dark:text-foreground";
+  const navBgColor = isTransparent ? "bg-transparent py-6" : "bg-white/95 dark:bg-background/95 backdrop-blur-md shadow-sm py-4 border-b border-border";
 
   return (
     <>
@@ -28,13 +36,11 @@ export function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm py-4 border-b" : "bg-transparent py-6"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${navBgColor}`}
       >
         <div className="container mx-auto px-6 lg:px-12 flex items-center justify-between">
           {/* Left Navigation */}
-          <div className="hidden lg:flex items-center space-x-8 text-sm font-bold tracking-wide uppercase text-primary">
+          <div className={`hidden lg:flex items-center space-x-8 text-sm font-bold tracking-wide uppercase transition-colors duration-300 ${navTextColor}`}>
             <div className="group relative">
               <button className="flex items-center space-x-1 hover:opacity-80 transition-opacity">
                 <span>Shop</span>
@@ -55,18 +61,40 @@ export function Navbar() {
           {/* Center Logo */}
           <Link href="/" className="absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center">
             <div className="relative w-32 h-12 md:w-40 md:h-16">
-              <Image 
-                src="/Logo.jpeg" 
-                alt="Lamssé Luxe Logo" 
-                fill 
-                className="object-contain"
-                priority
-              />
+              {isTransparent ? (
+                /* Pure White Logo for Video Overlay */
+                <Image 
+                  src="/Logo.jpeg" 
+                  alt="Lamssé Luxe Logo" 
+                  fill 
+                  className="object-contain"
+                  priority
+                />
+              ) : (
+                <>
+                  {/* Light Mode Logo (Visible when NOT dark mode) */}
+                  <Image 
+                    src="/Logo-light.jpeg" 
+                    alt="Lamssé Luxe Logo" 
+                    fill 
+                    className="object-contain dark:hidden block"
+                    priority
+                  />
+                  {/* Dark Mode Logo (Visible only in dark mode) */}
+                  <Image 
+                    src="/Logo.jpeg" 
+                    alt="Lamssé Luxe Logo" 
+                    fill 
+                    className="object-contain hidden dark:block"
+                    priority
+                  />
+                </>
+              )}
             </div>
           </Link>
 
           {/* Right Navigation */}
-          <div className="hidden lg:flex items-center space-x-6 text-sm font-bold tracking-wide uppercase text-primary">
+          <div className={`hidden lg:flex items-center space-x-6 text-sm font-bold tracking-wide uppercase transition-colors duration-300 ${navTextColor}`}>
             <Link href="/community" className="hover:opacity-80 transition-opacity">Soft Life Queens</Link>
             <div className="flex items-center space-x-4 ml-4 border-l border-primary/20 pl-4">
               <ThemeToggle />
@@ -81,7 +109,7 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu Toggle */}
-          <div className="lg:hidden flex items-center space-x-4 text-primary">
+          <div className={`lg:hidden flex items-center space-x-4 transition-colors duration-300 ${navTextColor}`}>
             <ThemeToggle />
             <button className="hover:opacity-80 transition-opacity relative" aria-label="Cart">
               <ShoppingBag className="w-6 h-6" />

@@ -45,7 +45,17 @@ export default function AdminProductsPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="desc" className="text-xs uppercase font-bold text-gray-500">Description</Label>
-                <textarea id="desc" name="description" rows={4} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="A stunning piece for queens..."></textarea>
+                <textarea id="desc" name="description" rows={3} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="A stunning piece for queens..."></textarea>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="material" className="text-xs uppercase font-bold text-gray-500">Materials Used</Label>
+                  <textarea id="material" name="material" rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="e.g. 100% Silk"></textarea>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="occasion" className="text-xs uppercase font-bold text-gray-500">When to Wear (Occasion)</Label>
+                  <textarea id="occasion" name="occasion" rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="e.g. Late night dinners, yacht parties"></textarea>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -62,10 +72,18 @@ export default function AdminProductsPage() {
                   <Label htmlFor="sizes" className="text-xs uppercase font-bold text-gray-500">Sizes (Comma-Separated)</Label>
                   <Input id="sizes" name="sizes" placeholder="XS, S, M, L, XL" className="border-gray-200 focus-visible:ring-black" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="colors" className="text-xs uppercase font-bold text-gray-500">Colors (Comma-Separated)</Label>
-                  <Input id="colors" name="colors" placeholder="Midnight Black, Taupe" className="border-gray-200 focus-visible:ring-black" />
-                </div>
+              </div>
+              <div className="space-y-2 border-t border-gray-100 pt-4">
+                <Label className="text-xs uppercase font-bold text-gray-500">Colors (Name & Exact Hex Picker)</Label>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex gap-2 items-center">
+                    <Input name="color_names" placeholder={`Color ${i + 1} Name (e.g. Midnight)`} className="border-gray-200 focus-visible:ring-black flex-1" />
+                    <div className="h-10 w-12 rounded-lg overflow-hidden border border-gray-200 shrink-0">
+                      <input type="color" name="color_codes" className="w-[150%] h-[150%] -ml-1 -mt-1 cursor-pointer" defaultValue={["#000000", "#DC143C", "#F5F5DC", "#4682B4"][i]} />
+                    </div>
+                  </div>
+                ))}
+                <p className="text-[10px] text-gray-400">Leave name blank to skip. Hex codes power the visual swatches.</p>
               </div>
               <div className="space-y-4 border-t border-gray-100 pt-4">
                 <h4 className="text-sm font-bold uppercase tracking-tight">Multi-Angle Image URLs</h4>
@@ -106,36 +124,36 @@ export default function AdminProductsPage() {
         </Sheet>
       </div>
 
-      <div className="bg-card text-card-foreground border border-border shadow-sm rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex space-x-2">
+      <div className="bg-card text-card-foreground border border-border shadow-sm rounded-xl overflow-hidden mt-8">
+        <div className="p-4 border-b border-border bg-muted/50 flex space-x-2">
           <div className="relative w-full max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input placeholder="Search inventory..." className="pl-10 border-border bg-background focus-visible:ring-primary h-9" />
           </div>
         </div>
         <Table>
           <TableHeader>
-            <TableRow className="border-gray-100 hover:bg-transparent">
-              <TableHead className="font-bold text-gray-500 uppercase text-xs w-[80px]">Image</TableHead>
-              <TableHead className="font-bold text-gray-500 uppercase text-xs">Name</TableHead>
-              <TableHead className="font-bold text-gray-500 uppercase text-xs">Category</TableHead>
-              <TableHead className="font-bold text-gray-500 uppercase text-xs text-right">Price</TableHead>
-              <TableHead className="font-bold text-gray-500 uppercase text-xs text-right">Stock</TableHead>
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="font-bold text-muted-foreground uppercase text-xs w-[80px]">Image</TableHead>
+              <TableHead className="font-bold text-muted-foreground uppercase text-xs">Name</TableHead>
+              <TableHead className="font-bold text-muted-foreground uppercase text-xs">Category</TableHead>
+              <TableHead className="font-bold text-muted-foreground uppercase text-xs text-right">Price</TableHead>
+              <TableHead className="font-bold text-muted-foreground uppercase text-xs text-right">Stock</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {liveProducts.map((p: any) => (
-              <TableRow key={p.id} className="border-gray-50 group hover:bg-gray-50/50 transition-colors cursor-pointer">
+              <TableRow key={p.id} className="border-border group hover:bg-muted/50 transition-colors cursor-pointer">
                 <TableCell>
-                  <div className="w-12 h-14 relative bg-gray-100 rounded-md overflow-hidden border border-gray-100">
+                  <div className="w-12 h-14 relative bg-muted rounded-md overflow-hidden border border-border">
                     <Image src={p.image_url || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200"} alt={p.name} fill sizes="48px" className="object-cover" />
                   </div>
                 </TableCell>
-                <TableCell className="font-medium text-black">{p.name}</TableCell>
-                <TableCell className="text-gray-500 capitalize">{p.category || 'N/A'}</TableCell>
+                <TableCell className="font-medium text-foreground">{p.name}</TableCell>
+                <TableCell className="text-muted-foreground capitalize">{p.category || 'N/A'}</TableCell>
                 <TableCell className="text-right font-medium">${p.price}</TableCell>
                 <TableCell className="text-right">
-                  <span className={p.stock > 0 ? "text-gray-600" : "text-red-500 font-bold"}>
+                  <span className={p.stock > 0 ? "text-muted-foreground" : "text-destructive font-bold"}>
                     {p.stock > 0 ? p.stock : "Out of Stock"}
                   </span>
                 </TableCell>
