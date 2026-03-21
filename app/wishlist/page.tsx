@@ -68,7 +68,7 @@ export default function WishlistPage() {
             </div>
             <h3 className="text-2xl font-black tracking-tight mb-3">Your wishlist is empty</h3>
             <p className="text-muted-foreground mb-8">
-              Looks like you haven't added anything to your wishlist yet. Discover our latest collections and find your new obsessions.
+              Looks like you haven&apos;t added anything to your wishlist yet. Discover our latest collections and find your new obsessions.
             </p>
             <Link 
               href="/shop" 
