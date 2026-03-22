@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, ShoppingBag, User, Menu, X, Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { SearchBar } from "@/components/SearchBar";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -65,21 +66,10 @@ export function Navbar() {
               </div>
             </div>
 
-            {/* Right Block: Search Pill & Utilitarian Icons */}
+            {/* Right Block: Dynamic Search Component & Utilitarian Icons */}
             <div className={`hidden lg:flex flex-1 items-center justify-end gap-x-6 transition-colors duration-300 ${navTextColor}`}>
-              {/* Fashion Nova Style Search Pill */}
-              <div className={`flex flex-1 max-w-sm xl:max-w-md px-5 py-2.5 rounded-full border transition-colors ${
-                isTransparent 
-                  ? "border-white/30 bg-white/10 text-white placeholder-white/80" 
-                  : "border-border bg-muted/50 text-foreground"
-              }`}>
-                <Search className="w-4 h-4 mr-3 opacity-60 flex-shrink-0" />
-                <input 
-                  type="text" 
-                  placeholder="Search within Lamssé Luxe..." 
-                  className="bg-transparent border-none outline-none w-full text-xs font-bold tracking-wide placeholder-current opacity-80" 
-                />
-              </div>
+              {/* Dynamic Database Search Component */}
+              <SearchBar isTransparent={isTransparent} />
 
               {/* Utility Icons */}
               <div className="flex items-center space-x-5 flex-shrink-0">
