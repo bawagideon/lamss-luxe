@@ -31,7 +31,7 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
         setTrending(data.slice(0, 4)); 
       });
     }
-  }, [isFocused]);
+  }, [isFocused, trending.length]);
 
   // Load search results dynamically via .ilike fuzzy matching
   useEffect(() => {
@@ -180,7 +180,7 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
                       ))}
                     </div>
                   ) : (
-                    !isLoading && <p className="text-sm text-gray-500 italic">No exact matches found for "{query}".</p>
+                    !isLoading && <p className="text-sm text-gray-500 italic">No exact matches found for &quot;{query}&quot;.</p>
                   )}
                 </div>
               </div>
