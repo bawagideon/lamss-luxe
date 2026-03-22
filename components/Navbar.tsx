@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, User, Menu, X, ChevronDown } from "lucide-react";
+import { Search, ShoppingBag, User, Menu, X, Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -28,7 +28,7 @@ export function Navbar() {
   const isHome = pathname === "/";
   const isTransparent = isHome && !isScrolled;
   const navTextColor = isTransparent ? "text-white" : "text-primary dark:text-foreground";
-  const navBgColor = isTransparent ? "bg-transparent py-6" : "bg-white/95 dark:bg-background/95 backdrop-blur-md shadow-sm py-4 border-b border-border";
+  const navBgColor = isTransparent ? "bg-transparent" : "bg-white/95 dark:bg-background/95 backdrop-blur-md border-b border-border shadow-sm";
 
   return (
     <>
@@ -38,89 +38,96 @@ export function Navbar() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${navBgColor}`}
       >
-        <div className="container mx-auto px-6 lg:px-12 flex items-center justify-between">
-          {/* Left Navigation */}
-          <div className={`hidden lg:flex items-center space-x-8 text-sm font-bold tracking-wide uppercase transition-colors duration-300 ${navTextColor}`}>
-            <div className="group relative">
-              <button className="flex items-center space-x-1 hover:opacity-80 transition-opacity">
-                <span>Shop</span>
-                <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
-              </button>
-              {/* Dropdown Menu */}
-              <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="bg-popover text-popover-foreground shadow-xl rounded-lg py-2 w-48 flex flex-col border">
-                  <Link href="/shop/tops" className="px-4 py-2 hover:bg-muted transition-colors">Tops</Link>
-                  <Link href="/shop/two-piece" className="px-4 py-2 hover:bg-muted transition-colors">Two-Piece</Link>
-                  <Link href="/shop/dresses" className="px-4 py-2 hover:bg-muted transition-colors">Dresses</Link>
+        <div className="w-full">
+          {/* TOP TIER: Logo, Main Categories (Level 1), Search, Icons */}
+          <div className="container mx-auto px-4 lg:px-6 py-3 md:py-4 flex items-center justify-between gap-6">
+            
+            {/* Left Block: Logo & Primary Links */}
+            <div className="flex items-center gap-6 lg:gap-10">
+              {/* Logo (Aligned Left) */}
+              <Link href="/" className="flex-shrink-0">
+                <div className="relative w-36 h-10 md:w-48 md:h-12">
+                  {isTransparent ? (
+                    <Image src="/Logo.jpeg" alt="Lamssé Luxe Logo" fill className="object-contain" priority />
+                  ) : (
+                    <>
+                      <Image src="/Logo-light.jpeg" alt="Lamssé Luxe Logo" fill className="object-contain dark:hidden block" priority />
+                      <Image src="/Logo.jpeg" alt="Lamssé Luxe Logo" fill className="object-contain hidden dark:block" priority />
+                    </>
+                  )}
                 </div>
+              </Link>
+              
+              {/* Primary Links (Level 1) - Desktop Only */}
+              <div className={`hidden xl:flex items-center space-x-6 text-sm font-black tracking-widest uppercase transition-colors duration-300 ${navTextColor}`}>
+                <Link href="/shop" className="border-b-2 border-current pb-1">Shop</Link>
+                <Link href="/collections" className="hover:opacity-80 transition-opacity pb-1 border-b-2 border-transparent hover:border-current">Collections</Link>
+                <Link href="/community" className="hover:opacity-80 transition-opacity pb-1 border-b-2 border-transparent hover:border-current">Community</Link>
               </div>
             </div>
-            <Link href="/collections" className="hover:opacity-80 transition-opacity">Collections</Link>
-          </div>
 
-          {/* Center Logo */}
-          <Link href="/" className="absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center">
-            <div className="relative w-32 h-12 md:w-40 md:h-16">
-              {isTransparent ? (
-                /* Pure White Logo for Video Overlay */
-                <Image 
-                  src="/Logo.jpeg" 
-                  alt="Lamssé Luxe Logo" 
-                  fill 
-                  className="object-contain"
-                  priority
+            {/* Right Block: Search Pill & Utilitarian Icons */}
+            <div className={`hidden lg:flex flex-1 items-center justify-end gap-x-6 transition-colors duration-300 ${navTextColor}`}>
+              {/* Fashion Nova Style Search Pill */}
+              <div className={`flex flex-1 max-w-sm xl:max-w-md px-5 py-2.5 rounded-full border transition-colors ${
+                isTransparent 
+                  ? "border-white/30 bg-white/10 text-white placeholder-white/80" 
+                  : "border-border bg-muted/50 text-foreground"
+              }`}>
+                <Search className="w-4 h-4 mr-3 opacity-60 flex-shrink-0" />
+                <input 
+                  type="text" 
+                  placeholder="Search within Lamssé Luxe..." 
+                  className="bg-transparent border-none outline-none w-full text-xs font-bold tracking-wide placeholder-current opacity-80" 
                 />
-              ) : (
-                <>
-                  {/* Light Mode Logo (Visible when NOT dark mode) */}
-                  <Image 
-                    src="/Logo-light.jpeg" 
-                    alt="Lamssé Luxe Logo" 
-                    fill 
-                    className="object-contain dark:hidden block"
-                    priority
-                  />
-                  {/* Dark Mode Logo (Visible only in dark mode) */}
-                  <Image 
-                    src="/Logo.jpeg" 
-                    alt="Lamssé Luxe Logo" 
-                    fill 
-                    className="object-contain hidden dark:block"
-                    priority
-                  />
-                </>
-              )}
-            </div>
-          </Link>
+              </div>
 
-          {/* Right Navigation */}
-          <div className={`hidden lg:flex items-center space-x-6 text-sm font-bold tracking-wide uppercase transition-colors duration-300 ${navTextColor}`}>
-            <Link href="/community" className="hover:opacity-80 transition-opacity">Soft Life Queens</Link>
-            <div className="flex items-center space-x-4 ml-4 border-l border-primary/20 pl-4">
+              {/* Utility Icons */}
+              <div className="flex items-center space-x-5 flex-shrink-0">
+                <ThemeToggle />
+                <Link href="/wishlist" className="hover:opacity-80 transition-opacity" aria-label="Wishlist">
+                  <Heart className="w-6 h-6" />
+                </Link>
+                <Link href="/admin" className="hover:opacity-80 transition-opacity" aria-label="Account">
+                  <User className="w-6 h-6" />
+                </Link>
+                <button className="hover:opacity-80 transition-opacity relative" aria-label="Cart">
+                  <ShoppingBag className="w-6 h-6" />
+                  <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-md">0</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile Hamburger / Touch Interface */}
+            <div className={`lg:hidden flex items-center space-x-4 transition-colors duration-300 ${navTextColor}`}>
               <ThemeToggle />
-              <button className="hover:opacity-80 transition-opacity" aria-label="Account">
-                <User className="w-5 h-5" />
-              </button>
               <button className="hover:opacity-80 transition-opacity relative" aria-label="Cart">
-                <ShoppingBag className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">0</span>
+                <ShoppingBag className="w-6 h-6" />
               </button>
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="hover:opacity-80 transition-opacity ml-2"
+              >
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+
+          </div>
+
+          {/* BOTTOM TIER: Subcategories - strict route mapping (No 404s/Dropdowns) */}
+          <div className={`hidden lg:flex items-center justify-center w-full border-t ${isTransparent ? 'border-white/20' : 'border-border/60'} py-3`}>
+            <div className={`flex items-center space-x-8 text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-300 ${navTextColor}`}>
+              <Link href="/shop" className="hover:opacity-80 transition-opacity">Shop All</Link>
+              <Link href="/shop/tops" className="hover:opacity-80 transition-opacity">Tops</Link>
+              <Link href="/shop/two-piece" className="hover:opacity-80 transition-opacity">Two-Piece</Link>
+              <Link href="/shop/dresses" className="hover:opacity-80 transition-opacity">Dresses</Link>
+              <Link href="/collections" className="hover:opacity-80 transition-opacity">The Collections</Link>
+              <Link href="/community" className="text-primary hover:opacity-80 transition-opacity">Soft Life Queens</Link>
+              <Link href="/about" className="hover:opacity-80 transition-opacity">About Us</Link>
+              <Link href="/contact" className="hover:opacity-80 transition-opacity">Contact</Link>
             </div>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <div className={`lg:hidden flex items-center space-x-4 transition-colors duration-300 ${navTextColor}`}>
-            <ThemeToggle />
-            <button className="hover:opacity-80 transition-opacity relative" aria-label="Cart">
-              <ShoppingBag className="w-6 h-6" />
-            </button>
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="hover:opacity-80 transition-opacity"
-            >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
         </div>
       </motion.nav>
 
