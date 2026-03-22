@@ -25,7 +25,7 @@ export default function ContactPage() {
                 <Instagram className="w-6 h-6 text-primary mt-1" />
                 <div>
                   <p className="font-bold text-lg">Instagram</p>
-                  <p className="text-muted-foreground">Follow us @LamssLuxe for drops and community events.</p>
+                  <p className="text-muted-foreground">Follow us @lamsseluxe.ca for drops and community events.</p>
                   <a href="#" className="text-primary hover:underline mt-2 inline-block">DM us on Instagram &rarr;</a>
                 </div>
               </div>

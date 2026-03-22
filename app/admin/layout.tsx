@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, ShoppingBag, Truck, Users, Settings, Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
+import { Toaster } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 
 const sidebarNavItems = [
@@ -70,7 +71,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <div className="p-4 border-t border-border">
-          <button className="flex w-full items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all">
+          <button 
+            onClick={() => {
+              document.cookie = 'admin_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+              window.location.href = '/shop';
+            }}
+            className="flex w-full items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+          >
             <LogOut className="w-5 h-5" />
             <span>Sign Out</span>
           </button>
@@ -78,7 +85,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full p-6 md:p-10 pb-20">
+      <main className="flex-1 w-full p-6 md:p-10 pb-20 relative">
+        <Toaster position="top-right" />
         <div className="max-w-6xl mx-auto w-full">
           {children}
         </div>

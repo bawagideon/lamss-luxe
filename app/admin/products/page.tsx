@@ -7,17 +7,43 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { getAdminProducts, addProduct } from "@/app/actions/admin";
+import { useEffect, useState, useTransition } from "react";
+import { getAdminProducts, addProduct, deleteProduct } from "@/app/actions/admin";
+import toast from "react-hot-toast";
 
 export default function AdminProductsPage() {
   const [liveProducts, setLiveProducts] = useState<any[]>([]);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     getAdminProducts().then(setLiveProducts);
   }, []);
+
+  const handleAddSubmit = (formData: FormData) => {
+    startTransition(async () => {
+      const res = await addProduct(formData);
+      if (res?.error) toast.error(res.error);
+      else {
+        toast.success("Product Drop Successfully Added!");
+        getAdminProducts().then(setLiveProducts);
+      }
+    });
+  };
+
+  const handleDelete = (id: string, name: string) => {
+    if (confirm(`Permanently delete ${name}? This action is immediate and irrevocable.`)) {
+      startTransition(async () => {
+        const res = await deleteProduct(id);
+        if (res?.error) toast.error(res.error);
+        else {
+          toast.success("Product Annihilated.");
+          setLiveProducts(prev => prev.filter(p => p.id !== id));
+        }
+      });
+    }
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -38,7 +64,7 @@ export default function AdminProductsPage() {
               <SheetTitle className="text-2xl font-black uppercase tracking-tight">New Drop</SheetTitle>
               <SheetDescription>Configure a new product entry for the catalog.</SheetDescription>
             </SheetHeader>
-            <form action={async (formData) => { await addProduct(formData); getAdminProducts().then(setLiveProducts); }} className="space-y-6">
+            <form action={handleAddSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-xs uppercase font-bold text-gray-500">Product Name</Label>
                 <Input id="name" name="name" required placeholder="e.g. The Velvet Evening Gown" className="border-gray-200 focus-visible:ring-black" />
@@ -85,23 +111,23 @@ export default function AdminProductsPage() {
                 ))}
                 <p className="text-[10px] text-gray-400">Leave name blank to skip. Hex codes power the visual swatches.</p>
               </div>
-              <div className="space-y-4 border-t border-gray-100 pt-4">
-                <h4 className="text-sm font-bold uppercase tracking-tight">Multi-Angle Image URLs</h4>
+                <div className="space-y-4 border-t border-gray-100 pt-4">
+                <h4 className="text-sm font-bold uppercase tracking-tight">Multi-Angle Image Uploads</h4>
                 <div className="space-y-2">
                   <Label htmlFor="image_main" className="text-xs text-gray-500">Main Image (Default/Cover)</Label>
-                  <Input id="image_main" name="image_main" placeholder="https://..." className="border-gray-200 focus-visible:ring-black" />
+                  <Input id="image_main" name="image_main" type="file" accept="image/*" className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-black file:text-white file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="image_front" className="text-xs text-gray-500">Front Angle</Label>
-                  <Input id="image_front" name="image_front" placeholder="https://..." className="border-gray-200 focus-visible:ring-black" />
+                  <Input id="image_front" name="image_front" type="file" accept="image/*" className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="image_side" className="text-xs text-gray-500">Side Angle</Label>
-                  <Input id="image_side" name="image_side" placeholder="https://..." className="border-gray-200 focus-visible:ring-black" />
+                  <Input id="image_side" name="image_side" type="file" accept="image/*" className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="image_back" className="text-xs text-gray-500">Back Angle</Label>
-                  <Input id="image_back" name="image_back" placeholder="https://..." className="border-gray-200 focus-visible:ring-black" />
+                  <Input id="image_back" name="image_back" type="file" accept="image/*" className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" />
                 </div>
               </div>
               <div className="space-y-2">
@@ -138,7 +164,8 @@ export default function AdminProductsPage() {
               <TableHead className="font-bold text-muted-foreground uppercase text-xs">Name</TableHead>
               <TableHead className="font-bold text-muted-foreground uppercase text-xs">Category</TableHead>
               <TableHead className="font-bold text-muted-foreground uppercase text-xs text-right">Price</TableHead>
-              <TableHead className="font-bold text-muted-foreground uppercase text-xs text-right">Stock</TableHead>
+              <TableHead className="font-bold text-muted-foreground uppercase text-xs text-center">Stock</TableHead>
+              <TableHead className="font-bold text-muted-foreground uppercase text-xs text-center w-[50px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -152,10 +179,20 @@ export default function AdminProductsPage() {
                 <TableCell className="font-medium text-foreground">{p.name}</TableCell>
                 <TableCell className="text-muted-foreground capitalize">{p.category || 'N/A'}</TableCell>
                 <TableCell className="text-right font-medium">${p.price}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-center">
                   <span className={p.stock > 0 ? "text-muted-foreground" : "text-destructive font-bold"}>
                     {p.stock > 0 ? p.stock : "Out of Stock"}
                   </span>
+                </TableCell>
+                <TableCell className="text-center">
+                  <button 
+                    disabled={isPending}
+                    onClick={(e) => { e.stopPropagation(); handleDelete(p.id, p.name); }} 
+                    className="text-red-500 opacity-60 hover:opacity-100 transition-opacity p-2 rounded hover:bg-red-50"
+                    title="Delete Product"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </TableCell>
               </TableRow>
             ))}

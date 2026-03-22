@@ -62,7 +62,6 @@ export function Navbar() {
               <div className={`hidden xl:flex items-center space-x-6 text-sm font-black tracking-widest uppercase transition-colors duration-300 ${navTextColor}`}>
                 <Link href="/shop" className="border-b-2 border-current pb-1">Shop</Link>
                 <Link href="/collections" className="hover:opacity-80 transition-opacity pb-1 border-b-2 border-transparent hover:border-current">Collections</Link>
-                <Link href="/community" className="hover:opacity-80 transition-opacity pb-1 border-b-2 border-transparent hover:border-current">Community</Link>
               </div>
             </div>
 
@@ -122,7 +121,6 @@ export function Navbar() {
               <Link href="/shop/two-piece" className="hover:opacity-80 transition-opacity">Two-Piece</Link>
               <Link href="/shop/dresses" className="hover:opacity-80 transition-opacity">Dresses</Link>
               <Link href="/collections" className="hover:opacity-80 transition-opacity">The Collections</Link>
-              <Link href="/community" className="text-primary hover:opacity-80 transition-opacity">Soft Life Queens</Link>
               <Link href="/about" className="hover:opacity-80 transition-opacity">About Us</Link>
               <Link href="/contact" className="hover:opacity-80 transition-opacity">Contact</Link>
             </div>

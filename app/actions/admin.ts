@@ -72,48 +72,101 @@ export async function getAdminAllOrders() {
   return data || [];
 }
 
+// Private Helper: Hydrates raw browser File payloads into absolute Supabase CDNs
+async function uploadProductImage(file: File | null) {
+  if (!file || file.size === 0) return null;
+  const supabase = getAdminSupabase();
+  
+  // Failsafe: Ensure target bucket 'products' physically exists natively before upload
+  const { data: buckets } = await supabase.storage.listBuckets();
+  if (!buckets?.find(b => b.name === 'products')) {
+    await supabase.storage.createBucket('products', { public: true });
+  }
+
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+  
+  const { error } = await supabase.storage.from('products').upload(fileName, file, { cacheControl: '3600', upsert: false });
+  if (error) {
+    console.error("Supabase Storage Upload Error:", error);
+    return null;
+  }
+  
+  const { data } = supabase.storage.from('products').getPublicUrl(fileName);
+  return data.publicUrl;
+}
+
 // 3. Product Catalog Sandbox
 export async function addProduct(formData: FormData) {
   noStore();
-  const name = formData.get('name') as string;
-  const description = formData.get('description') as string;
-  const price = Number(formData.get('price'));
-  const stock = Number(formData.get('stock'));
-  const category = formData.get('category') as string;
-  const sizesStr = formData.get('sizes') as string || "";
-  const rawColorNames = formData.getAll('color_names') as string[];
-  const rawColorCodes = formData.getAll('color_codes') as string[];
-  const material = formData.get('material') as string || null;
-  const occasion = formData.get('occasion') as string || null;
-  
-  const image_main = formData.get('image_main') as string || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200&auto=format&fit=crop"; 
-  const image_front = formData.get('image_front') as string || null;
-  const image_side = formData.get('image_side') as string || null;
-  const image_back = formData.get('image_back') as string || null;
+  try {
+    const name = formData.get('name') as string;
+    const description = formData.get('description') as string;
+    const price = Number(formData.get('price'));
+    const stock = Number(formData.get('stock'));
+    const category = formData.get('category') as string;
+    const sizesStr = formData.get('sizes') as string || "";
+    const rawColorNames = formData.getAll('color_names') as string[];
+    const rawColorCodes = formData.getAll('color_codes') as string[];
+    const material = formData.get('material') as string || null;
+    const occasion = formData.get('occasion') as string || null;
+    
+    // Parse the multipart binary blobs
+    const mainFile = formData.get('image_main') as File | null;
+    const frontFile = formData.get('image_front') as File | null;
+    const sideFile = formData.get('image_side') as File | null;
+    const backFile = formData.get('image_back') as File | null;
 
-  const sizes = sizesStr.split(',').map(s => s.trim()).filter(Boolean);
-  
-  const colors: string[] = [];
-  const color_codes: string[] = [];
+    // Dispatch blobs into CDNs synchronously
+    const image_main = await uploadProductImage(mainFile) || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200&auto=format&fit=crop"; 
+    const image_front = await uploadProductImage(frontFile);
+    const image_side = await uploadProductImage(sideFile);
+    const image_back = await uploadProductImage(backFile);
 
-  rawColorNames.forEach((name, idx) => {
-    if (name.trim() !== '') {
-      colors.push(name.trim());
-      color_codes.push(rawColorCodes[idx] || "#000000");
-    }
-  });
+    const sizes = sizesStr.split(',').map(s => s.trim()).filter(Boolean);
+    
+    const colors: string[] = [];
+    const color_codes: string[] = [];
 
-  const supabase = getAdminSupabase();
-  await supabase.from('products').insert({
-    name, description, price, stock, category, 
-    image_url: image_main,
-    image_front, image_side, image_back,
-    sizes, colors, color_codes,
-    material, occasion
-  });
+    rawColorNames.forEach((name, idx) => {
+      if (name.trim() !== '') {
+        colors.push(name.trim());
+        color_codes.push(rawColorCodes[idx] || "#000000");
+      }
+    });
 
-  revalidatePath('/admin/products');
-  revalidatePath('/shop');
+    const supabase = getAdminSupabase();
+    const { error } = await supabase.from('products').insert({
+      name, description, price, stock, category, 
+      image_url: image_main,
+      image_front, image_side, image_back,
+      sizes, colors, color_codes,
+      material, occasion
+    });
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin/products');
+    revalidatePath('/shop');
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message || "Failed to add product natively." };
+  }
+}
+
+export async function deleteProduct(id: string) {
+  noStore();
+  try {
+    const supabase = getAdminSupabase();
+    const { error } = await supabase.from('products').delete().eq('id', id);
+    if (error) throw new Error(error.message);
+    
+    revalidatePath('/admin/products');
+    revalidatePath('/shop');
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message || "Failed to delete from DB." };
+  }
 }
 
 export async function getAdminProducts() {
