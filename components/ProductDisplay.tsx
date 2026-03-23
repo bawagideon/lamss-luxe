@@ -155,6 +155,22 @@ export function ProductDisplay({ product }: { product: any }) {
             </div>
           </div>
 
+          {/* Product Specifications */}
+          <div className="flex flex-col gap-4 py-6 border-y border-border">
+            {product.material && (
+              <div className="flex flex-col">
+                <span className="text-xs uppercase font-extrabold text-muted-foreground tracking-widest mb-1">Material & Care</span>
+                <span className="text-base font-semibold text-foreground">{product.material}</span>
+              </div>
+            )}
+            {product.occasion && (
+              <div className="flex flex-col">
+                <span className="text-xs uppercase font-extrabold text-muted-foreground tracking-widest mb-1">Occasion / Fit</span>
+                <span className="text-base font-semibold text-foreground">{product.occasion}</span>
+              </div>
+            )}
+          </div>
+
           <div className="flex gap-4 mt-8">
             <button 
               type="submit" 

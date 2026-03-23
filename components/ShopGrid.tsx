@@ -34,8 +34,9 @@ export function ShopGrid() {
         <div className="flex flex-col md:flex-row justify-between items-end mb-12">
           <div>
             <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">Shop The Look</h2>
-            <p className="text-muted-foreground text-lg max-w-xl">
-              Curated elegance for the modern woman. Wear it during the day, slay it through the night.
+            <p className="text-muted-foreground text-lg max-w-xl leading-relaxed">
+              Curated elegance for the modern woman.<br/>
+              Effortless by day. Unforgettable by night.
             </p>
           </div>
           <Link href="/collections" className="mt-6 md:mt-0 text-primary font-bold hover:underline transition-all">

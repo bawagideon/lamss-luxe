@@ -19,7 +19,7 @@ export function Gallery() {
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">Community Moments</h2>
           <div className="text-muted-foreground text-lg max-w-2xl mx-auto space-y-2">
-            <p>Tag @LamssLuxe or use #LamsséNetwork to be featured.</p>
+            <p>Tag @lamsseluxe.ca or use #LamsséNetwork to be featured.</p>
             <p>We love seeing how you show up, express yourself, and embrace your style.</p>
           </div>
         </div>

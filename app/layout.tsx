@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthModal } from "@/components/AuthModal";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +29,8 @@ export default function RootLayout({
         >
           <Navbar />
           {children}
+          <AuthModal />
+          <Toaster position="top-right" />
         </ThemeProvider>
       </body>
     </html>

@@ -15,7 +15,7 @@ export default function CommunityPage() {
           Lamssé Luxe is more than just fashion. It is a growing community for women who are intentional about how they show up, how they live, and how they express themselves.
         </p>
         <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mt-4">
-          Through Lamssé Network, we are building a space where women can connect, share, and grow together while embracing confidence, style, and a soft life mindset.
+          Through Lamssé Network, we are building a space where women can connect, share, and grow together while embracing confidence, style, and a refined soft life mindset.
         </p>
       </div>
 
@@ -25,19 +25,22 @@ export default function CommunityPage() {
       {/* Coming Soon Section */}
       <section className="py-24 bg-secondary">
         <div className="container mx-auto px-6 text-center max-w-3xl">
-          <h2 className="text-sm font-bold tracking-[0.3em] uppercase text-primary mb-2">Coming Soon</h2>
-          <h3 className="text-3xl md:text-4xl font-black tracking-tight mb-8">Lamssé Network Experience &mdash; Soft Life Queens Edition</h3>
+          <h2 className="text-sm font-bold tracking-[0.3em] uppercase text-primary mb-2">Next Event Coming Soon</h2>
+          <h3 className="text-3xl md:text-4xl font-black tracking-tight mb-8">Her Elegance Series — Soft Life Queens Edition</h3>
           
           <div className="bg-card text-card-foreground p-8 md:p-12 rounded-2xl shadow-sm border border-border">
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground mb-6 font-semibold">
               Our first experience is currently in planning.
             </p>
-            <p className="text-lg text-muted-foreground mb-8">
-              This edition will introduce the Lamssé Network in a way that brings together style, conversation, and community in a relaxed and memorable setting.
+            <p className="text-lg text-muted-foreground mb-4">
+              This Edition is a carefully curated evening where women come together to relax, connect, and enjoy the moment.
             </p>
-            <div className="inline-block px-6 py-3 bg-primary/10 text-primary font-bold rounded-full text-sm tracking-wide">
-              Be part of the first experience.
-            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Think silky pyjamas, good wine, meaningful conversations around career and lifestyle, and a space where style meets ease. It is designed to feel effortless, intimate, and refreshing, a true soft life experience.
+            </p>
+            <a href="#community" className="inline-block px-10 py-5 bg-primary/10 hover:bg-primary hover:text-white transition-colors text-primary font-bold rounded-full text-base tracking-widest uppercase">
+              Register
+            </a>
           </div>
         </div>
       </section>

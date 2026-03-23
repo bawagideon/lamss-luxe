@@ -29,8 +29,8 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight w-full"
         >
-          Ready-to-Slay Fashion <br/> 
-          <span className="text-white">for Soft Life Queens.</span>
+          Ready-to-Slay IT Girl Fashion <br/> 
+          <span className="text-white">for the Poise Woman.</span>
         </motion.h1>
         
         <motion.p
@@ -39,7 +39,7 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
           className="mt-6 text-lg md:text-xl text-gray-200 font-medium max-w-2xl text-center"
         >
-          Curated elegance delivered instantly. Dress with intention.
+          Curated pieces designed to elevate your presence. Dress with intention. Show up with confidence.
         </motion.p>
         
         <motion.div 

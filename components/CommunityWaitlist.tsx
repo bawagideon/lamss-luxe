@@ -26,11 +26,12 @@ export function CommunityWaitlist() {
           viewport={{ once: true }}
         >
           <h2 className="text-sm font-bold tracking-[0.3em] uppercase text-primary mb-4">The Experience</h2>
-          <h3 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">Lamssé Network Experience</h3>
+          <h3 className="text-4xl md:text-5xl font-black text-white mb-2 leading-tight">Her Elegance Series</h3>
+          <h4 className="text-xl md:text-2xl font-bold text-gray-300 mb-8">by Lamssé Network</h4>
           <div className="text-lg text-gray-200 mb-10 leading-relaxed max-w-2xl mx-auto space-y-4">
-            <p>A curated women’s experience designed to bring together confidence, style, and meaningful connection.</p>
-            <p>Each edition is created to give women a space to step away from routine, connect with like-minded individuals, and enjoy conversations around lifestyle, self-expression, and personal growth in a relaxed and inspiring environment.</p>
-            <p className="font-bold text-white tracking-wide pt-4">Join the waitlist to be the first to know when we launch.</p>
+            <p>A curated experience for women who move with presence, confidence, and intention.</p>
+            <p>A space to connect, express, and step fully into who you are becoming.</p>
+            <p className="font-bold text-white tracking-wide pt-4">Join the waitlist to be the first to experience it.</p>
           </div>
 
           {!submitted ? (

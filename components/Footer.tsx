@@ -11,7 +11,8 @@ export function Footer() {
           <div className="col-span-1 lg:col-span-1">
             <h2 className="text-xl font-black uppercase tracking-widest mb-4">Lamssé Luxe</h2>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              Ready-to-Slay Fashion. Fusing e-commerce with community for the unapologetic soft life queens.
+              Ready-to-Slay Fashion for women who move with confidence and intention.<br/><br/>
+              Blending fashion, community, and experience into one lifestyle.
             </p>
           </div>
 
@@ -30,7 +31,7 @@ export function Footer() {
             <h3 className="font-bold mb-4 uppercase text-sm tracking-wider">Company</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li><Link href="/about" className="hover:text-primary transition-colors">About & Founder Story</Link></li>
-              <li><Link href="/community" className="hover:text-primary transition-colors">Soft Life Queens Night</Link></li>
+              <li><Link href="/community" className="hover:text-primary transition-colors">Lamssé Network Experience</Link></li>
               <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
               <li><Link href="/shipping-returns" className="hover:text-primary transition-colors">Shipping & Returns</Link></li>
             </ul>
@@ -40,7 +41,7 @@ export function Footer() {
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
             <h3 className="font-bold mb-4 uppercase text-sm tracking-wider">Join The Circle</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Get style inspiration, event announcements, and exclusive drops straight to your inbox.
+              Get style inspiration, event updates, and exclusive drops.
             </p>
             <form className="flex flex-col space-y-2">
               <Input 

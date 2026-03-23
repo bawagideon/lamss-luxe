@@ -8,6 +8,7 @@ import { ShoppingBag, User, Menu, X, Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchBar } from "@/components/SearchBar";
+import { CartSheet } from "@/components/CartSheet";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -45,24 +46,34 @@ export function Navbar() {
             
             {/* Left Block: Logo & Primary Links */}
             <div className="flex items-center gap-6 lg:gap-10">
-              {/* Logo (Aligned Left) */}
+              {/* Logo (Aligned Left, Expanded Dimensions) */}
               <Link href="/" className="flex-shrink-0">
-                <div className="relative w-36 h-10 md:w-48 md:h-12">
+                <div className="relative w-44 h-12 md:w-56 md:h-14 lg:w-64 lg:h-16">
                   {isTransparent ? (
-                    <Image src="/Logo.jpeg" alt="Lamssé Luxe Logo" fill className="object-contain" priority />
+                    <Image src="/Logo.jpeg" alt="Lamssé Luxe Logo" fill className="object-contain object-left" priority />
                   ) : (
                     <>
-                      <Image src="/Logo-light.jpeg" alt="Lamssé Luxe Logo" fill className="object-contain dark:hidden block" priority />
-                      <Image src="/Logo.jpeg" alt="Lamssé Luxe Logo" fill className="object-contain hidden dark:block" priority />
+                      <Image src="/Logo-light.jpeg" alt="Lamssé Luxe Logo" fill className="object-contain object-left dark:hidden block" priority />
+                      <Image src="/Logo.jpeg" alt="Lamssé Luxe Logo" fill className="object-contain object-left hidden dark:block" priority />
                     </>
                   )}
                 </div>
               </Link>
               
               {/* Primary Links (Level 1) - Desktop Only */}
-              <div className={`hidden xl:flex items-center space-x-6 text-sm font-black tracking-widest uppercase transition-colors duration-300 ${navTextColor}`}>
-                <Link href="/shop" className="border-b-2 border-current pb-1">Shop</Link>
-                <Link href="/collections" className="hover:opacity-80 transition-opacity pb-1 border-b-2 border-transparent hover:border-current">Collections</Link>
+              <div className={`hidden xl:flex items-center space-x-8 text-sm font-black tracking-widest uppercase transition-colors duration-300 ${navTextColor}`}>
+                <Link 
+                  href="/shop" 
+                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname.startsWith('/shop') ? 'border-current' : 'border-transparent hover:border-current'}`}
+                >
+                  Shop
+                </Link>
+                <Link 
+                  href="/collections" 
+                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname.startsWith('/collections') ? 'border-current' : 'border-transparent hover:border-current'}`}
+                >
+                  Collections
+                </Link>
               </div>
             </div>
 
@@ -80,19 +91,14 @@ export function Navbar() {
                 <Link href="/admin" className="hover:opacity-80 transition-opacity" aria-label="Account">
                   <User className="w-6 h-6" />
                 </Link>
-                <button className="hover:opacity-80 transition-opacity relative" aria-label="Cart">
-                  <ShoppingBag className="w-6 h-6" />
-                  <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-md">0</span>
-                </button>
+                <CartSheet />
               </div>
             </div>
 
             {/* Mobile Hamburger / Touch Interface */}
             <div className={`lg:hidden flex items-center space-x-4 transition-colors duration-300 ${navTextColor}`}>
               <ThemeToggle />
-              <button className="hover:opacity-80 transition-opacity relative" aria-label="Cart">
-                <ShoppingBag className="w-6 h-6" />
-              </button>
+              <CartSheet />
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="hover:opacity-80 transition-opacity ml-2"
