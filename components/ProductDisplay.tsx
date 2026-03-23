@@ -29,11 +29,11 @@ export function ProductDisplay({ product }: { product: any }) {
 
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
   const isWished = mounted && wishlistIds.includes(product.id);
-  const { addItem, onOpen } = useCart();
+  const { addItem } = useCart();
 
   const handleAddToBag = () => {
     addItem({
-      id: product.id,
+      productId: product.id,
       name: product.name,
       price: `$${product.price}`,
       rawPrice: product.price,
@@ -41,10 +41,9 @@ export function ProductDisplay({ product }: { product: any }) {
       selectedSize,
       selectedColor,
       quantity: 1,
-      stockWeight: product.stock
+      maxStock: product.stock
     });
     toast.success("Added to your bag!");
-    if (onOpen) onOpen(); // Fallback to safely open sheet if exported
   };
 
   const sizes = product.sizes && product.sizes.length > 0 ? product.sizes : ["XS", "S", "M", "L", "XL"];
