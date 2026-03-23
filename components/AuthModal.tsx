@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
@@ -106,6 +106,7 @@ export function AuthModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-white text-black [&>button]:hidden">
+        <DialogDescription className="sr-only">Authenticate to access or create your Lamssé Luxe account.</DialogDescription>
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           <div className="w-6" /> {/* Spacer */}
           <DialogTitle className="text-[14px] font-black uppercase tracking-widest text-center flex-1">

@@ -134,13 +134,13 @@ export function CartSheet() {
             </div>
 
             {/* Scrollable Items Payload */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-50/50">
-              <div className="bg-white border text-[13px] text-center font-medium p-3 hover:border-black transition-colors rounded-lg shadow-sm">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-50/50 dark:bg-zinc-950/50">
+              <div className="bg-white dark:bg-zinc-900 border text-[13px] text-center font-medium p-3 hover:border-black dark:hover:border-white transition-colors rounded-lg shadow-sm">
                 Don&apos;t lose your bag! Sync it to <button onClick={() => { setIsOpen(false); document.dispatchEvent(new CustomEvent('open-auth-modal')); }} className="underline underline-offset-4 font-bold hover:text-primary transition-colors">your email.</button>
               </div>
 
               {cartItems.map((item) => (
-                <div key={item.id} className="flex gap-4 p-4 bg-white border border-border hover:border-black/20 transition-colors rounded-xl shadow-sm">
+                <div key={item.id} className="flex gap-4 p-4 bg-white dark:bg-zinc-900 border border-border hover:border-black/20 dark:hover:border-white/20 transition-colors rounded-xl shadow-sm">
                   {/* Thumbnail */}
                   <div className="relative w-24 h-[120px] shrink-0 bg-gray-100 rounded-md overflow-hidden">
                     <Image 
@@ -159,7 +159,7 @@ export function CartSheet() {
                       <span className="font-black text-red-600 text-sm">{item.price}</span>
                     </div>
 
-                    <div className="flex items-center text-[11px] text-muted-foreground bg-gray-50 border border-border w-fit pl-2 max-w-full rounded-[4px] font-bold overflow-hidden mb-auto">
+                    <div className="flex items-center text-[11px] text-muted-foreground bg-gray-50 dark:bg-zinc-800 border border-border w-fit pl-2 max-w-full rounded-[4px] font-bold overflow-hidden mb-auto">
                       <span className="py-1 pr-2 truncate">Size: {item.selectedSize}</span>
                       <div className="h-4 border-l border-border" />
                       <span className="flex items-center gap-1.5 py-1 px-2 shrink-0">Color: <span className="w-2.5 h-2.5 rounded-full ring-1 ring-border/50" style={{ backgroundColor: item.selectedColor !== 'Unknown' ? item.selectedColor : '#000000' }} /></span>
@@ -167,7 +167,7 @@ export function CartSheet() {
 
                     <div className="pt-3 flex items-center justify-between mt-2">
                       {/* Quantity Toggler */}
-                      <div className="flex items-center border-2 border-border/60 hover:border-black transition-colors rounded-full h-8 overflow-hidden bg-white">
+                      <div className="flex items-center border-2 border-border/60 hover:border-black dark:hover:border-white transition-colors rounded-full h-8 overflow-hidden bg-white dark:bg-zinc-900">
                         <button 
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           className="w-8 h-full flex items-center justify-center hover:bg-gray-100 transition-colors text-muted-foreground hover:text-black"

@@ -18,9 +18,9 @@ export default async function AccountLayout({ children }: { children: React.Reac
     .single();
 
   return (
-    <div className="min-h-screen bg-white pt-[80px] lg:pt-[100px]">
+    <div className="min-h-screen bg-background pt-[80px] lg:pt-[100px]">
       <div className="container mx-auto px-0 lg:px-6">
-        <div className="flex flex-col lg:flex-row min-h-[calc(100vh-100px)]">
+        <div className="flex flex-col lg:flex-row min-h-[calc(100dvh-100px)]">
           
           <AccountSidebar firstName={profile?.first_name || "Guest"} />
 

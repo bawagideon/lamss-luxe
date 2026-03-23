@@ -13,18 +13,32 @@ import { UserProfileDropdown } from "@/components/UserProfileDropdown";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 50);
+
+      if (currentScrollY > lastScrollY && currentScrollY > 150) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      setLastScrollY(currentScrollY);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     // Trigger once on mount to get initial scroll position
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   if (pathname.startsWith("/admin")) return null;
 
@@ -37,8 +51,8 @@ export function Navbar() {
     <>
       <motion.nav
         initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        animate={{ y: isVisible ? 0 : "-100%" }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${navBgColor}`}
       >
         <div className="w-full">
@@ -109,8 +123,8 @@ export function Navbar() {
           </div>
 
           {/* BOTTOM TIER: Subcategories - strict route mapping (No 404s/Dropdowns) */}
-          <div className={`hidden lg:flex items-center justify-center w-full border-t ${isTransparent ? 'border-white/20' : 'border-border/60'} py-3`}>
-            <div className={`flex items-center space-x-8 text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-300 ${navTextColor}`}>
+          <div className={`hidden lg:flex items-center justify-center w-full border-t ${isTransparent ? 'border-white/20' : 'border-border/60'} py-3 px-4`}>
+            <div className={`flex flex-wrap items-center justify-center gap-x-6 lg:gap-x-10 gap-y-2 text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-300 ${navTextColor}`}>
               <Link href="/shop" className="hover:opacity-80 transition-opacity">Shop All</Link>
               <Link href="/shop/tops" className="hover:opacity-80 transition-opacity">Tops</Link>
               <Link href="/shop/two-piece" className="hover:opacity-80 transition-opacity">Two-Piece</Link>
@@ -135,11 +149,11 @@ export function Navbar() {
             className="fixed inset-0 z-40 bg-background pt-24 px-6 lg:hidden"
           >
             <div className="flex flex-col space-y-6 text-xl font-bold uppercase text-primary">
-              <Link href="/shop/tops" className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Tops</Link>
-              <Link href="/shop/two-piece" className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Two-Piece</Link>
-              <Link href="/shop/dresses" className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Dresses</Link>
-              <Link href="/collections" className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Collections</Link>
-              <Link href="/community" className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Soft Life Queens</Link>
+              <Link href="/shop/tops" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Tops</Link>
+              <Link href="/shop/two-piece" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Two-Piece</Link>
+              <Link href="/shop/dresses" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Dresses</Link>
+              <Link href="/collections" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Collections</Link>
+              <Link href="/community" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Soft Life Queens</Link>
               <button 
                 onClick={() => {
                   setIsMobileMenuOpen(false);

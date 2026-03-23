@@ -60,6 +60,11 @@ export function ShopGrid() {
                 className="group cursor-pointer"
               >
                 <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-4 rounded-sm">
+                  {/* FULL CARD DOM LINK OVERLAY (Fixes mobile hover dead-zones) */}
+                  <Link href={`/product/${product.id}`} className="absolute inset-0 z-10 focus:outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary">
+                    <span className="sr-only">View Details for {product.name}</span>
+                  </Link>
+
                   {/* Default Studio Image */}
                   <Image 
                     src={product.imageDefault} 

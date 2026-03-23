@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="relative w-full h-screen flex flex-col justify-center items-center overflow-hidden">
+    <section className="relative w-full h-[100dvh] flex flex-col justify-center items-center overflow-hidden">
       {/* Absolute Background Video */}
       <video 
         autoPlay 
