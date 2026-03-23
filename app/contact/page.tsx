@@ -9,7 +9,7 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <main className="flex min-h-screen flex-col w-full bg-background pt-32 pb-24">
+    <main className="flex min-h-screen flex-col w-full bg-background pt-40 pb-24">
       <div className="container mx-auto px-6 max-w-5xl">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">Get in Touch</h1>
@@ -51,7 +51,7 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form */}
-          <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100">
+          <div className="bg-card p-8 rounded-2xl border border-border">
             <h2 className="text-2xl font-bold mb-6">Send a Message</h2>
             {!submitted ? (
               <form 
@@ -60,15 +60,15 @@ export default function ContactPage() {
               >
                 <div className="space-y-2">
                   <label htmlFor="name" className="text-sm font-medium">Full Name</label>
-                  <Input id="name" placeholder="E.g. Sarah Jenkins" required className="bg-white text-base" />
+                  <Input id="name" placeholder="E.g. Sarah Jenkins" required className="bg-background text-base" />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium">Email Address</label>
-                  <Input id="email" type="email" placeholder="sarah@example.com" required className="bg-white text-base" />
+                  <Input id="email" type="email" placeholder="sarah@example.com" required className="bg-background text-base" />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="subject" className="text-sm font-medium">Subject</label>
-                  <Input id="subject" placeholder="Order inquiry, Returns, etc." required className="bg-white text-base" />
+                  <Input id="subject" placeholder="Order inquiry, Returns, etc." required className="bg-background text-base" />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="message" className="text-sm font-medium">Message</label>
@@ -80,7 +80,7 @@ export default function ContactPage() {
                     placeholder="How can we help you today?"
                   />
                 </div>
-                <Button type="submit" size="lg" className="w-full text-base font-bold bg-black text-white hover:bg-black/80 mt-2">
+                <Button type="submit" size="lg" className="w-full text-base font-bold bg-foreground text-background hover:bg-foreground/90 mt-2">
                   Send Message
                 </Button>
               </form>

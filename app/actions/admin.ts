@@ -154,6 +154,62 @@ export async function addProduct(formData: FormData) {
   }
 }
 
+export async function editProduct(formData: FormData) {
+  noStore();
+  try {
+    const id = formData.get('id') as string;
+    const name = formData.get('name') as string;
+    const description = formData.get('description') as string;
+    const price = Number(formData.get('price'));
+    const stock = Number(formData.get('stock'));
+    const category = formData.get('category') as string;
+    const sizesStr = formData.get('sizes') as string || "";
+    const rawColorNames = formData.getAll('color_names') as string[];
+    const rawColorCodes = formData.getAll('color_codes') as string[];
+    const material = formData.get('material') as string || null;
+    const occasion = formData.get('occasion') as string || null;
+    
+    // Parse the multipart binary blobs
+    const mainFile = formData.get('image_main') as File | null;
+    const frontFile = formData.get('image_front') as File | null;
+    const sideFile = formData.get('image_side') as File | null;
+    const backFile = formData.get('image_back') as File | null;
+
+    const sizes = sizesStr.split(',').map(s => s.trim()).filter(Boolean);
+    const colors: string[] = [];
+    const color_codes: string[] = [];
+
+    rawColorNames.forEach((name, idx) => {
+      if (name.trim() !== '') {
+        colors.push(name.trim());
+        color_codes.push(rawColorCodes[idx] || "#000000");
+      }
+    });
+
+    const updatePayload: any = {
+      name, description, price, stock, category, 
+      sizes, colors, color_codes,
+      material, occasion
+    };
+
+    if (mainFile && mainFile.size > 0) updatePayload.image_url = await uploadProductImage(mainFile);
+    if (frontFile && frontFile.size > 0) updatePayload.image_front = await uploadProductImage(frontFile);
+    if (sideFile && sideFile.size > 0) updatePayload.image_side = await uploadProductImage(sideFile);
+    if (backFile && backFile.size > 0) updatePayload.image_back = await uploadProductImage(backFile);
+
+    const supabase = getAdminSupabase();
+    const { error } = await supabase.from('products').update(updatePayload).eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin/products');
+    revalidatePath('/shop');
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message || "Failed to update product natively." };
+  }
+}
+
 export async function deleteProduct(id: string) {
   noStore();
   try {

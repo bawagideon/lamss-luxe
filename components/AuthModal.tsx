@@ -35,12 +35,13 @@ export function AuthModal() {
   const supabase = createClient();
 
   useEffect(() => {
-    const handleOpen = () => {
-      setMode("signIn");
+    const handleOpen = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setMode(customEvent.detail?.mode || "signIn");
       setIsOpen(true);
     };
-    document.addEventListener("open-auth-modal", handleOpen);
-    return () => document.removeEventListener("open-auth-modal", handleOpen);
+    document.addEventListener("open-auth-modal", handleOpen as EventListener);
+    return () => document.removeEventListener("open-auth-modal", handleOpen as EventListener);
   }, []);
 
   const loginForm = useForm<LoginForm>({

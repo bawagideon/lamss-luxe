@@ -10,11 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState, useTransition } from "react";
-import { getAdminProducts, addProduct, deleteProduct } from "@/app/actions/admin";
+import { getAdminProducts, addProduct, deleteProduct, editProduct } from "@/app/actions/admin";
 import toast from "react-hot-toast";
 
 export default function AdminProductsPage() {
   const [liveProducts, setLiveProducts] = useState<any[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -23,11 +25,20 @@ export default function AdminProductsPage() {
 
   const handleAddSubmit = (formData: FormData) => {
     startTransition(async () => {
-      const res = await addProduct(formData);
+      let res;
+      if (selectedProduct) {
+        formData.append("id", selectedProduct.id);
+        res = await editProduct(formData);
+      } else {
+        res = await addProduct(formData);
+      }
+      
       if (res?.error) toast.error(res.error);
       else {
-        toast.success("Product Drop Successfully Added!");
+        toast.success(selectedProduct ? "Product Updated Successfully!" : "Product Drop Successfully Added!");
         getAdminProducts().then(setLiveProducts);
+        setIsSheetOpen(false);
+        setSelectedProduct(null);
       }
     });
   };
@@ -53,59 +64,59 @@ export default function AdminProductsPage() {
           <p className="text-gray-500 text-sm mt-1">Manage your exclusive drops and catalog.</p>
         </div>
         
-        <Sheet>
+        <Sheet open={isSheetOpen} onOpenChange={(open) => { setIsSheetOpen(open); if (!open) setSelectedProduct(null); }}>
           <SheetTrigger asChild>
-            <Button className="bg-black hover:bg-black/80 font-bold tracking-wide uppercase rounded-lg shadow-sm">
+            <Button onClick={() => setSelectedProduct(null)} className="bg-black hover:bg-black/80 font-bold tracking-wide uppercase rounded-lg shadow-sm">
               <Plus className="w-4 h-4 mr-2" /> Add Product
             </Button>
           </SheetTrigger>
           <SheetContent className="overflow-y-auto w-full sm:max-w-md">
             <SheetHeader className="mb-8">
-              <SheetTitle className="text-2xl font-black uppercase tracking-tight">New Drop</SheetTitle>
-              <SheetDescription>Configure a new product entry for the catalog.</SheetDescription>
+              <SheetTitle className="text-2xl font-black uppercase tracking-tight">{selectedProduct ? "Edit Drop" : "New Drop"}</SheetTitle>
+              <SheetDescription>Configure a product entry for the catalog.</SheetDescription>
             </SheetHeader>
-            <form action={handleAddSubmit} className="space-y-6">
+            <form key={selectedProduct?.id || 'new'} action={handleAddSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-xs uppercase font-bold text-gray-500">Product Name</Label>
-                <Input id="name" name="name" required placeholder="e.g. The Velvet Evening Gown" className="border-gray-200 focus-visible:ring-black" />
+                <Input id="name" name="name" defaultValue={selectedProduct?.name || ''} required placeholder="e.g. The Velvet Evening Gown" className="border-gray-200 focus-visible:ring-black" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="desc" className="text-xs uppercase font-bold text-gray-500">Description</Label>
-                <textarea id="desc" name="description" rows={3} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="A stunning piece for queens..."></textarea>
+                <textarea id="desc" name="description" defaultValue={selectedProduct?.description || ''} rows={3} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="A stunning piece for queens..."></textarea>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="material" className="text-xs uppercase font-bold text-gray-500">Materials Used</Label>
-                  <textarea id="material" name="material" rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="e.g. 100% Silk"></textarea>
+                  <textarea id="material" name="material" defaultValue={selectedProduct?.material || ''} rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="e.g. 100% Silk"></textarea>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="occasion" className="text-xs uppercase font-bold text-gray-500">When to Wear (Occasion)</Label>
-                  <textarea id="occasion" name="occasion" rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="e.g. Late night dinners, yacht parties"></textarea>
+                  <textarea id="occasion" name="occasion" defaultValue={selectedProduct?.occasion || ''} rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="e.g. Late night dinners, yacht parties"></textarea>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="price" className="text-xs uppercase font-bold text-gray-500">Price (CAD)</Label>
-                  <Input id="price" name="price" required type="number" step="0.01" placeholder="100.00" className="border-gray-200 focus-visible:ring-black" />
+                  <Input id="price" name="price" defaultValue={selectedProduct?.price || ''} required type="number" step="0.01" placeholder="100.00" className="border-gray-200 focus-visible:ring-black" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="stock" className="text-xs uppercase font-bold text-gray-500">Initial Stock</Label>
-                  <Input id="stock" name="stock" required type="number" placeholder="50" className="border-gray-200 focus-visible:ring-black" />
+                  <Input id="stock" name="stock" defaultValue={selectedProduct?.stock || ''} required type="number" placeholder="50" className="border-gray-200 focus-visible:ring-black" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="sizes" className="text-xs uppercase font-bold text-gray-500">Sizes (Comma-Separated)</Label>
-                  <Input id="sizes" name="sizes" placeholder="XS, S, M, L, XL" className="border-gray-200 focus-visible:ring-black" />
+                  <Input id="sizes" name="sizes" defaultValue={selectedProduct?.sizes?.join(', ') || ''} placeholder="XS, S, M, L, XL" className="border-gray-200 focus-visible:ring-black" />
                 </div>
               </div>
               <div className="space-y-2 border-t border-gray-100 pt-4">
                 <Label className="text-xs uppercase font-bold text-gray-500">Colors (Name & Exact Hex Picker)</Label>
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="flex gap-2 items-center">
-                    <Input name="color_names" placeholder={`Color ${i + 1} Name (e.g. Midnight)`} className="border-gray-200 focus-visible:ring-black flex-1" />
+                    <Input name="color_names" defaultValue={selectedProduct?.colors?.[i] || ''} placeholder={`Color ${i + 1} Name (e.g. Midnight)`} className="border-gray-200 focus-visible:ring-black flex-1" />
                     <div className="h-10 w-12 rounded-lg overflow-hidden border border-gray-200 shrink-0">
-                      <input type="color" name="color_codes" className="w-[150%] h-[150%] -ml-1 -mt-1 cursor-pointer" defaultValue={["#000000", "#DC143C", "#F5F5DC", "#4682B4"][i]} />
+                      <input type="color" name="color_codes" className="w-[150%] h-[150%] -ml-1 -mt-1 cursor-pointer" defaultValue={selectedProduct?.color_codes?.[i] || ["#000000", "#DC143C", "#F5F5DC", "#4682B4"][i]} />
                     </div>
                   </div>
                 ))}
@@ -132,7 +143,7 @@ export default function AdminProductsPage() {
               </div>
               <div className="space-y-2">
                 <Label className="text-xs uppercase font-bold text-gray-500">Category</Label>
-                <Select name="category">
+                <Select name="category" defaultValue={selectedProduct?.category || "dresses"}>
                   <SelectTrigger className="w-full border-gray-200 focus:ring-black">
                     <SelectValue placeholder="Select classification" />
                   </SelectTrigger>
@@ -144,7 +155,9 @@ export default function AdminProductsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="submit" className="w-full bg-black hover:bg-black/80 font-bold uppercase tracking-wide h-12">Submit Product</Button>
+              <Button type="submit" disabled={isPending} className="w-full bg-black hover:bg-black/80 font-bold uppercase tracking-wide h-12">
+                {selectedProduct ? "Save Changes" : "Submit Product"}
+              </Button>
             </form>
           </SheetContent>
         </Sheet>
@@ -170,7 +183,11 @@ export default function AdminProductsPage() {
           </TableHeader>
           <TableBody>
             {liveProducts.map((p: any) => (
-              <TableRow key={p.id} className="border-border group hover:bg-muted/50 transition-colors cursor-pointer">
+              <TableRow 
+                key={p.id} 
+                className="border-border group hover:bg-muted/50 transition-colors cursor-pointer"
+                onClick={() => { setSelectedProduct(p); setIsSheetOpen(true); }}
+              >
                 <TableCell>
                   <div className="w-12 h-14 relative bg-muted rounded-md overflow-hidden border border-border">
                     <Image src={p.image_url || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200"} alt={p.name} fill sizes="48px" className="object-cover" />

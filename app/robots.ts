@@ -1,12 +1,12 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/api/', '/admin/'],
+      disallow: ['/admin/', '/account/'],
     },
-    sitemap: 'https://lamsseluxe.com/sitemap.xml',
-  }
+    sitemap: 'https://www.lamsseluxe.ca/sitemap.xml',
+  };
 }

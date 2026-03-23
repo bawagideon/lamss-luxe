@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchBar } from "@/components/SearchBar";
 import { CartSheet } from "@/components/CartSheet";
+import { UserProfileDropdown } from "@/components/UserProfileDropdown";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -88,9 +89,7 @@ export function Navbar() {
                 <Link href="/wishlist" className="hover:opacity-80 transition-opacity" aria-label="Wishlist">
                   <Heart className="w-6 h-6" />
                 </Link>
-                <Link href="/admin" className="hover:opacity-80 transition-opacity" aria-label="Account">
-                  <User className="w-6 h-6" />
-                </Link>
+                <UserProfileDropdown />
                 <CartSheet />
               </div>
             </div>
@@ -141,10 +140,16 @@ export function Navbar() {
               <Link href="/shop/dresses" className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Dresses</Link>
               <Link href="/collections" className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Collections</Link>
               <Link href="/community" className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Soft Life Queens</Link>
-              <Link href="#" className="pt-4 flex items-center space-x-2 shrink-0 hover:opacity-80 transition-opacity">
+              <button 
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  document.dispatchEvent(new CustomEvent("open-auth-modal", { detail: { mode: "signIn" } }));
+                }}
+                className="pt-4 flex items-center space-x-2 shrink-0 hover:opacity-80 transition-opacity"
+              >
                 <User className="w-5 h-5" />
-                <span>Account</span>
-              </Link>
+                <span>Account Flow</span>
+              </button>
             </div>
           </motion.div>
         )}
