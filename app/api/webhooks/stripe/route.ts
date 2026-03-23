@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import { headers } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy', { apiVersion: '2023-10-16' as any });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy', { apiVersion: '2026-02-25.clover' });
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!);
-  } catch (err) {
+  } catch {
     return new Response(`Webhook Error`, { status: 400 });
   }
 
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     } else if (order && session.metadata?.cart_payload) {
       try {
         const cartItems = JSON.parse(session.metadata.cart_payload);
-        const orderItemsBatch = cartItems.map((item: any) => ({
+        const orderItemsBatch = cartItems.map((item: { id: string; qty: number; price: number; size: string; color: string; }) => ({
           order_id: order.id,
           product_id: item.id,
           quantity: item.qty,

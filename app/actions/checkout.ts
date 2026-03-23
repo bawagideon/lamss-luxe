@@ -4,9 +4,19 @@ import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy', { apiVersion: '2023-10-16' as any });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy', { apiVersion: '2026-02-25.clover' });
 
-export async function createCheckoutSession(cartItems: any[]) {
+export type CheckoutCartItem = {
+  productId: string;
+  name: string;
+  rawPrice: number;
+  image: string;
+  selectedSize: string;
+  selectedColor: string;
+  quantity: number;
+};
+
+export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
   if (!cartItems || cartItems.length === 0) {
     redirect('/shop');
   }
