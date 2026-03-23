@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,6 @@ export function AccountSidebar({ firstName = "Guest" }: { firstName?: string }) 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   
-  import { useEffect } from "react";
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
