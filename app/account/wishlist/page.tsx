@@ -11,7 +11,7 @@ import { getProductsByIds } from "@/app/actions/products";
 // Using the exact Wishlist logic constructed during Phase 9
 export default function AccountWishlistPage() {
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
-  const [wishedProducts, setWishedProducts] = useState<any[]>([]);
+  const [wishedProducts, setWishedProducts] = useState<{ id: string, name: string, price: string, imageDefault: string, imageLifestyle: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,12 +26,12 @@ export default function AccountWishlistPage() {
     setLoading(true);
     getProductsByIds(wishlistIds).then((dbProducts) => {
       if (dbProducts) {
-        setWishedProducts(dbProducts.map((p: any) => ({
+        setWishedProducts(dbProducts.map((p: { id: string, name: string, price: number, image_main?: string, image_url?: string, image_front?: string }) => ({
           id: p.id,
           name: p.name,
           price: `$${p.price}`,
-          imageDefault: p.image_main || p.image_url,
-          imageLifestyle: p.image_front || p.image_url // Fallback if missing second image
+          imageDefault: p.image_main || p.image_url || "",
+          imageLifestyle: p.image_front || p.image_url || "" // Fallback if missing second image
         })));
       }
       setLoading(false);

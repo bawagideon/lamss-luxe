@@ -61,7 +61,7 @@ export default async function MyInfoPage() {
               <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 font-bold text-xs">🎂</div>
               <div>
                 <span className="text-sm font-bold text-gray-700 block">Add Birthday +</span>
-                <span className="text-xs text-gray-400 block mt-0.5">We'll send you a surprise on your birthday! 🎉</span>
+                <span className="text-xs text-gray-400 block mt-0.5">We&apos;ll send you a surprise on your birthday! 🎉</span>
               </div>
             </div>
             <span className="text-xl font-light text-gray-400 group-hover:text-black transition-colors">+</span>

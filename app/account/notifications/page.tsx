@@ -13,9 +13,9 @@ export default function NotificationsPage() {
         <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm mb-6 border border-gray-200">
           <Bell className="w-8 h-8 text-gray-300" />
         </div>
-        <h3 className="text-2xl font-black tracking-tight mb-3">You're all caught up!</h3>
+        <h3 className="text-2xl font-black tracking-tight mb-3">You&apos;re all caught up!</h3>
         <p className="text-gray-500 max-w-sm">
-          You don't have any new notifications at this time. We'll let you know when there's an update on your orders or exclusive Lamssé drops.
+          You don&apos;t have any new notifications at this time. We&apos;ll let you know when there&apos;s an update on your orders or exclusive Lamssé drops.
         </p>
       </div>
 

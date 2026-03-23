@@ -6,8 +6,9 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ChevronRight, Heart } from "lucide-react";
-import { createCheckoutSession } from "@/app/actions/checkout";
 import { useWishlist } from "@/hooks/useWishlist";
+import { useCart } from "@/store/useCart";
+import toast from "react-hot-toast";
 
 export function ProductDisplay({ product }: { product: any }) {
   // Aggregate images into a clean array, filtering out nulls
@@ -28,6 +29,23 @@ export function ProductDisplay({ product }: { product: any }) {
 
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
   const isWished = mounted && wishlistIds.includes(product.id);
+  const { addItem, onOpen } = useCart();
+
+  const handleAddToBag = () => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: `$${product.price}`,
+      rawPrice: product.price,
+      image: mainImage,
+      selectedSize,
+      selectedColor,
+      quantity: 1,
+      stockWeight: product.stock
+    });
+    toast.success("Added to your bag!");
+    if (onOpen) onOpen(); // Fallback to safely open sheet if exported
+  };
 
   const sizes = product.sizes && product.sizes.length > 0 ? product.sizes : ["XS", "S", "M", "L", "XL"];
   const colors = product.colors && product.colors.length > 0 ? product.colors : ["Midnight Black", "Taupe"];
@@ -96,11 +114,7 @@ export function ProductDisplay({ product }: { product: any }) {
           </p>
         )}
 
-        <form action={createCheckoutSession} className="flex flex-col space-y-8 mt-auto">
-          <input type="hidden" name="productId" value={product.id} />
-          <input type="hidden" name="quantity" value="1" />
-          <input type="hidden" name="size" value={selectedSize} />
-          <input type="hidden" name="color" value={selectedColor} />
+        <div className="flex flex-col space-y-8 mt-auto">
           
           {/* Color Selector */}
           <div>
@@ -173,7 +187,8 @@ export function ProductDisplay({ product }: { product: any }) {
 
           <div className="flex gap-4 mt-8">
             <button 
-              type="submit" 
+              type="button" 
+              onClick={handleAddToBag}
               disabled={!selectedSize || !selectedColor || product.stock <= 0}
               className="flex-1 bg-foreground text-background py-5 px-6 font-black text-lg tracking-widest uppercase hover:opacity-90 transition-opacity rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -196,7 +211,7 @@ export function ProductDisplay({ product }: { product: any }) {
             </div>
             <p className="text-sm text-muted-foreground">Free international shipping on orders over $150.</p>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
