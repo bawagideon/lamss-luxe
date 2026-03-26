@@ -1,6 +1,6 @@
 'use server';
 
-import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
+import { unstable_noStore as noStore } from 'next/cache';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { sendNewsletterEmail } from '@/lib/resend';
 
@@ -50,8 +50,9 @@ export async function sendTestEmail(testAddress: string, subject: string, conten
   try {
     await sendNewsletterEmail(testAddress, subject, content);
     return { success: true };
-  } catch (error: any) {
-    return { error: error.message || "Failed to send test email." };
+  } catch (error: unknown) {
+    const err = error as Error;
+    return { error: err.message || "Failed to send test email." };
   }
 }
 
@@ -84,7 +85,8 @@ export async function sendLiveNewsletter(subject: string, content: string) {
       count: subscribers.length,
       failures: failures
     };
-  } catch (error: any) {
-    return { error: error.message || "Failed to dispatch live newsletter." };
+  } catch (error: unknown) {
+    const err = error as Error;
+    return { error: err.message || "Failed to dispatch live newsletter." };
   }
 }

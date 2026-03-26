@@ -88,7 +88,7 @@ export default function AdminProductsPage() {
           setSelectedProduct(null);
           setCompressedFiles({});
         }
-      } catch (err) {
+      } catch (_err) {
         toast.error("An unexpected error occurred", { id: loader });
       }
     });

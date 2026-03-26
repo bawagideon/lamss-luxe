@@ -14,8 +14,14 @@ const fallbackImages = [
   "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?q=80&w=600&auto=format&fit=crop"
 ];
 
-export function Gallery({ initialMoments }: { initialMoments?: any[] }) {
-  const [moments, setMoments] = useState<any[]>([]);
+interface Moment {
+  id: string;
+  image_url: string;
+  instagram_link?: string | null;
+}
+
+export function Gallery({ initialMoments }: { initialMoments?: Moment[] }) {
+  const [moments, setMoments] = useState<Moment[]>([]);
 
   useEffect(() => {
     if (initialMoments && initialMoments.length > 0) {
@@ -46,7 +52,7 @@ export function Gallery({ initialMoments }: { initialMoments?: any[] }) {
         </div>
 
         <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-          {displayMoments.map((moment, index) => {
+          {displayMoments.map((moment: Moment, index: number) => {
             const isVideo = moment.image_url?.match(/\.(mp4|mov|webm)$|video/i);
             const content = (
               <motion.div 

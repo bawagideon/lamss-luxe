@@ -3,7 +3,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Download, UserCircle, Mail, MapPin, Instagram, Bookmark, Phone, Calendar } from "lucide-react";
+import { Search, Download, Mail, MapPin, Instagram, Bookmark, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import { fetchCustomers, fetchNewsletterSubscribers, fetchCustomerWishlist } from "@/app/actions/admin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,7 +17,6 @@ export default function AdminCustomersPage() {
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
@@ -35,7 +34,6 @@ export default function AdminCustomersPage() {
   }, []);
 
   const handleViewProfile = async (customer: any) => {
-    setSelectedCustomer(customer);
     if (customer.wishlist?.length > 0) {
       setWishlistLoading(true);
       const products = await fetchCustomerWishlist(customer.wishlist);
@@ -247,8 +245,8 @@ export default function AdminCustomersPage() {
                                   <div className="grid grid-cols-1 gap-2">
                                     {wishlistProducts.map((p) => (
                                       <div key={p.id} className="flex items-center p-2 border border-gray-100 rounded-lg group hover:border-black transition-all">
-                                        <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden mr-3">
-                                          <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
+                                        <div className="relative w-12 h-12 bg-gray-100 rounded overflow-hidden mr-3">
+                                          <Image src={p.image_url} alt={p.name} fill className="object-cover" />
                                         </div>
                                         <div className="flex-1">
                                           <div className="text-xs font-black uppercase tracking-tight">{p.name}</div>

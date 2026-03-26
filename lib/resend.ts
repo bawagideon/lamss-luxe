@@ -18,9 +18,15 @@ export async function sendNewsletterEmail(email: string, subject: string, conten
   }
 }
 
-export async function sendOrderConfirmationEmail(email: string, orderDetails: any) {
+interface OrderDetails {
+  amount: string | number;
+  size?: string;
+  color?: string;
+}
+
+export async function sendOrderConfirmationEmail(email: string, orderDetails: OrderDetails) {
   try {
-    const { id, amount, size, color } = orderDetails;
+    const { amount, size, color } = orderDetails;
     
     await resend.emails.send({
       from: 'Lamssé Luxe <orders@lamsseluxe.com>',
@@ -56,9 +62,9 @@ export async function sendOrderConfirmationEmail(email: string, orderDetails: an
   }
 }
 
-export async function sendShippingConfirmationEmail(email: string, orderDetails: any) {
+export async function sendShippingConfirmationEmail(email: string, _orderDetails: unknown) {
   try {
-    const { id } = orderDetails;
+    // Order processing notification
     
     await resend.emails.send({
       from: 'Lamssé Luxe <shipping@lamsseluxe.com>',

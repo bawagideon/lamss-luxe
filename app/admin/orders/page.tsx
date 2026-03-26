@@ -14,7 +14,6 @@ import { cn } from "@/lib/utils";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   useEffect(() => {
     getAdminAllOrders().then(setOrders);

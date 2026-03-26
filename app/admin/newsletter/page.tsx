@@ -24,14 +24,11 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 export default function NewsletterStudioPage() {
   const [stats, setStats] = useState({ totalSubscribers: 0, newThisWeek: 0 });
