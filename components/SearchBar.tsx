@@ -6,15 +6,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { searchProducts, getActiveProducts } from "@/app/actions/products";
 
+interface SearchProduct {
+  id: string;
+  name: string;
+  price: number;
+  image_url: string;
+  category?: string;
+}
+
 export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<SearchProduct[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [trending, setTrending] = useState<any[]>([]);
+  const [trending, setTrending] = useState<SearchProduct[]>([]);
   
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
