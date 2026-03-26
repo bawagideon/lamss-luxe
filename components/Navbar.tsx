@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchBar } from "@/components/SearchBar";
 import { CartSheet } from "@/components/CartSheet";
 import { UserProfileDropdown } from "@/components/UserProfileDropdown";
+import { RegionSelector } from "@/components/RegionSelector";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -98,6 +99,7 @@ export function Navbar() {
 
               {/* Utility Icons */}
               <div className="flex items-center space-x-5 flex-shrink-0">
+                <RegionSelector isTransparent={isTransparent} />
                 <ThemeToggle />
                 <Link href="/wishlist" className="hover:opacity-80 transition-opacity" aria-label="Wishlist">
                   <Heart className="w-6 h-6" />
@@ -109,6 +111,7 @@ export function Navbar() {
 
             {/* Mobile Hamburger / Touch Interface */}
             <div className={`lg:hidden flex items-center space-x-4 transition-colors duration-300 ${navTextColor}`}>
+              <RegionSelector isTransparent={isTransparent} />
               <ThemeToggle />
               <CartSheet />
               <button

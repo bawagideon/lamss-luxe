@@ -41,12 +41,19 @@ interface Subscriber {
   created_at: string;
 }
 
+interface Product {
+  id: string;
+  name: string;
+  image_url: string;
+  price: number | string;
+}
+
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
+  const [wishlistProducts, setWishlistProducts] = useState<Product[]>([]);
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
   useEffect(() => {
