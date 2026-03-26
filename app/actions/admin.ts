@@ -57,7 +57,7 @@ export async function updateOrderStatus(orderId: string, status: string) {
   if (status === 'shipped') {
     const { data: order } = await supabase.from('orders').select('customer_email').eq('id', orderId).single();
     if (order?.customer_email) {
-      await sendShippingConfirmationEmail(order.customer_email, { id: orderId });
+      await sendShippingConfirmationEmail(order.customer_email);
     }
   }
 
