@@ -9,23 +9,28 @@ import { ChevronRight, Heart } from "lucide-react";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/store/useCart";
 import toast from "react-hot-toast";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import Link from "next/link";
+import { ProductGallery } from "./ProductGallery";
 
 export function ProductDisplay({ product }: { product: any }) {
-  // Aggregate images into a clean array, filtering out nulls
-  const allImages = [
-    product.image_url,
-    product.image_front,
-    product.image_side,
-    product.image_back
-  ].filter(Boolean);
-
-  const imagesToRelyOn = allImages.length > 0 
-    ? allImages 
-    : ["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop"];
-
-  const [mainImage, setMainImage] = useState(imagesToRelyOn[0]);
   const [selectedSize, setSelectedSize] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || "");
+
+  // 1. Resolve active image set based on selected color (JSONB variant data)
+  const activeVariant = product.color_images?.[selectedColor] || {};
+  
+  // 2. High-End Fallback Engine: Specific Variant -> Global Angle -> Main Cover
+  // This guarantees the UI never crashes and always shows the most relevant image.
+  const main = activeVariant.main || product.image_url || product.image_main;
+  const front = activeVariant.front || product.image_front || main;
+  const side = activeVariant.side || product.image_side || main;
+  const back = activeVariant.back || product.image_back || main;
+
+  // 3. Aggregate unique images into the gallery pipeline
+  const imagesToRelyOn = Array.from(new Set([main, front, side, back].filter(Boolean))).length > 0 
+    ? Array.from(new Set([main, front, side, back].filter(Boolean)))
+    : ["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop"];
 
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
   const isWished = mounted && wishlistIds.includes(product.id);
@@ -37,7 +42,7 @@ export function ProductDisplay({ product }: { product: any }) {
       name: product.name,
       price: `$${product.price}`,
       rawPrice: product.price,
-      image: mainImage,
+      image: imagesToRelyOn[0],
       selectedSize,
       selectedColor,
       quantity: 1,
@@ -53,48 +58,10 @@ export function ProductDisplay({ product }: { product: any }) {
     : colors.map(() => "#000000");
 
   return (
-    <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row gap-12 lg:gap-24">
+    <div className="container mx-auto px-8 sm:px-10 lg:px-16 flex flex-col lg:flex-row gap-12 lg:gap-24">
       
       {/* Left Column: Image Gallery */}
-      <div className="w-full lg:w-3/5 flex flex-col-reverse md:flex-row gap-4">
-        {/* Thumbnails (Vertical on desktop, horizontal on mobile) */}
-        <div className="flex md:flex-col gap-4 overflow-x-auto md:overflow-x-visible md:w-24 shrink-0">
-          {imagesToRelyOn.map((img, idx) => (
-            <button
-              key={idx}
-              onClick={() => setMainImage(img)}
-              className={`relative aspect-[3/4] w-20 md:w-full overflow-hidden rounded-md border-2 transition-all duration-200 shrink-0 ${
-                mainImage === img ? "border-primary" : "border-transparent opacity-60 hover:opacity-100"
-              }`}
-            >
-              <Image 
-                src={img}
-                alt={`${product.name} angle ${idx + 1}`}
-                fill
-                className="object-cover"
-              />
-            </button>
-          ))}
-        </div>
-
-        {/* Main Image */}
-        <motion.div 
-          key={mainImage}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="relative aspect-[3/4] w-full flex-grow bg-secondary rounded-lg overflow-hidden"
-        >
-          <Image 
-            src={mainImage}
-            alt={product.name}
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 60vw"
-            className="object-cover"
-          />
-        </motion.div>
-      </div>
+      <ProductGallery images={imagesToRelyOn} />
 
       {/* Right Column: Details & Add to Cart */}
       <div className="w-full lg:w-2/5 flex flex-col pt-4 lg:pt-10">
@@ -107,11 +74,7 @@ export function ProductDisplay({ product }: { product: any }) {
         <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4">{product.name}</h1>
         <p className="text-2xl font-bold mb-8">${product.price}</p>
 
-        {product.description && (
-          <p className="text-muted-foreground leading-relaxed mb-10 text-lg">
-            {product.description}
-          </p>
-        )}
+        {/* Description removed from here, moved into Accordion below */}
 
         <div className="flex flex-col space-y-8 mt-auto">
           
@@ -168,21 +131,7 @@ export function ProductDisplay({ product }: { product: any }) {
             </div>
           </div>
 
-          {/* Product Specifications */}
-          <div className="flex flex-col gap-4 py-6 border-y border-border">
-            {product.material && (
-              <div className="flex flex-col">
-                <span className="text-xs uppercase font-extrabold text-muted-foreground tracking-widest mb-1">Material & Care</span>
-                <span className="text-base font-semibold text-foreground">{product.material}</span>
-              </div>
-            )}
-            {product.occasion && (
-              <div className="flex flex-col">
-                <span className="text-xs uppercase font-extrabold text-muted-foreground tracking-widest mb-1">Occasion / Fit</span>
-                <span className="text-base font-semibold text-foreground">{product.occasion}</span>
-              </div>
-            )}
-          </div>
+          {/* Legacy Specs Removed, replaced by Accordion below */}
 
           <div className="flex gap-4 mt-8">
             <button 
@@ -202,6 +151,73 @@ export function ProductDisplay({ product }: { product: any }) {
               <Heart className={`w-6 h-6 transition-colors ${isWished ? "text-red-500 fill-current" : "text-muted-foreground group-hover:text-foreground"}`} />
             </button>
           </div>
+
+          <Accordion type="single" collapsible className="w-full mt-10">
+            {product.description && (
+              <AccordionItem value="description" className="border-t border-border">
+                <AccordionTrigger className="text-sm tracking-widest uppercase py-6 hover:no-underline">Description</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground text-[15px] leading-relaxed pb-8">
+                  {product.description.split('\n').filter((l: string) => l.trim()).length > 1 ? (
+                    <ul className="list-disc pl-5 space-y-2">
+                       {product.description.split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => (
+                         <li key={i}>{line.trim()}</li>
+                       ))}
+                    </ul>
+                  ) : (
+                    <p>{product.description}</p>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
+            {product.size_and_fit && (
+              <AccordionItem value="size-fit">
+                <AccordionTrigger className="text-sm tracking-widest uppercase py-6 hover:no-underline">Size & Fit</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground text-[15px] leading-relaxed pb-8">
+                  {product.size_and_fit.split('\n').filter((l: string) => l.trim()).length > 1 ? (
+                    <ul className="list-disc pl-5 space-y-2">
+                       {product.size_and_fit.split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => (
+                         <li key={i}>{line.trim()}</li>
+                       ))}
+                    </ul>
+                  ) : (
+                    <p>{product.size_and_fit}</p>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
+            {(product.material || product.fabric_and_care) && (
+              <AccordionItem value="fabric">
+                <AccordionTrigger className="text-sm tracking-widest uppercase py-6 hover:no-underline">About The Fabric</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground text-[15px] leading-relaxed pb-8">
+                  <div className="space-y-4">
+                    {product.material && (
+                      <div>
+                        <span className="block font-bold text-foreground text-xs uppercase tracking-tighter mb-1">Material Composition</span>
+                        <p>{product.material}</p>
+                      </div>
+                    )}
+                    {product.fabric_and_care && (
+                      <div>
+                        <span className="block font-bold text-foreground text-xs uppercase tracking-tighter mb-1">Care Instructions</span>
+                        <p>{product.fabric_and_care}</p>
+                      </div>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
+            <AccordionItem value="shipping" className="border-b border-border">
+              <AccordionTrigger className="text-sm tracking-widest uppercase py-6 hover:no-underline">Shipping & Returns</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground text-[15px] leading-relaxed pb-8">
+                <p className="mb-4">Standard shipping takes 3-5 business days. Express shipping options available at checkout.</p>
+                <p className="mb-6">Returns accepted within 14 days of delivery. Items must be in original condition with tags attached.</p>
+                <Link href="/shipping-returns" className="text-foreground font-bold underline underline-offset-4 hover:opacity-70 transition-opacity">View Full Policy</Link>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
           
           <div className="border-t border-border pt-6 mt-8">
             <div className="flex items-center text-sm text-muted-foreground mb-2">

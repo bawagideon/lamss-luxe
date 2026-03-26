@@ -48,7 +48,10 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
     client_reference_id: user?.id || undefined, // Strict Database Profile Binding
     success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/shop`,
-    shipping_address_collection: { allowed_countries: ['CA', 'US'] },
+    billing_address_collection: 'required',
+    shipping_address_collection: { 
+      allowed_countries: ['US', 'CA', 'GB', 'NG', 'GH'] 
+    },
     metadata: { cart_payload: orderMetadata },
   });
 

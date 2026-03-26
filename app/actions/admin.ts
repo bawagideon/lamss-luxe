@@ -110,6 +110,8 @@ export async function addProduct(formData: FormData) {
     const rawColorCodes = formData.getAll('color_codes') as string[];
     const material = formData.get('material') as string || null;
     const occasion = formData.get('occasion') as string || null;
+    const size_and_fit = formData.get('size_and_fit') as string || null;
+    const fabric_and_care = formData.get('fabric_and_care') as string || null;
     
     // Parse the multipart binary blobs
     const mainFile = formData.get('image_main') as File | null;
@@ -135,13 +137,33 @@ export async function addProduct(formData: FormData) {
       }
     });
 
+    // 4. Variant Image Processing (JSONB)
+    const color_images: Record<string, any> = {};
+    for (const color of colors) {
+      const vMain = formData.get(`variant_image_${color}_main`) as File | null;
+      const vFront = formData.get(`variant_image_${color}_front`) as File | null;
+      const vSide = formData.get(`variant_image_${color}_side`) as File | null;
+      const vBack = formData.get(`variant_image_${color}_back`) as File | null;
+
+      // Only add to JSONB if at least one variant image is provided
+      if ((vMain && vMain.size > 0) || (vFront && vFront.size > 0) || (vSide && vSide.size > 0) || (vBack && vBack.size > 0)) {
+        color_images[color] = {
+          main: await uploadProductImage(vMain),
+          front: await uploadProductImage(vFront),
+          side: await uploadProductImage(vSide),
+          back: await uploadProductImage(vBack),
+        };
+      }
+    }
+
     const supabase = getAdminSupabase();
     const { error } = await supabase.from('products').insert({
       name, description, price, stock, category, 
       image_url: image_main,
       image_front, image_side, image_back,
       sizes, colors, color_codes,
-      material, occasion
+      material, occasion, size_and_fit, fabric_and_care,
+      color_images
     });
 
     if (error) throw new Error(error.message);
@@ -168,6 +190,8 @@ export async function editProduct(formData: FormData) {
     const rawColorCodes = formData.getAll('color_codes') as string[];
     const material = formData.get('material') as string || null;
     const occasion = formData.get('occasion') as string || null;
+    const size_and_fit = formData.get('size_and_fit') as string || null;
+    const fabric_and_care = formData.get('fabric_and_care') as string || null;
     
     // Parse the multipart binary blobs
     const mainFile = formData.get('image_main') as File | null;
@@ -186,10 +210,29 @@ export async function editProduct(formData: FormData) {
       }
     });
 
+    // 4. Variant Image Processing (JSONB)
+    const color_images: Record<string, any> = {};
+    for (const color of colors) {
+      const vMain = formData.get(`variant_image_${color}_main`) as File | null;
+      const vFront = formData.get(`variant_image_${color}_front`) as File | null;
+      const vSide = formData.get(`variant_image_${color}_side`) as File | null;
+      const vBack = formData.get(`variant_image_${color}_back`) as File | null;
+
+      if ((vMain && vMain.size > 0) || (vFront && vFront.size > 0) || (vSide && vSide.size > 0) || (vBack && vBack.size > 0)) {
+        color_images[color] = {
+          main: await uploadProductImage(vMain),
+          front: await uploadProductImage(vFront),
+          side: await uploadProductImage(vSide),
+          back: await uploadProductImage(vBack),
+        };
+      }
+    }
+
     const updatePayload: any = {
       name, description, price, stock, category, 
       sizes, colors, color_codes,
-      material, occasion
+      material, occasion, size_and_fit, fabric_and_care,
+      color_images
     };
 
     if (mainFile && mainFile.size > 0) updatePayload.image_url = await uploadProductImage(mainFile);
@@ -232,7 +275,55 @@ export async function getAdminProducts() {
   return data || [];
 }
 
-// 4. Customers Tracking
+// 4. Customers CRM & Tracking
+export async function fetchCustomers() {
+  noStore();
+  const supabase = getAdminSupabase();
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error("Error fetching customers from profiles:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function fetchNewsletterSubscribers() {
+  noStore();
+  const supabase = getAdminSupabase();
+  const { data, error } = await supabase
+    .from('newsletter_subscribers')
+    .select('*')
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error("Error fetching newsletter subscribers:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function fetchCustomerWishlist(wishlistIds: string[]) {
+  noStore();
+  if (!wishlistIds || wishlistIds.length === 0) return [];
+  
+  const supabase = getAdminSupabase();
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, name, price, image_url')
+    .in('id', wishlistIds);
+  
+  if (error) {
+    console.error("Error fetching customer wishlist details:", error);
+    return [];
+  }
+  return data || [];
+}
+
+// Legacy Aggregated Tracking (Keeping for Metrics compatibility if needed)
 export async function getCustomers() {
   noStore();
   const supabase = getAdminSupabase();
@@ -242,7 +333,6 @@ export async function getCustomers() {
 
   const customerMap = new Map();
   data.forEach((order: any) => {
-    // Graceful fallback if customer_email doesn't exist to prevent crash loop
     const email = order.customer_email || 'guest@anonymous.com';
     
     if (!customerMap.has(email)) {

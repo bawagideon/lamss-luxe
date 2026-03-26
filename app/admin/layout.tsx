@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, Truck, Users, Settings, Menu, X, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Truck, Users, Settings, Menu, X, LogOut, Camera } from "lucide-react";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ const sidebarNavItems = [
   { title: "Products", href: "/admin/products", icon: ShoppingBag },
   { title: "Orders", href: "/admin/orders", icon: Truck },
   { title: "Customers", href: "/admin/customers", icon: Users },
+  { title: "Community", href: "/admin/community", icon: Camera },
   { title: "Settings", href: "/admin/settings", icon: Settings },
 ];
 

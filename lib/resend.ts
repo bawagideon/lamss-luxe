@@ -1,7 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import { Resend } from 'resend';
+import { BrandNewsletter } from '@/emails/BrandNewsletter';
+import * as React from 'react';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
+
+export async function sendNewsletterEmail(email: string, subject: string, content: string) {
+  try {
+    await resend.emails.send({
+      from: 'Lamssé Luxe <newsletter@lamsseluxe.com>',
+      to: [email],
+      subject: subject,
+      react: BrandNewsletter({ subject, content }) as React.ReactElement,
+    });
+    console.log(`[Resend] Newsletter successfully sent to ${email}`);
+  } catch (error) {
+    console.error(`[Resend] Failed to send newsletter to ${email}:`, error);
+  }
+}
 
 export async function sendOrderConfirmationEmail(email: string, orderDetails: any) {
   try {

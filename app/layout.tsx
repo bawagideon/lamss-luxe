@@ -84,7 +84,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Navbar />
-          {children}
+          <main className="min-h-screen pt-28 md:pt-40">
+            {children}
+          </main>
           <AuthModal />
           <Toaster position="top-right" />
         </ThemeProvider>

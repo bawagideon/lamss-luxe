@@ -9,28 +9,40 @@ import { getActiveProducts } from "@/app/actions/products";
 import { Heart } from "lucide-react";
 import { useWishlist } from "@/hooks/useWishlist";
 
-export function ShopGrid() {
+export function ShopGrid({ initialProducts }: { initialProducts?: any[] }) {
   const [liveProducts, setLiveProducts] = useState<any[]>([]);
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
 
   useEffect(() => {
+    if (initialProducts) {
+      setLiveProducts(initialProducts.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        price: `$${p.price}`,
+        rawPrice: p.price,
+        imageDefault: p.image_url,
+        imageLifestyle: p.image_url
+      })));
+      return;
+    }
+
     getActiveProducts().then((dbProducts) => {
       if (dbProducts && dbProducts.length > 0) {
         setLiveProducts(dbProducts.map((p: any) => ({
           id: p.id,
           name: p.name,
           price: `$${p.price}`,
-          rawPrice: p.price, // keep raw for calculations if needed
+          rawPrice: p.price,
           imageDefault: p.image_url,
-          imageLifestyle: p.image_url // duplicate if missing second image
+          imageLifestyle: p.image_url
         })));
       }
     });
-  }, []);
+  }, [initialProducts]);
 
   return (
     <section className="py-24 bg-background" id="shop">
-      <div className="container mx-auto px-6 lg:px-12">
+      <div className="container mx-auto px-8 sm:px-10 lg:px-16">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12">
           <div>
             <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">Shop The Look</h2>

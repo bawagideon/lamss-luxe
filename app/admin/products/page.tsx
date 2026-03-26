@@ -12,33 +12,84 @@ import Image from "next/image";
 import { useEffect, useState, useTransition } from "react";
 import { getAdminProducts, addProduct, deleteProduct, editProduct } from "@/app/actions/admin";
 import toast from "react-hot-toast";
+import imageCompression from "browser-image-compression";
 
 export default function AdminProductsPage() {
   const [liveProducts, setLiveProducts] = useState<any[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [activeColors, setActiveColors] = useState<string[]>(['', '', '', '']);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [compressedFiles, setCompressedFiles] = useState<Record<string, File>>({});
 
   useEffect(() => {
     getAdminProducts().then(setLiveProducts);
   }, []);
 
+  useEffect(() => {
+    if (selectedProduct) {
+      setActiveColors(selectedProduct.colors || ['', '', '', '']);
+    } else {
+      setActiveColors(['', '', '', '']);
+    }
+    setCompressedFiles({});
+  }, [selectedProduct]);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size < 1024 * 500) { // If less than 500KB, skip compression to save CPU
+       setCompressedFiles(prev => ({ ...prev, [fieldName]: file }));
+       return;
+    }
+
+    const options = {
+      maxSizeMB: 0.8,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    const loader = toast.loading(`Optimizing ${file.name}...`);
+    try {
+      const compressedFile = await imageCompression(file, options);
+      setCompressedFiles(prev => ({ ...prev, [fieldName]: compressedFile }));
+      toast.success(`${file.name} optimized!`, { id: loader });
+    } catch (error) {
+      console.error("Compression Error:", error);
+      toast.error("Compression failed, using original.", { id: loader });
+      setCompressedFiles(prev => ({ ...prev, [fieldName]: file }));
+    }
+  };
+
   const handleAddSubmit = (formData: FormData) => {
+    // Inject optimized files into the form data
+    Object.entries(compressedFiles).forEach(([name, file]) => {
+      formData.set(name, file);
+    });
+
+    const loader = toast.loading(selectedProduct ? "Updating product and variants..." : "Creating product and variants...");
     startTransition(async () => {
-      let res;
-      if (selectedProduct) {
-        formData.append("id", selectedProduct.id);
-        res = await editProduct(formData);
-      } else {
-        res = await addProduct(formData);
-      }
-      
-      if (res?.error) toast.error(res.error);
-      else {
-        toast.success(selectedProduct ? "Product Updated Successfully!" : "Product Drop Successfully Added!");
-        getAdminProducts().then(setLiveProducts);
-        setIsSheetOpen(false);
-        setSelectedProduct(null);
+      try {
+        let res;
+        if (selectedProduct) {
+          formData.append("id", selectedProduct.id);
+          res = await editProduct(formData);
+        } else {
+          res = await addProduct(formData);
+        }
+        
+        if (res?.error) {
+          toast.error(res.error, { id: loader });
+        } else {
+          toast.success(selectedProduct ? "Product Updated Successfully!" : "Product Drop Successfully Added!", { id: loader });
+          getAdminProducts().then(setLiveProducts);
+          setIsSheetOpen(false);
+          setSelectedProduct(null);
+          setCompressedFiles({});
+        }
+      } catch (err) {
+        toast.error("An unexpected error occurred", { id: loader });
       }
     });
   };
@@ -94,6 +145,16 @@ export default function AdminProductsPage() {
                   <textarea id="occasion" name="occasion" defaultValue={selectedProduct?.occasion || ''} rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="e.g. Late night dinners, yacht parties"></textarea>
                 </div>
               </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="size_fit" className="text-xs uppercase font-bold text-gray-500">Size & Fit</Label>
+                  <textarea id="size_fit" name="size_and_fit" defaultValue={selectedProduct?.size_and_fit || ''} rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="e.g. Model is 5'9 and wears size S"></textarea>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fabric_care" className="text-xs uppercase font-bold text-gray-500">Fabric & Care</Label>
+                  <textarea id="fabric_care" name="fabric_and_care" defaultValue={selectedProduct?.fabric_and_care || ''} rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="e.g. 100% Polyester. Dry clean only."></textarea>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="price" className="text-xs uppercase font-bold text-gray-500">Price (CAD)</Label>
@@ -112,9 +173,22 @@ export default function AdminProductsPage() {
               </div>
               <div className="space-y-2 border-t border-gray-100 pt-4">
                 <Label className="text-xs uppercase font-bold text-gray-500">Colors (Name & Exact Hex Picker)</Label>
-                {Array.from({ length: 4 }).map((_, i) => (
+                {activeColors.map((color, i) => (
                   <div key={i} className="flex gap-2 items-center">
-                    <Input name="color_names" defaultValue={selectedProduct?.colors?.[i] || ''} placeholder={`Color ${i + 1} Name (e.g. Midnight)`} className="border-gray-200 focus-visible:ring-black flex-1" />
+                    <Input 
+                      name="color_names" 
+                      value={color} 
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        startTransition(() => {
+                          const newColors = [...activeColors];
+                          newColors[i] = val;
+                          setActiveColors(newColors);
+                        });
+                      }}
+                      placeholder={`Color ${i + 1} Name (e.g. Midnight)`} 
+                      className="border-gray-200 focus-visible:ring-black flex-1" 
+                    />
                     <div className="h-10 w-12 rounded-lg overflow-hidden border border-gray-200 shrink-0">
                       <input type="color" name="color_codes" className="w-[150%] h-[150%] -ml-1 -mt-1 cursor-pointer" defaultValue={selectedProduct?.color_codes?.[i] || ["#000000", "#DC143C", "#F5F5DC", "#4682B4"][i]} />
                     </div>
@@ -122,23 +196,114 @@ export default function AdminProductsPage() {
                 ))}
                 <p className="text-[10px] text-gray-400">Leave name blank to skip. Hex codes power the visual swatches.</p>
               </div>
-                <div className="space-y-4 border-t border-gray-100 pt-4">
-                <h4 className="text-sm font-bold uppercase tracking-tight">Multi-Angle Image Uploads</h4>
+
+              {activeColors.some(c => c.trim() !== '') && (
+                <div className="space-y-6 border-t border-gray-100 pt-6">
+                  <h4 className="text-sm font-black uppercase tracking-tight text-primary">Variant Specific Imagery</h4>
+                  <p className="text-[10px] text-muted-foreground -mt-4 italic">Upload specific model shots for each color variant below.</p>
+                  
+                  {activeColors.filter(c => c.trim() !== '').map((color) => (
+                    <div key={color} className="p-4 bg-muted/30 rounded-lg space-y-4 border border-border/50">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                        <span className="text-xs font-black uppercase tracking-widest">{color} Variant</span>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-3">
+                        <div className="space-y-1">
+                          <Label className="text-[10px] uppercase text-gray-400 font-bold">Main Variant View</Label>
+                          <Input 
+                            name={`variant_image_${color}_main`} 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={(e) => handleFileChange(e, `variant_image_${color}_main`)}
+                            className="h-8 text-[11px] file:text-[10px] file:px-2" 
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="space-y-1">
+                            <Label className="text-[10px] uppercase text-gray-400 font-bold">Front</Label>
+                            <Input 
+                              name={`variant_image_${color}_front`} 
+                              type="file" 
+                              accept="image/*" 
+                              onChange={(e) => handleFileChange(e, `variant_image_${color}_front`)}
+                              className="h-8 text-[11px] file:text-[10px] file:px-2" 
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px] uppercase text-gray-400 font-bold">Side</Label>
+                            <Input 
+                              name={`variant_image_${color}_side`} 
+                              type="file" 
+                              accept="image/*" 
+                              onChange={(e) => handleFileChange(e, `variant_image_${color}_side`)}
+                              className="h-8 text-[11px] file:text-[10px] file:px-2" 
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px] uppercase text-gray-400 font-bold">Back</Label>
+                            <Input 
+                              name={`variant_image_${color}_back`} 
+                              type="file" 
+                              accept="image/*" 
+                              onChange={(e) => handleFileChange(e, `variant_image_${color}_back`)}
+                              className="h-8 text-[11px] file:text-[10px] file:px-2" 
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="space-y-4 border-t border-gray-100 pt-4">
+                <h4 className="text-sm font-bold uppercase tracking-tight">Global Fallback Images</h4>
+                <p className="text-[10px] text-muted-foreground italic -mt-2">Used if variant images are missing.</p>
                 <div className="space-y-2">
                   <Label htmlFor="image_main" className="text-xs text-gray-500">Main Image (Default/Cover)</Label>
-                  <Input id="image_main" name="image_main" type="file" accept="image/*" className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-black file:text-white file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" />
+                  <Input 
+                    id="image_main" 
+                    name="image_main" 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => handleFileChange(e, 'image_main')}
+                    className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-black file:text-white file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="image_front" className="text-xs text-gray-500">Front Angle</Label>
-                  <Input id="image_front" name="image_front" type="file" accept="image/*" className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" />
+                  <Input 
+                    id="image_front" 
+                    name="image_front" 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => handleFileChange(e, 'image_front')}
+                    className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="image_side" className="text-xs text-gray-500">Side Angle</Label>
-                  <Input id="image_side" name="image_side" type="file" accept="image/*" className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" />
+                  <Input 
+                    id="image_side" 
+                    name="image_side" 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => handleFileChange(e, 'image_side')}
+                    className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="image_back" className="text-xs text-gray-500">Back Angle</Label>
-                  <Input id="image_back" name="image_back" type="file" accept="image/*" className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" />
+                  <Input 
+                    id="image_back" 
+                    name="image_back" 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => handleFileChange(e, 'image_back')}
+                    className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" 
+                  />
                 </div>
               </div>
               <div className="space-y-2">
@@ -151,6 +316,8 @@ export default function AdminProductsPage() {
                     <SelectItem value="dresses">Dresses</SelectItem>
                     <SelectItem value="two-piece">Two-Piece</SelectItem>
                     <SelectItem value="tops">Tops</SelectItem>
+                    <SelectItem value="swim">Swim</SelectItem>
+                    <SelectItem value="outerwear">Outerwear</SelectItem>
                     <SelectItem value="accessories">Accessories</SelectItem>
                   </SelectContent>
                 </Select>

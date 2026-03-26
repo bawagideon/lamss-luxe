@@ -33,6 +33,43 @@ export async function getActiveProducts() {
   }
 }
 
+export async function getNewArrivals() {
+  noStore();
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (!url || !key) return [];
+
+    const supabase = createClient(url, key, {
+      auth: { persistSession: false },
+      global: { fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }) }
+    });
+    
+    // Calculate the threshold date (30 days ago)
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() - 30);
+    const thresholdISO = thresholdDate.toISOString();
+    
+    // Fetch only products created within the last 30 days
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .gte('created_at', thresholdISO)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error("Error fetching new arrivals:", error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (err) {
+    console.error("Fatal Server Action Runtime Crash in getNewArrivals:", err);
+    return [];
+  }
+}
+
 export async function searchProducts(query: string) {
   noStore();
   if (!query) return [];
@@ -122,6 +159,94 @@ export async function getProductsByIds(ids: string[]) {
     return data || [];
   } catch (err) {
     console.error("Fatal Server Action Runtime Crash in getProductsByIds:", err);
+    return [];
+  }
+}
+
+export async function getProductsByCategory(category: string) {
+  noStore();
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) return [];
+
+    const supabase = createClient(url, key, {
+      auth: { persistSession: false },
+      global: { fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }) }
+    });
+    
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('category', category)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error(`Error fetching products for category ${category}:`, error);
+      return [];
+    }
+    return data || [];
+  } catch (err) {
+    console.error(`Fatal Server Action Runtime Crash in getProductsByCategory(${category}):`, err);
+    return [];
+  }
+}
+
+export async function getFilteredProducts(filters: {
+  category?: string[];
+  size?: string[];
+  color?: string[];
+  material?: string[];
+  occasion?: string[];
+}) {
+  noStore();
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) return [];
+
+    const supabase = createClient(url, key, {
+      auth: { persistSession: false },
+      global: { fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }) }
+    });
+
+    let query = supabase.from('products').select('*');
+
+    // Multi-select Category (Text column)
+    if (filters.category && filters.category.length > 0) {
+      query = query.in('category', filters.category);
+    }
+
+    // Multi-select Sizes (Array column - using overlaps)
+    if (filters.size && filters.size.length > 0) {
+      query = query.overlaps('sizes', filters.size);
+    }
+
+    // Multi-select Colors (Array column - using overlaps)
+    if (filters.color && filters.color.length > 0) {
+      query = query.overlaps('colors', filters.color);
+    }
+
+    // Multi-select Material (Text column)
+    if (filters.material && filters.material.length > 0) {
+      query = query.in('material', filters.material);
+    }
+
+    // Multi-select Occasion (Text column)
+    if (filters.occasion && filters.occasion.length > 0) {
+      query = query.in('occasion', filters.occasion);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
+
+    if (error) {
+       console.error("Supabase Filter Error:", error);
+       return [];
+    }
+
+    return data || [];
+  } catch (err) {
+    console.error("Fatal Error in getFilteredProducts:", err);
     return [];
   }
 }

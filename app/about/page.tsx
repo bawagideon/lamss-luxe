@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main className="flex min-h-screen flex-col w-full bg-background pt-32 pb-24">
-      <div className="container mx-auto px-6 max-w-3xl">
+      <div className="container mx-auto px-8 sm:px-10 max-w-4xl">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">About Lamssé Luxe</h1>
+          <h1 className="text-4xl md:text-7xl font-black mb-6 tracking-tight">About Lamssé Luxe</h1>
           <p className="text-xl text-muted-foreground">The intersection of fashion, confidence, and community.</p>
         </div>
 

@@ -134,7 +134,7 @@ export function CartSheet() {
             </div>
 
             {/* Scrollable Items Payload */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-50/50 dark:bg-zinc-950/50">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-50/50 dark:bg-zinc-950">
               <div className="bg-white dark:bg-zinc-900 border text-[13px] text-center font-medium p-3 hover:border-black dark:hover:border-white transition-colors rounded-lg shadow-sm">
                 Don&apos;t lose your bag! Sync it to <button onClick={() => { setIsOpen(false); document.dispatchEvent(new CustomEvent('open-auth-modal')); }} className="underline underline-offset-4 font-bold hover:text-primary transition-colors">your email.</button>
               </div>
@@ -159,10 +159,10 @@ export function CartSheet() {
                       <span className="font-black text-red-600 text-sm">{item.price}</span>
                     </div>
 
-                    <div className="flex items-center text-[11px] text-muted-foreground bg-gray-50 dark:bg-zinc-800 border border-border w-fit pl-2 max-w-full rounded-[4px] font-bold overflow-hidden mb-auto">
+                    <div className="flex items-center text-[11px] text-muted-foreground dark:text-zinc-400 bg-gray-50 dark:bg-zinc-800 border border-border w-fit pl-2 max-w-full rounded-[4px] font-bold overflow-hidden mb-auto">
                       <span className="py-1 pr-2 truncate">Size: {item.selectedSize}</span>
                       <div className="h-4 border-l border-border" />
-                      <span className="flex items-center gap-1.5 py-1 px-2 shrink-0">Color: <span className="w-2.5 h-2.5 rounded-full ring-1 ring-border/50" style={{ backgroundColor: item.selectedColor !== 'Unknown' ? item.selectedColor : '#000000' }} /></span>
+                      <span className="flex items-center gap-1.5 py-1 px-2 shrink-0">Color: <span className="w-2.5 h-2.5 rounded-full ring-1 ring-border/50" style={{ backgroundColor: item.selectedColor }} /></span>
                     </div>
 
                     <div className="pt-3 flex items-center justify-between mt-2">

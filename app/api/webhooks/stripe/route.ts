@@ -17,22 +17,39 @@ export async function POST(req: Request) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
-    const customerEmail = session.customer_details?.email || session.customer_email || 'guest@anonymous.com';
-    const amountTotal = session.amount_total ? session.amount_total / 100 : 0;
     
-    // Secure identity binding harvested natively from NextJs auth
+    // Core Transaction Data
+    const customerEmail = session.customer_details?.email || session.customer_email || 'guest@anonymous.com';
+    const amountTotal = (session.amount_total || 0) / 100;
     const userId = session.client_reference_id;
+
+    // Capture Shipping and Contact Details for Fulfillment
+    const shippingDetails = (session as any).shipping_details;
+    const customerName = session.customer_details?.name || shippingDetails?.name || 'Guest Customer';
+    const customerPhone = session.customer_details?.phone || 'N/A';
+
+    const shippingAddress = {
+      name: customerName,
+      phone: customerPhone,
+      line1: shippingDetails?.address?.line1,
+      line2: shippingDetails?.address?.line2,
+      city: shippingDetails?.address?.city,
+      state: shippingDetails?.address?.state,
+      postal_code: shippingDetails?.address?.postal_code,
+      country: shippingDetails?.address?.country,
+    };
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
     
-    // Create the master Order Row
+    // Create the master Order Row with explicit Shipping injection
     const { data: order, error } = await supabase
       .from('orders')
       .insert({
         total_amount: amountTotal,
         status: 'paid',
         customer_email: customerEmail,
-        user_id: userId || null
+        user_id: userId || null,
+        shipping_address: shippingAddress
       }).select().single();
 
     if (error) {
