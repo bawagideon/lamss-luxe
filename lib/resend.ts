@@ -62,7 +62,7 @@ export async function sendOrderConfirmationEmail(email: string, orderDetails: Or
   }
 }
 
-export async function sendShippingConfirmationEmail(email: string, _orderDetails: unknown) {
+export async function sendShippingConfirmationEmail(email: string) {
   try {
     // Order processing notification
     

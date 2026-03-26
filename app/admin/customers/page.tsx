@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Download, Mail, MapPin, Instagram, Bookmark, Calendar } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { fetchCustomers, fetchNewsletterSubscribers, fetchCustomerWishlist } from "@/app/actions/admin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,9 +13,37 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
+interface Customer {
+  id: string;
+  full_name?: string | null;
+  email: string;
+  phone?: string | null;
+  created_at: string;
+  wishlist?: string[];
+  instagram_handle?: string | null;
+  tiktok_handle?: string | null;
+  birthday?: string | null;
+  gender?: string | null;
+  default_shipping_address?: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    country: string;
+  } | null;
+}
+
+interface Subscriber {
+  id: string;
+  email: string;
+  name?: string | null;
+  city?: string | null;
+  created_at: string;
+}
+
 export default function AdminCustomersPage() {
-  const [customers, setCustomers] = useState<any[]>([]);
-  const [subscribers, setSubscribers] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
@@ -33,8 +62,8 @@ export default function AdminCustomersPage() {
     init();
   }, []);
 
-  const handleViewProfile = async (customer: any) => {
-    if (customer.wishlist?.length > 0) {
+  const handleViewProfile = async (customer: Customer) => {
+    if (customer.wishlist && customer.wishlist.length > 0) {
       setWishlistLoading(true);
       const products = await fetchCustomerWishlist(customer.wishlist);
       setWishlistProducts(products);

@@ -32,7 +32,7 @@ export default function AdminCommunityPage() {
           getCommunityMoments().then(setMoments);
           setIsDialogOpen(false);
         }
-      } catch (err) {
+      } catch {
         toast.error("An unexpected error occurred", { id: loader });
       }
     });
@@ -50,7 +50,7 @@ export default function AdminCommunityPage() {
             toast.success("Moment deleted.", { id: loader });
             setMoments(prev => prev.filter(m => m.id !== id));
           }
-        } catch (err) {
+        } catch {
           toast.error("Failed to delete", { id: loader });
         }
       });
