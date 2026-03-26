@@ -83,7 +83,6 @@ export default function AdminOrdersPage() {
                   <Dialog>
                     <DialogTrigger asChild>
                       <button 
-                        onClick={() => setSelectedOrder(o)}
                         className="hover:underline flex items-center gap-1 group text-black translate-y-0 active:scale-95 transition-all text-sm"
                       >
                         #{o.id.slice(0, 8)} 
