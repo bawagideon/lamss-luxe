@@ -4,7 +4,7 @@ import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { sendShippingConfirmationEmail } from '@/lib/resend';
 
-interface Order {
+export interface Order {
   id: string;
   total_amount: number;
   status: string;
@@ -13,14 +13,14 @@ interface Order {
   created_at: string;
 }
 
-interface Product {
+export interface Product {
   id: string;
   name: string;
   price: number;
   description?: string;
   category_id?: string;
   category?: string;
-  image_url: string;
+  image_url: string | null;
   image_front?: string | null;
   image_side?: string | null;
   image_back?: string | null;
@@ -29,11 +29,11 @@ interface Product {
   stock_status?: string;
   stock?: number;
   sizes?: string[];
-  material?: string;
-  occasion?: string;
-  size_and_fit?: string;
-  fabric_and_care?: string;
-  color_images?: Record<string, any>;
+  material?: string | null;
+  occasion?: string | null;
+  size_and_fit?: string | null;
+  fabric_and_care?: string | null;
+  color_images?: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }>;
 }
 
 const getAdminSupabase = () => createSupabaseAdmin(
@@ -260,7 +260,7 @@ export async function editProduct(formData: FormData) {
       }
     }
 
-    const updatePayload: any = {
+    const updatePayload: Partial<Product> = {
       name, description, price, stock, category, 
       sizes, colors, color_codes,
       material, occasion, size_and_fit, fabric_and_care,
@@ -365,7 +365,7 @@ export async function getCustomers() {
   
   if (!data) return [];
 
-  const customerMap = new Map<string, any>();
+  const customerMap = new Map<string, { id: string; name: string; email: string; joined: string; orders: number; spent: number }>();
   data.forEach((order: { customer_email: string; total_amount: number; created_at: string }) => {
     const email = order.customer_email || 'guest@anonymous.com';
     
@@ -380,8 +380,10 @@ export async function getCustomers() {
       });
     }
     const customer = customerMap.get(email);
-    customer.orders += 1;
-    customer.spent += Number(order.total_amount || 0);
+    if (customer) {
+      customer.orders += 1;
+      customer.spent += Number(order.total_amount || 0);
+    }
   });
 
   return Array.from(customerMap.values()).map(c => ({

@@ -29,7 +29,7 @@ interface Product {
   occasion?: string;
   size_and_fit?: string;
   fabric_and_care?: string;
-  color_images?: Record<string, any>;
+  color_images?: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }>;
 }
 
 export function ProductDisplay({ product }: { product: Product }) {
@@ -37,7 +37,7 @@ export function ProductDisplay({ product }: { product: Product }) {
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || "");
 
   // 1. Resolve active image set based on selected color (JSONB variant data)
-  const activeVariant = product.color_images?.[selectedColor] || {};
+  const activeVariant = product.color_images?.[selectedColor] || { main: null, front: null, side: null, back: null };
   
   // 2. High-End Fallback Engine: Specific Variant -> Global Angle -> Main Cover
   // This guarantees the UI never crashes and always shows the most relevant image.
@@ -47,8 +47,9 @@ export function ProductDisplay({ product }: { product: Product }) {
   const back = activeVariant.back || product.image_back || main;
 
   // 3. Aggregate unique images into the gallery pipeline
-  const imagesToRelyOn = Array.from(new Set([main, front, side, back].filter(Boolean))).length > 0 
-    ? Array.from(new Set([main, front, side, back].filter(Boolean)))
+  const rawImages = [main, front, side, back].filter((img): img is string => typeof img === 'string' && img !== '');
+  const imagesToRelyOn = rawImages.length > 0 
+    ? Array.from(new Set(rawImages))
     : ["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop"];
 
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();

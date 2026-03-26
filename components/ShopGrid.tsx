@@ -17,13 +17,13 @@ interface ShopProduct {
   imageLifestyle: string;
 }
 
-export function ShopGrid({ initialProducts }: { initialProducts?: any[] }) {
+export function ShopGrid({ initialProducts }: { initialProducts?: { id: string; name: string; price: number; image_url: string }[] }) {
   const [liveProducts, setLiveProducts] = useState<ShopProduct[]>([]);
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
 
   useEffect(() => {
     if (initialProducts) {
-      setLiveProducts(initialProducts.map((p: any) => ({
+      setLiveProducts(initialProducts.map((p: { id: string; name: string; price: number; image_url: string }) => ({
         id: p.id,
         name: p.name,
         price: `$${p.price}`,
@@ -36,7 +36,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: any[] }) {
 
     getActiveProducts().then((dbProducts) => {
       if (dbProducts && dbProducts.length > 0) {
-        setLiveProducts(dbProducts.map((p: any) => ({
+        setLiveProducts(dbProducts.map((p: { id: string; name: string; price: number; image_url: string }) => ({
           id: p.id,
           name: p.name,
           price: `$${p.price}`,

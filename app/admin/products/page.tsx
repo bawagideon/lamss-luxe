@@ -367,7 +367,7 @@ export default function AdminProductsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {liveProducts.map((p: any) => (
+            {liveProducts.map((p: Product) => (
               <TableRow 
                 key={p.id} 
                 className="border-border group hover:bg-muted/50 transition-colors cursor-pointer"
@@ -382,8 +382,8 @@ export default function AdminProductsPage() {
                 <TableCell className="text-muted-foreground capitalize">{p.category || 'N/A'}</TableCell>
                 <TableCell className="text-right font-medium">${p.price}</TableCell>
                 <TableCell className="text-center">
-                  <span className={p.stock > 0 ? "text-muted-foreground" : "text-destructive font-bold"}>
-                    {p.stock > 0 ? p.stock : "Out of Stock"}
+                  <span className={(p.stock ?? 0) > 0 ? "text-muted-foreground" : "text-destructive font-bold"}>
+                    {(p.stock ?? 0) > 0 ? p.stock : "Out of Stock"}
                   </span>
                 </TableCell>
                 <TableCell className="text-center">

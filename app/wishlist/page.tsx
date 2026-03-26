@@ -33,7 +33,7 @@ export default function WishlistPage() {
     setLoading(true);
     getProductsByIds(wishlistIds).then((dbProducts) => {
       if (dbProducts) {
-        setWishedProducts(dbProducts.map((p: any) => ({
+        setWishedProducts(dbProducts.map((p: { id: string; name: string; price: number; image_url: string }) => ({
           id: p.id,
           name: p.name,
           price: `$${p.price}`,
