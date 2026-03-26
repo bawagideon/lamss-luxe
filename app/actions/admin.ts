@@ -169,7 +169,7 @@ export async function addProduct(formData: FormData) {
     });
 
     // 4. Variant Image Processing (JSONB)
-    const color_images: Record<string, any> = {};
+    const color_images: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
     for (const color of colors) {
       const vMain = formData.get(`variant_image_${color}_main`) as File | null;
       const vFront = formData.get(`variant_image_${color}_front`) as File | null;
@@ -243,7 +243,7 @@ export async function editProduct(formData: FormData) {
     });
 
     // 4. Variant Image Processing (JSONB)
-    const color_images: Record<string, any> = {};
+    const color_images: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
     for (const color of colors) {
       const vMain = formData.get(`variant_image_${color}_main`) as File | null;
       const vFront = formData.get(`variant_image_${color}_front`) as File | null;
