@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { getAdminAllOrders, updateOrderStatus } from "@/app/actions/admin";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +11,28 @@ import { Copy, MapPin, Phone, Mail, Package, ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 
+interface Address {
+  name: string;
+  line1: string;
+  line2?: string | null;
+  city: string;
+  state?: string | null;
+  postal_code: string;
+  country: string;
+  phone?: string | null;
+}
+
+interface Order {
+  id: string;
+  customer_email: string;
+  total_amount: number;
+  status: string;
+  created_at: string;
+  shipping_address?: Address | null;
+}
+
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     getAdminAllOrders().then(setOrders);
@@ -33,7 +52,7 @@ export default function AdminOrdersPage() {
     });
   };
 
-  const formatAddress = (addr: any) => {
+  const formatAddress = (addr: Address | null) => {
     if (!addr) return "";
     const lines = [
       addr.name,
@@ -77,7 +96,7 @@ export default function AdminOrdersPage() {
                  <TableCell colSpan={6} className="text-center py-12 text-gray-400 font-medium italic">No active transactions found.</TableCell>
               </TableRow>
             )}
-            {orders.map((o: any) => (
+            {orders.map((o) => (
               <TableRow key={o.id} className="border-gray-50 hover:bg-gray-50/50 transition-colors">
                 <TableCell className="font-bold text-black">
                   <Dialog>
@@ -145,7 +164,7 @@ export default function AdminOrdersPage() {
                               variant="outline" 
                               size="sm" 
                               disabled={!o.shipping_address}
-                              onClick={() => copyToClipboard(formatAddress(o.shipping_address))}
+                              onClick={() => copyToClipboard(formatAddress(o.shipping_address || null))}
                               className="h-8 text-[10px] uppercase font-bold border-black hover:bg-black hover:text-white rounded-none transition-all"
                             >
                               <Copy className="w-3 h-3 mr-2" /> Copy Address

@@ -1,9 +1,40 @@
 'use server';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { sendShippingConfirmationEmail } from '@/lib/resend';
+
+interface Order {
+  id: string;
+  total_amount: number;
+  status: string;
+  customer_email: string;
+  user_id?: string | null;
+  created_at: string;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  category_id?: string;
+  category?: string;
+  image_url: string;
+  image_front?: string | null;
+  image_side?: string | null;
+  image_back?: string | null;
+  colors?: string[];
+  color_codes?: string[];
+  stock_status?: string;
+  stock?: number;
+  sizes?: string[];
+  material?: string;
+  occasion?: string;
+  size_and_fit?: string;
+  fabric_and_care?: string;
+  color_images?: Record<string, any>;
+}
 
 const getAdminSupabase = () => createSupabaseAdmin(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,7 +54,7 @@ export async function getAdminMetrics() {
   let totalRevenue = 0;
   const { data: revenueData } = await supabase.from('orders').select('total_amount').eq('status', 'paid');
   if (revenueData) {
-    totalRevenue = revenueData.reduce((sum: number, order: any) => sum + Number(order.total_amount || 0), 0);
+    totalRevenue = revenueData.reduce((sum: number, order: { total_amount: number }) => sum + Number(order.total_amount || 0), 0);
   }
 
   const { count: ordersCount } = await supabase.from('orders').select('*', { count: 'exact', head: true });
@@ -171,8 +202,9 @@ export async function addProduct(formData: FormData) {
     revalidatePath('/admin/products');
     revalidatePath('/shop');
     return { success: true };
-  } catch (error: any) {
-    return { error: error.message || "Failed to add product natively." };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to add product natively.";
+    return { error: message };
   }
 }
 
@@ -248,8 +280,9 @@ export async function editProduct(formData: FormData) {
     revalidatePath('/admin/products');
     revalidatePath('/shop');
     return { success: true };
-  } catch (error: any) {
-    return { error: error.message || "Failed to update product natively." };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update product natively.";
+    return { error: message };
   }
 }
 
@@ -263,8 +296,9 @@ export async function deleteProduct(id: string) {
     revalidatePath('/admin/products');
     revalidatePath('/shop');
     return { success: true };
-  } catch (error: any) {
-    return { error: error.message || "Failed to delete from DB." };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to delete from DB.";
+    return { error: message };
   }
 }
 
@@ -331,8 +365,8 @@ export async function getCustomers() {
   
   if (!data) return [];
 
-  const customerMap = new Map();
-  data.forEach((order: any) => {
+  const customerMap = new Map<string, any>();
+  data.forEach((order: { customer_email: string; total_amount: number; created_at: string }) => {
     const email = order.customer_email || 'guest@anonymous.com';
     
     if (!customerMap.has(email)) {

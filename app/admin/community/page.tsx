@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,8 +10,16 @@ import { useEffect, useState, useTransition } from "react";
 import { getCommunityMoments, uploadCommunityMoment, deleteCommunityMoment } from "@/app/actions/community";
 import toast from "react-hot-toast";
 
+interface CommunityMoment {
+  id: string;
+  image_url: string;
+  caption?: string | null;
+  instagram_link?: string | null;
+  created_at?: string;
+}
+
 export default function AdminCommunityPage() {
-  const [moments, setMoments] = useState<any[]>([]);
+  const [moments, setMoments] = useState<CommunityMoment[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -25,8 +32,8 @@ export default function AdminCommunityPage() {
     startTransition(async () => {
       try {
         const res = await uploadCommunityMoment(formData);
-        if (res?.error) {
-          toast.error(res.error, { id: loader });
+        if (res && 'error' in res) {
+          toast.error(res.error as string, { id: loader });
         } else {
           toast.success("Moment uploaded successfully!", { id: loader });
           getCommunityMoments().then(setMoments);
@@ -48,7 +55,7 @@ export default function AdminCommunityPage() {
             toast.error(res.error, { id: loader });
           } else {
             toast.success("Moment deleted.", { id: loader });
-            setMoments(prev => prev.filter(m => m.id !== id));
+            setMoments((prev: CommunityMoment[]) => prev.filter((m: CommunityMoment) => m.id !== id));
           }
         } catch {
           toast.error("Failed to delete", { id: loader });

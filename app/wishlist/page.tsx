@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -9,9 +8,17 @@ import { Heart, ShoppingBag } from "lucide-react";
 import { useWishlist } from "@/hooks/useWishlist";
 import { getProductsByIds } from "@/app/actions/products";
 
+interface WishedProduct {
+  id: string;
+  name: string;
+  price: string;
+  imageDefault: string;
+  imageLifestyle: string;
+}
+
 export default function WishlistPage() {
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
-  const [wishedProducts, setWishedProducts] = useState<any[]>([]);
+  const [wishedProducts, setWishedProducts] = useState<WishedProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -116,7 +123,7 @@ export default function WishlistPage() {
                       e.preventDefault();
                       e.stopPropagation();
                       toggleWishlist(product.id);
-                      setWishedProducts(prev => prev.filter(p => p.id !== product.id));
+                      setWishedProducts((prev: WishedProduct[]) => prev.filter((p: WishedProduct) => p.id !== product.id));
                     }}
                     className="absolute top-4 right-4 z-30 p-2.5 rounded-full backdrop-blur-md bg-background/70 hover:bg-background text-red-500 transition-all shadow-sm group/heart"
                     aria-label="Remove from Wishlist"

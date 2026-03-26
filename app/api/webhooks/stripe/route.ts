@@ -4,6 +4,20 @@ import { createClient } from '@supabase/supabase-js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy', { apiVersion: '2026-02-25.clover' });
 
+interface ExtendedStripeSession extends Stripe.Checkout.Session {
+  shipping_details?: {
+    name: string;
+    address: {
+      line1: string;
+      line2?: string | null;
+      city: string;
+      state: string;
+      postal_code: string;
+      country: string;
+    };
+  } | null;
+}
+
 export async function POST(req: Request) {
   const body = await req.text();
   const signature = headers().get('stripe-signature') as string;
@@ -16,7 +30,7 @@ export async function POST(req: Request) {
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
+    const session = event.data.object as ExtendedStripeSession;
     
     // Core Transaction Data
     const customerEmail = session.customer_details?.email || session.customer_email || 'guest@anonymous.com';
@@ -24,7 +38,7 @@ export async function POST(req: Request) {
     const userId = session.client_reference_id;
 
     // Capture Shipping and Contact Details for Fulfillment
-    const shippingDetails = (session as any).shipping_details;
+    const shippingDetails = session.shipping_details;
     const customerName = session.customer_details?.name || shippingDetails?.name || 'Guest Customer';
     const customerPhone = session.customer_details?.phone || 'N/A';
 

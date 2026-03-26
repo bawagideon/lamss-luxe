@@ -1,7 +1,5 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useState } from "react";
 import { ChevronRight, Heart } from "lucide-react";
 import { useWishlist } from "@/hooks/useWishlist";
@@ -11,7 +9,30 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import Link from "next/link";
 import { ProductGallery } from "./ProductGallery";
 
-export function ProductDisplay({ product }: { product: any }) {
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  category?: string;
+  image_url: string;
+  image_main?: string | null;
+  image_front?: string | null;
+  image_side?: string | null;
+  image_back?: string | null;
+  colors?: string[];
+  color_codes?: string[];
+  stock_status?: string;
+  stock: number;
+  sizes?: string[];
+  material?: string;
+  occasion?: string;
+  size_and_fit?: string;
+  fabric_and_care?: string;
+  color_images?: Record<string, any>;
+}
+
+export function ProductDisplay({ product }: { product: Product }) {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || "");
 

@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,9 +13,28 @@ import { getAdminProducts, addProduct, deleteProduct, editProduct } from "@/app/
 import toast from "react-hot-toast";
 import imageCompression from "browser-image-compression";
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  category_id?: string;
+  category?: string;
+  image_url: string;
+  colors?: string[];
+  color_codes?: string[];
+  stock_status?: string;
+  stock?: number;
+  sizes?: string[];
+  material?: string;
+  occasion?: string;
+  size_and_fit?: string;
+  fabric_and_care?: string;
+}
+
 export default function AdminProductsPage() {
-  const [liveProducts, setLiveProducts] = useState<any[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [liveProducts, setLiveProducts] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeColors, setActiveColors] = useState<string[]>(['', '', '', '']);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -79,8 +97,8 @@ export default function AdminProductsPage() {
           res = await addProduct(formData);
         }
         
-        if (res?.error) {
-          toast.error(res.error, { id: loader });
+        if ('error' in res) {
+          toast.error(res.error as string, { id: loader });
         } else {
           toast.success(selectedProduct ? "Product Updated Successfully!" : "Product Drop Successfully Added!", { id: loader });
           getAdminProducts().then(setLiveProducts);

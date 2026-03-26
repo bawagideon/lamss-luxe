@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,8 +8,17 @@ import { getActiveProducts } from "@/app/actions/products";
 import { Heart } from "lucide-react";
 import { useWishlist } from "@/hooks/useWishlist";
 
+interface ShopProduct {
+  id: string;
+  name: string;
+  price: string;
+  rawPrice: number;
+  imageDefault: string;
+  imageLifestyle: string;
+}
+
 export function ShopGrid({ initialProducts }: { initialProducts?: any[] }) {
-  const [liveProducts, setLiveProducts] = useState<any[]>([]);
+  const [liveProducts, setLiveProducts] = useState<ShopProduct[]>([]);
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
 
   useEffect(() => {

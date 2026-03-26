@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -8,9 +7,17 @@ import { DollarSign, ShoppingBag, Package, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getAdminMetrics, getAdminRecentOrders } from "@/app/actions/admin";
 
+interface Order {
+  id: string;
+  customer_email: string;
+  total_amount: number;
+  status: string;
+  created_at: string;
+}
+
 export default function AdminOverviewPage() {
   const [metrics, setMetrics] = useState({ totalRevenue: "0.00", ordersCount: 0, activeProducts: 0, waitlistCount: 0 });
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     getAdminMetrics().then(setMetrics);
@@ -87,10 +94,10 @@ export default function AdminOverviewPage() {
                 {orders.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-6 text-gray-500 font-medium">
-                      No active transactions found on database.
+                    No active transactions found on database.
                     </TableCell>
                   </TableRow>
-                ) : orders.map((order: any) => (
+                ) : orders.map((order: Order) => (
                   <TableRow key={order.id} className="border-border group hover:bg-muted/50 transition-colors">
                     <TableCell className="font-medium text-foreground">
                       {order.id.slice(0, 8).toUpperCase()}...

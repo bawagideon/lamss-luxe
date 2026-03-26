@@ -1,6 +1,5 @@
 'use server';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 
@@ -92,8 +91,9 @@ export async function uploadCommunityMoment(formData: FormData) {
     revalidatePath('/admin/community');
     revalidatePath('/community');
     return { success: true };
-  } catch (error: any) {
-    return { error: error.message || "Failed to upload community moment." };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to upload community moment.";
+    return { error: message };
   }
 }
 
@@ -115,8 +115,9 @@ export async function deleteCommunityMoment(id: string, imageUrl: string) {
     revalidatePath('/admin/community');
     revalidatePath('/community');
     return { success: true };
-  } catch (error: any) {
-    return { error: error.message || "Failed to delete community moment." };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to delete community moment.";
+    return { error: message };
   }
 }
 
@@ -141,8 +142,9 @@ export async function subscribeToNewsletter(formData: FormData) {
 
     revalidatePath('/admin/newsletter');
     return { success: true };
-  } catch (err: any) {
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to join waitlist.";
     console.error("Newsletter Subscription Error:", err);
-    return { error: err.message || "Failed to join waitlist." };
+    return { error: message };
   }
 }
