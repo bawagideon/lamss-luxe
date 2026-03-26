@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const userId = session.client_reference_id;
 
     // Capture Shipping and Contact Details for Fulfillment
-    const shippingDetails = session.shipping_details;
+    const shippingDetails = (session as any).shipping_details;
     const customerName = session.customer_details?.name || shippingDetails?.name || 'Guest Customer';
     const customerPhone = session.customer_details?.phone || 'N/A';
 
