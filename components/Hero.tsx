@@ -27,9 +27,9 @@ export function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight w-full"
+          className="text-4xl md:text-6xl lg:text-8xl font-black text-white tracking-tighter uppercase leading-[0.9] w-full"
         >
-          Ready-to-Slay IT Girl Fashion <br/> 
+          Ready-to-Slay IT Girl <br/> 
           <span className="text-white">for the Poise Woman.</span>
         </motion.h1>
         

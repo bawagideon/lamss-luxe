@@ -33,6 +33,7 @@ export interface Product {
   occasion?: string | null;
   size_and_fit?: string | null;
   fabric_and_care?: string | null;
+  marketing_message?: string | null;
   color_images?: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }>;
 }
 
@@ -143,6 +144,7 @@ export async function addProduct(formData: FormData) {
     const occasion = formData.get('occasion') as string || null;
     const size_and_fit = formData.get('size_and_fit') as string || null;
     const fabric_and_care = formData.get('fabric_and_care') as string || null;
+    const marketing_message = formData.get('marketing_message') as string || null;
     
     // Parse the multipart binary blobs
     const mainFile = formData.get('image_main') as File | null;
@@ -194,6 +196,7 @@ export async function addProduct(formData: FormData) {
       image_front, image_side, image_back,
       sizes, colors, color_codes,
       material, occasion, size_and_fit, fabric_and_care,
+      marketing_message,
       color_images
     });
 
@@ -224,6 +227,7 @@ export async function editProduct(formData: FormData) {
     const occasion = formData.get('occasion') as string || null;
     const size_and_fit = formData.get('size_and_fit') as string || null;
     const fabric_and_care = formData.get('fabric_and_care') as string || null;
+    const marketing_message = formData.get('marketing_message') as string || null;
     
     // Parse the multipart binary blobs
     const mainFile = formData.get('image_main') as File | null;
@@ -264,6 +268,7 @@ export async function editProduct(formData: FormData) {
       name, description, price, stock, category, 
       sizes, colors, color_codes,
       material, occasion, size_and_fit, fabric_and_care,
+      marketing_message,
       color_images
     };
 

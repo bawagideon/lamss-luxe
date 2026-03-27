@@ -22,8 +22,8 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <h3 className="font-bold mb-4 uppercase text-sm tracking-wider">Shop</h3>
-            <ul className="space-y-3 text-sm text-muted-foreground">
+            <h3 className="font-black mb-4 uppercase text-sm tracking-widest text-[#1a1a1a] dark:text-white">Shop</h3>
+            <ul className="space-y-3 text-[11px] font-black uppercase tracking-[0.1em] text-muted-foreground">
               <li><Link href="/shop/tops" className="hover:text-primary transition-colors">Tops</Link></li>
               <li><Link href="/shop/two-piece" className="hover:text-primary transition-colors">Two-Piece</Link></li>
               <li><Link href="/shop/dresses" className="hover:text-primary transition-colors">Dresses</Link></li>
@@ -32,8 +32,8 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-bold mb-4 uppercase text-sm tracking-wider">Company</h3>
-            <ul className="space-y-3 text-sm text-muted-foreground">
+            <h3 className="font-black mb-4 uppercase text-sm tracking-widest text-[#1a1a1a] dark:text-white">Company</h3>
+            <ul className="space-y-3 text-[11px] font-black uppercase tracking-[0.1em] text-muted-foreground">
               <li><Link href="/about" className="hover:text-primary transition-colors">About & Founder Story</Link></li>
               <li><Link href="/community" className="hover:text-primary transition-colors">Lamssé Network Experience</Link></li>
               <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
@@ -43,8 +43,8 @@ export function Footer() {
 
           {/* Newsletter */}
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
-            <h3 className="font-bold mb-4 uppercase text-sm tracking-wider">Join The Circle</h3>
-            <p className="text-sm text-muted-foreground mb-4">
+            <h3 className="font-black mb-4 uppercase text-sm tracking-widest text-[#1a1a1a] dark:text-white">Join The Circle</h3>
+            <p className="text-[11px] font-medium text-muted-foreground mb-4">
               Get style inspiration, event updates, and exclusive drops.
             </p>
             <form className="flex flex-col space-y-2">
@@ -61,7 +61,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground">
+        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Lamssé Luxe. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>

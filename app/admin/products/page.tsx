@@ -30,6 +30,7 @@ interface Product {
   occasion?: string;
   size_and_fit?: string;
   fabric_and_care?: string;
+  marketing_message?: string;
 }
 
 export default function AdminProductsPage() {
@@ -151,7 +152,11 @@ export default function AdminProductsPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="desc" className="text-xs uppercase font-bold text-gray-500">Description</Label>
-                <textarea id="desc" name="description" defaultValue={selectedProduct?.description || ''} rows={3} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="A stunning piece for queens..."></textarea>
+                <textarea id="desc" name="description" defaultValue={selectedProduct?.description || ''} rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="A stunning piece for queens..."></textarea>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="marketing_message" className="text-xs uppercase font-bold text-red-500">Marketing Message (E.g. UP TO 90% OFF)</Label>
+                <Input id="marketing_message" name="marketing_message" defaultValue={selectedProduct?.marketing_message || ''} placeholder="FLASH SALE! 50% OFF" className="border-red-100 focus-visible:ring-red-500" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">

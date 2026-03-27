@@ -3,30 +3,31 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { User, Menu, X, Heart } from "lucide-react";
+import { motion } from "framer-motion";
+import { Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchBar } from "@/components/SearchBar";
 import { CartSheet } from "@/components/CartSheet";
 import { UserProfileDropdown } from "@/components/UserProfileDropdown";
 import { RegionSelector } from "@/components/RegionSelector";
+import { useUIStore } from "@/store/useUIStore";
+import { GridSwitcher } from "@/components/GridSwitcher";
+import { MobileSidebar } from "@/components/MobileSidebar";
 
 export function Navbar() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { toggleMobileMenu, setMobileMenuOpen } = useUIStore();
   const pathname = usePathname();
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+    setMobileMenuOpen(false);
+  }, [pathname, setMobileMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-// Removed scroll check for transparency
-
       if (currentScrollY > lastScrollY && currentScrollY > 150) {
         setIsVisible(false);
       } else {
@@ -35,7 +36,6 @@ export function Navbar() {
       setLastScrollY(currentScrollY);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    // Trigger once on mount to get initial scroll position
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
@@ -54,132 +54,102 @@ export function Navbar() {
         className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${navBgColor}`}
       >
         <div className="w-full">
-          {/* TOP TIER: Logo, Main Categories (Level 1), Search, Icons */}
+          {/* TOP TIER: Logo, Search (Desktop), Icons, Hamburger */}
           <div className="container mx-auto px-4 lg:px-6 py-3 md:py-4 flex items-center justify-between gap-6">
             
-            {/* Left Block: Logo & Primary Links */}
-            <div className="flex items-center gap-6 lg:gap-10">
-              {/* Logo (Aligned Left) */}
-              <Link href="/" className="flex-shrink-0">
-                <div className="relative w-48 h-12 md:w-56 md:h-14 lg:w-64 lg:h-16">
-                  <Image src="/Logo-light.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left dark:hidden" priority />
-                  <Image src="/Logo-dark.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left hidden dark:block" priority />
-                </div>
+            {/* Left Block: 3D Stacked Logo Card */}
+            <div className="flex items-center gap-6">
+              <Link href="/" className="flex-shrink-0 group">
+                <motion.div 
+                  whileHover={{ scale: 1.08, y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative w-16 h-16 md:w-24 md:h-24 bg-white dark:bg-zinc-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-border/50 border-b-[6px] border-b-zinc-200 dark:border-b-zinc-800 flex items-center justify-center p-2.5 transition-all duration-500 overflow-hidden"
+                >
+                  {/* Subtle Grain Overlay on Card */}
+                  <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] dark:opacity-[0.1]" />
+                  
+                  <div className="relative w-full h-full transform transition-transform duration-500 group-hover:scale-110">
+                    <Image src="/Logo-light.png" alt="Logo" fill className="object-contain dark:hidden" priority />
+                    <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
+                  </div>
+
+                  {/* Hover "Expand" Glow */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                </motion.div>
               </Link>
-              
-              {/* Primary Links (Level 1) - Desktop Only: Brand & Intent */}
-              <div className={`hidden xl:flex items-center space-x-10 text-sm font-black tracking-[0.2em] uppercase transition-colors duration-300 ${navTextColor}`}>
-                <Link 
-                  href="/collections" 
-                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname === '/collections' ? 'border-current' : 'border-transparent hover:border-current'}`}
-                >
-                  New In
-                </Link>
-                <Link 
-                  href="/shop" 
-                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname === '/shop' ? 'border-current' : 'border-transparent hover:border-current'}`}
-                >
-                  Clothing
-                </Link>
-                <Link 
-                  href="/community" 
-                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname === '/community' ? 'border-current' : 'border-transparent hover:border-current'}`}
-                >
-                  Community
-                </Link>
-              </div>
             </div>
 
-            {/* Right Block: Dynamic Search Component & Utilitarian Icons */}
-            <div className={`hidden lg:flex flex-1 items-center justify-end gap-x-6 transition-colors duration-300 ${navTextColor}`}>
-              {/* Dynamic Database Search Component */}
+            {/* Middle Block: PC Links or Search (Internal) */}
+            <div className="hidden xl:flex flex-1 max-w-xl mx-8">
               <SearchBar isTransparent={false} />
+            </div>
 
-              {/* Utility Icons */}
-              <div className="flex items-center space-x-5 flex-shrink-0">
+            {/* Right Block: Icons & Switcher */}
+            <div className={`flex items-center gap-3 md:gap-6 transition-colors duration-300 ${navTextColor}`}>
+              {/* Desktop Only Actions */}
+              <div className="hidden lg:flex items-center space-x-5">
                 <RegionSelector isTransparent={false} />
                 <ThemeToggle />
                 <Link href="/wishlist" className="hover:opacity-80 transition-opacity" aria-label="Wishlist">
                   <Heart className="w-6 h-6" />
                 </Link>
                 <UserProfileDropdown />
-                <CartSheet />
               </div>
-            </div>
 
-            {/* Mobile Hamburger / Touch Interface */}
-            <div className={`lg:hidden flex items-center space-x-4 transition-colors duration-300 ${navTextColor}`}>
-              <RegionSelector isTransparent={false} />
-              <ThemeToggle />
+              {/* Universal Actions */}
+              <GridSwitcher />
               <CartSheet />
+              
+              {/* Specialized Hamburger (Fashion Nova Style) */}
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="hover:opacity-80 transition-opacity ml-2"
+                onClick={toggleMobileMenu}
+                className="p-1 px-2 hover:opacity-70 transition-opacity"
+                aria-label="Toggle Menu"
               >
-                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                <div className="flex flex-col gap-[5px]">
+                  <div className="w-7 h-[1.5px] bg-current" />
+                  <div className="w-7 h-[1.5px] bg-current" />
+                  <div className="w-7 h-[1.5px] bg-current" />
+                </div>
               </button>
             </div>
-
           </div>
 
-          {/* BOTTOM TIER: Strictly Product Categories */}
-          <div className="hidden lg:flex items-center justify-center w-full border-t border-border/60 bg-white/50 dark:bg-background/50 py-3 px-4">
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[10px] font-black tracking-[0.2em] uppercase transition-colors duration-300 text-primary dark:text-foreground">
-              <Link href="/shop/dresses" className="hover:opacity-60 transition-opacity">Dresses</Link>
-              <Link href="/shop/two-piece" className="hover:opacity-60 transition-opacity">Matching Sets</Link>
-              <Link href="/shop/tops" className="hover:opacity-60 transition-opacity">Tops</Link>
-              <Link href="/shop/swim" className="hover:opacity-60 transition-opacity">Swim</Link>
-              <Link href="/shop/outerwear" className="hover:opacity-60 transition-opacity">Outerwear</Link>
-              <Link href="/shop/accessories" className="hover:opacity-60 transition-opacity">Accessories</Link>
-              <Link href="/shop?filter=restock" className="hover:opacity-60 transition-opacity text-primary/70 dark:text-foreground/70">Restocks</Link>
+          {/* DEPARTMENT TIER (Fashion Nova Style) */}
+          <div className="flex items-center justify-center border-t border-border/40 overflow-x-auto no-scrollbar scroll-smooth bg-zinc-50/50 dark:bg-transparent">
+            <div className="flex items-center gap-8 md:gap-12 px-6 py-2.5">
+              {["Women", "Plus+Curve", "Men", "Sport", "Kids", "Beauty"].map((dept) => (
+                <Link 
+                  key={dept}
+                  href={`/shop?dept=${dept.toLowerCase()}`}
+                  className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all border-b-2 border-transparent hover:border-primary pb-0.5 whitespace-nowrap active:scale-95 text-zinc-600 dark:text-zinc-400"
+                >
+                  {dept}
+                </Link>
+              ))}
             </div>
           </div>
 
+          {/* MOBILE SEARCH TIER (Visible Only on Mobile) */}
+          <div className="lg:hidden px-4 pb-3 border-t border-border/20 pt-2">
+             <SearchBar isTransparent={false} />
+          </div>
+
+          {/* PRODUCT CATEGORIES (Desktop Only Sub-Nav) */}
+          <div className="hidden lg:flex items-center justify-center w-full border-t border-border/40 bg-white/30 dark:bg-background/30 py-2.5 px-4 backdrop-blur-sm">
+            <div className="flex flex-wrap items-center justify-center gap-x-10 text-[10px] font-black tracking-[0.2em] uppercase transition-colors duration-300 text-muted-foreground">
+              {["Dresses", "Matching Sets", "Tops", "Swim", "Outerwear", "Accessories", "Restocks"].map((cat) => (
+                <Link key={cat} href={`/shop/${cat.toLowerCase().replace(" ", "-")}`} className="hover:text-primary transition-colors whitespace-nowrap">
+                  {cat}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu Dropdown */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-background pt-24 pb-12 px-8 lg:hidden overflow-y-auto"
-          >
-            <div className="flex flex-col space-y-8">
-              {/* Categories Tier */}
-              <div className="flex flex-col space-y-5">
-                <p className="text-[10px] font-black tracking-widest uppercase text-muted-foreground mb-2">Shop Categories</p>
-                <Link href="/shop/dresses" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-black uppercase tracking-tight hover:text-primary transition-colors">Dresses</Link>
-                <Link href="/shop/two-piece" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-black uppercase tracking-tight hover:text-primary transition-colors">Matching Sets</Link>
-                <Link href="/shop/tops" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-black uppercase tracking-tight hover:text-primary transition-colors">Tops</Link>
-                <Link href="/shop/swim" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-black uppercase tracking-tight hover:text-primary transition-colors">Swim</Link>
-              </div>
-
-              {/* Visual Separator */}
-              <div className="h-px bg-border/60 w-full my-4" />
-
-              {/* Brand Tier */}
-              <div className="flex flex-col space-y-5">
-                <Link href="/collections" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold uppercase tracking-widest text-primary/80">New In</Link>
-                <Link href="/community" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold uppercase tracking-widest text-primary/80">Community</Link>
-                <button 
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    document.dispatchEvent(new CustomEvent("open-auth-modal", { detail: { mode: "signIn" } }));
-                  }}
-                  className="flex items-center space-x-3 text-lg font-bold uppercase tracking-widest text-primary/80"
-                >
-                  <User className="w-5 h-5" />
-                  <span>Account Flow</span>
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Mobile Menu & Search Overlay */}
+      <MobileSidebar />
     </>
   );
 }
