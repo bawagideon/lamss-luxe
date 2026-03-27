@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="relative w-full h-[100dvh] flex flex-col justify-center items-center overflow-hidden">
+    <section className="relative w-full h-screen min-h-[80vh] overflow-hidden">
       {/* Absolute Background Video */}
       <video 
         autoPlay 
@@ -15,14 +15,14 @@ export function Hero() {
         playsInline 
         className="absolute inset-0 w-full h-full object-cover z-0"
       >
-        <source src="/home-video.mp4" type="video/mp4" />
+        <source src="/Cut-Down.mp4" type="video/mp4" />
       </video>
 
       {/* Dark Overlay for Text Readability */}
       <div className="absolute inset-0 bg-black/40 z-10" />
 
-      {/* Center Overlay Content */}
-      <div className="text-center px-6 md:px-12 flex flex-col items-center z-20 w-full max-w-5xl mx-auto">
+      {/* Center Overlay Content Wrapper */}
+      <div className="relative z-20 flex flex-col items-center justify-center h-full text-white text-center px-4 max-w-5xl mx-auto">
         <motion.h1 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
