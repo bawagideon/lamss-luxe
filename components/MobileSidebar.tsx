@@ -3,14 +3,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { X, Instagram, Facebook, Youtube, ChevronRight, Globe, Moon, Sun, History, Sparkles } from "lucide-react";
+import { X, Instagram, Facebook, Youtube, ChevronRight, Globe, History, Sparkles } from "lucide-react";
 import { useUIStore } from "@/store/useUIStore";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 
 export function MobileSidebar() {
   const { isMobileMenuOpen, setMobileMenuOpen } = useUIStore();
-  const { theme, setTheme } = useTheme();
   const [activeDept, setActiveDept] = useState("Women");
 
   const departments = ["Women", "Plus+Curve", "Men", "Sport", "Kids", "Beauty"];
@@ -80,7 +79,7 @@ export function MobileSidebar() {
 
             {/* Navigation Content */}
             <div className="flex-1 overflow-y-auto pt-4 px-4 space-y-0.5 pb-20">
-              {categories.map((cat, idx) => (
+              {categories.map((cat) => (
                 <Link 
                   key={cat.href}
                   href={cat.href}

@@ -27,18 +27,18 @@ export function CategoryShop() {
     getActiveProducts().then((products) => {
       if (!products || products.length === 0) return;
 
-      const updated = categories.map((cat) => {
-        // Find first product in this category
-        const match = products.find((p) => 
-          p.category?.toLowerCase() === cat.slug.toLowerCase() || 
-          p.category?.toLowerCase() === cat.name.toLowerCase()
-        );
-        return {
-          ...cat,
-          image: match?.image_url || products[0].image_url // Fallback to first available product
-        };
-      });
-      setCategories(updated);
+      setCategories((prev) => 
+        prev.map((cat) => {
+          const match = products.find((p) => 
+            p.category?.toLowerCase() === cat.slug.toLowerCase() || 
+            p.category?.toLowerCase() === cat.name.toLowerCase()
+          );
+          return {
+            ...cat,
+            image: match?.image_url || products[0].image_url
+          };
+        })
+      );
     });
   }, []);
 
