@@ -11,6 +11,14 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/store/useCart";
 import { toast } from "react-hot-toast";
 
+interface RawProduct {
+  id: string;
+  name: string;
+  price: number;
+  image_url: string;
+  sizes?: string[];
+}
+
 interface ShopProduct {
   id: string;
   name: string;
@@ -21,7 +29,7 @@ interface ShopProduct {
   sizes: string[];
 }
 
-export function ShopGrid({ initialProducts }: { initialProducts?: { id: string; name: string; price: number; image_url: string; sizes?: string[] }[] }) {
+export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }) {
   const [liveProducts, setLiveProducts] = useState<ShopProduct[]>([]);
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
   const { addItem } = useCart();
@@ -42,14 +50,14 @@ export function ShopGrid({ initialProducts }: { initialProducts?: { id: string; 
 
     getActiveProducts().then((dbProducts) => {
       if (dbProducts && dbProducts.length > 0) {
-        setLiveProducts(dbProducts.map((p: any) => ({
+        setLiveProducts((dbProducts as unknown as RawProduct[]).map((p) => ({
           id: p.id,
           name: p.name,
-          price: `$${p.price}`,
+          price: `$${p.price.toFixed(2)}`,
           rawPrice: p.price,
           imageDefault: p.image_url,
           imageLifestyle: p.image_url,
-          sizes: p.sizes || ['XS', 'S', 'M', 'L', 'XL']
+          sizes: p.sizes && p.sizes.length > 0 ? p.sizes : ['XS', 'S', 'M', 'L', 'XL']
         })));
       }
     });
