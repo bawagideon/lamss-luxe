@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { X, Instagram, Facebook, Youtube, ChevronRight, Globe, History, Sparkles } from "lucide-react";
 import { useUIStore } from "@/store/useUIStore";
-import { useTheme } from "next-themes";
 import { useState } from "react";
 
 export function MobileSidebar() {
