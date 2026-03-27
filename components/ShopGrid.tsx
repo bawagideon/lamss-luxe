@@ -9,7 +9,7 @@ import { Heart } from "lucide-react";
 import { useWishlist } from "@/hooks/useWishlist";
 
 import { useCart } from "@/store/useCart";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 interface ShopProduct {
   id: string;
