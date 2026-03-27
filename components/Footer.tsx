@@ -9,7 +9,10 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Info */}
           <div className="col-span-1 lg:col-span-1">
-            <h2 className="text-xl font-black uppercase tracking-widest mb-4">Lamssé Luxe</h2>
+            <div className="relative w-48 h-12 mb-6">
+              <Image src="/Logo-light.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left dark:hidden" />
+              <Image src="/Logo-dark.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left hidden dark:block" />
+            </div>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
               Ready-to-Slay Fashion for women who move with confidence and intention.<br/><br/>
               Blending fashion, community, and experience into one lifestyle.
@@ -23,7 +26,7 @@ export function Footer() {
               <li><Link href="/shop/tops" className="hover:text-primary transition-colors">Tops</Link></li>
               <li><Link href="/shop/two-piece" className="hover:text-primary transition-colors">Two-Piece</Link></li>
               <li><Link href="/shop/dresses" className="hover:text-primary transition-colors">Dresses</Link></li>
-              <li><Link href="/collections" className="hover:text-primary transition-colors">New Arrivals</Link></li>
+              <li><Link href="/shop" className="hover:text-primary transition-colors">Shop All</Link></li>
             </ul>
           </div>
 
@@ -31,7 +34,6 @@ export function Footer() {
             <h3 className="font-bold mb-4 uppercase text-sm tracking-wider">Company</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li><Link href="/about" className="hover:text-primary transition-colors">About & Founder Story</Link></li>
-              <li><Link href="/community" className="hover:text-primary transition-colors">Lamssé Network Experience</Link></li>
               <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
               <li><Link href="/shipping-returns" className="hover:text-primary transition-colors">Shipping & Returns</Link></li>
             </ul>

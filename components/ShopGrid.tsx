@@ -59,9 +59,6 @@ export function ShopGrid({ initialProducts }: { initialProducts?: { id: string; 
               Effortless by day. Unforgettable by night.
             </p>
           </div>
-          <Link href="/collections" className="mt-6 md:mt-0 text-primary font-bold hover:underline transition-all">
-            View All Collections &rarr;
-          </Link>
         </div>
 
         {liveProducts.length === 0 ? (

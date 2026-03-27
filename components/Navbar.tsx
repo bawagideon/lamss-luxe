@@ -65,7 +65,8 @@ export function Navbar() {
               {/* Logo (Aligned Left, Expanded Dimensions) */}
               <Link href="/" className="flex-shrink-0">
                 <div className="relative w-56 h-14 md:w-64 md:h-16 lg:w-72 lg:h-20">
-                  <Image src="/logo-transparent.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left" priority />
+                  <Image src="/Logo-light.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left dark:hidden" priority />
+                  <Image src="/Logo-dark.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left hidden dark:block" priority />
                 </div>
               </Link>
               
@@ -76,18 +77,6 @@ export function Navbar() {
                   className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname.startsWith('/shop') ? 'border-current' : 'border-transparent hover:border-current'}`}
                 >
                   Shop
-                </Link>
-                <Link 
-                  href="/collections" 
-                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname.startsWith('/collections') ? 'border-current' : 'border-transparent hover:border-current'}`}
-                >
-                  Collections
-                </Link>
-                <Link 
-                  href="/community" 
-                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname.startsWith('/community') ? 'border-current' : 'border-transparent hover:border-current'}`}
-                >
-                  Lamssé Network
                 </Link>
               </div>
             </div>
@@ -131,8 +120,6 @@ export function Navbar() {
               <Link href="/shop/tops" className="hover:opacity-80 transition-opacity">Tops</Link>
               <Link href="/shop/two-piece" className="hover:opacity-80 transition-opacity">Two-Piece</Link>
               <Link href="/shop/dresses" className="hover:opacity-80 transition-opacity">Dresses</Link>
-              <Link href="/collections" className="hover:opacity-80 transition-opacity">The Collections</Link>
-              <Link href="/community" className="hover:opacity-80 transition-opacity">Lamssé Network Experience</Link>
               <Link href="/about" className="hover:opacity-80 transition-opacity">About Us</Link>
               <Link href="/contact" className="hover:opacity-80 transition-opacity">Contact</Link>
             </div>
@@ -155,8 +142,6 @@ export function Navbar() {
               <Link href="/shop/tops" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Tops</Link>
               <Link href="/shop/two-piece" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Two-Piece</Link>
               <Link href="/shop/dresses" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Dresses</Link>
-              <Link href="/collections" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Collections</Link>
-              <Link href="/community" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Lamssé Network</Link>
               <button 
                 onClick={() => {
                   setIsMobileMenuOpen(false);
