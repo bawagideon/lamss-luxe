@@ -114,7 +114,7 @@ export function Navbar() {
           </div>
 
           {/* BOTTOM TIER: Subcategories - strict route mapping (No 404s/Dropdowns) */}
-          <div className={`hidden lg:flex items-center justify-center w-full border-t ${isTransparent ? 'border-white/20' : 'border-border/60'} py-3 px-4`}>
+          <div className={`hidden lg:flex items-center justify-center w-full border-t transition-all duration-300 ${isTransparent ? 'border-white/10 bg-black/40 backdrop-blur-xl' : 'border-border/60 bg-white/95 dark:bg-background/95'} py-3 px-4`}>
             <div className={`flex flex-wrap items-center justify-center gap-x-6 lg:gap-x-10 gap-y-2 text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-300 ${navTextColor}`}>
               <Link href="/shop" className="hover:opacity-80 transition-opacity">Shop All</Link>
               <Link href="/shop/tops" className="hover:opacity-80 transition-opacity">Tops</Link>
