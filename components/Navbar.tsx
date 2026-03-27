@@ -13,7 +13,6 @@ import { UserProfileDropdown } from "@/components/UserProfileDropdown";
 import { RegionSelector } from "@/components/RegionSelector";
 
 export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -26,7 +25,7 @@ export function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      setIsScrolled(currentScrollY > 50);
+// Removed scroll check for transparency
 
       if (currentScrollY > lastScrollY && currentScrollY > 150) {
         setIsVisible(false);
