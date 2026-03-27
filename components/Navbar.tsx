@@ -64,9 +64,9 @@ export function Navbar() {
             <div className="flex items-center gap-6 lg:gap-10">
               {/* Logo (Aligned Left, Expanded Dimensions) */}
               <Link href="/" className="flex-shrink-0">
-                <div className="relative w-56 h-14 md:w-64 md:h-16 lg:w-72 lg:h-20">
-                  <Image src="/Logo-light.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left dark:hidden" priority />
-                  <Image src="/Logo-dark.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left hidden dark:block" priority />
+                <div className="relative w-64 h-16 md:w-80 md:h-24 lg:w-[400px] lg:h-32 -ml-4">
+                  <Image src="/Logo-light.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left dark:hidden scale-110 md:scale-125" priority />
+                  <Image src="/Logo-dark.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left hidden dark:block scale-110 md:scale-125" priority />
                 </div>
               </Link>
               

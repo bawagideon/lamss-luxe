@@ -10,9 +10,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Info */}
           <div className="col-span-1 lg:col-span-1">
-            <div className="relative w-48 h-12 mb-6">
-              <Image src="/Logo-light.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left dark:hidden" />
-              <Image src="/Logo-dark.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left hidden dark:block" />
+            <div className="relative w-64 h-16 mb-6 -ml-2">
+              <Image src="/Logo-light.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left dark:hidden scale-110" />
+              <Image src="/Logo-dark.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left hidden dark:block scale-110" />
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
               Ready-to-Slay Fashion for women who move with confidence and intention.<br/><br/>
