@@ -67,25 +67,25 @@ export function Navbar() {
                 </div>
               </Link>
               
-              {/* Primary Links (Level 1) - Desktop Only */}
-              <div className={`hidden xl:flex items-center space-x-8 text-sm font-black tracking-widest uppercase transition-colors duration-300 ${navTextColor}`}>
-                <Link 
-                  href="/shop" 
-                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname.startsWith('/shop') ? 'border-current' : 'border-transparent hover:border-current'}`}
-                >
-                  Shop
-                </Link>
+              {/* Primary Links (Level 1) - Desktop Only: Brand & Intent */}
+              <div className={`hidden xl:flex items-center space-x-10 text-sm font-black tracking-[0.2em] uppercase transition-colors duration-300 ${navTextColor}`}>
                 <Link 
                   href="/collections" 
-                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname.startsWith('/collections') ? 'border-current' : 'border-transparent hover:border-current'}`}
+                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname === '/collections' ? 'border-current' : 'border-transparent hover:border-current'}`}
                 >
-                  Collections
+                  New In
+                </Link>
+                <Link 
+                  href="/shop" 
+                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname === '/shop' ? 'border-current' : 'border-transparent hover:border-current'}`}
+                >
+                  Clothing
                 </Link>
                 <Link 
                   href="/community" 
-                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname.startsWith('/community') ? 'border-current' : 'border-transparent hover:border-current'}`}
+                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname === '/community' ? 'border-current' : 'border-transparent hover:border-current'}`}
                 >
-                  Lamssé Network
+                  Community
                 </Link>
               </div>
             </div>
@@ -122,15 +122,16 @@ export function Navbar() {
 
           </div>
 
-          {/* BOTTOM TIER: Subcategories - strict route mapping (No 404s/Dropdowns) */}
+          {/* BOTTOM TIER: Strictly Product Categories */}
           <div className="hidden lg:flex items-center justify-center w-full border-t border-border/60 bg-white/50 dark:bg-background/50 py-3 px-4">
-            <div className="flex flex-wrap items-center justify-center gap-x-6 lg:gap-x-10 gap-y-2 text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-300 text-primary dark:text-foreground">
-              <Link href="/shop" className="hover:opacity-80 transition-opacity">Shop All</Link>
-              <Link href="/shop/tops" className="hover:opacity-80 transition-opacity">Tops</Link>
-              <Link href="/shop/two-piece" className="hover:opacity-80 transition-opacity">Two-Piece</Link>
-              <Link href="/shop/dresses" className="hover:opacity-80 transition-opacity">Dresses</Link>
-              <Link href="/about" className="hover:opacity-80 transition-opacity">About Us</Link>
-              <Link href="/contact" className="hover:opacity-80 transition-opacity">Contact Us</Link>
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[10px] font-black tracking-[0.2em] uppercase transition-colors duration-300 text-primary dark:text-foreground">
+              <Link href="/shop/dresses" className="hover:opacity-60 transition-opacity">Dresses</Link>
+              <Link href="/shop/two-piece" className="hover:opacity-60 transition-opacity">Matching Sets</Link>
+              <Link href="/shop/tops" className="hover:opacity-60 transition-opacity">Tops</Link>
+              <Link href="/shop/swim" className="hover:opacity-60 transition-opacity">Swim</Link>
+              <Link href="/shop/outerwear" className="hover:opacity-60 transition-opacity">Outerwear</Link>
+              <Link href="/shop/accessories" className="hover:opacity-60 transition-opacity">Accessories</Link>
+              <Link href="/shop?filter=restock" className="hover:opacity-60 transition-opacity text-primary/70 dark:text-foreground/70">Restocks</Link>
             </div>
           </div>
 
@@ -141,28 +142,40 @@ export function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-background pt-24 px-6 lg:hidden"
+            className="fixed inset-0 z-40 bg-background pt-24 pb-12 px-8 lg:hidden overflow-y-auto"
           >
-            <div className="flex flex-col space-y-6 text-xl font-bold uppercase text-primary">
-              <Link href="/shop/tops" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Tops</Link>
-              <Link href="/shop/two-piece" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Two-Piece</Link>
-              <Link href="/shop/dresses" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Dresses</Link>
-              <Link href="/collections" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Collections</Link>
-              <Link href="/community" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Lamssé Network</Link>
-              <button 
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  document.dispatchEvent(new CustomEvent("open-auth-modal", { detail: { mode: "signIn" } }));
-                }}
-                className="pt-4 flex items-center space-x-2 shrink-0 hover:opacity-80 transition-opacity"
-              >
-                <User className="w-5 h-5" />
-                <span>Account Flow</span>
-              </button>
+            <div className="flex flex-col space-y-8">
+              {/* Categories Tier */}
+              <div className="flex flex-col space-y-5">
+                <p className="text-[10px] font-black tracking-widest uppercase text-muted-foreground mb-2">Shop Categories</p>
+                <Link href="/shop/dresses" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-black uppercase tracking-tight hover:text-primary transition-colors">Dresses</Link>
+                <Link href="/shop/two-piece" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-black uppercase tracking-tight hover:text-primary transition-colors">Matching Sets</Link>
+                <Link href="/shop/tops" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-black uppercase tracking-tight hover:text-primary transition-colors">Tops</Link>
+                <Link href="/shop/swim" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-black uppercase tracking-tight hover:text-primary transition-colors">Swim</Link>
+              </div>
+
+              {/* Visual Separator */}
+              <div className="h-px bg-border/60 w-full my-4" />
+
+              {/* Brand Tier */}
+              <div className="flex flex-col space-y-5">
+                <Link href="/collections" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold uppercase tracking-widest text-primary/80">New In</Link>
+                <Link href="/community" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold uppercase tracking-widest text-primary/80">Community</Link>
+                <button 
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    document.dispatchEvent(new CustomEvent("open-auth-modal", { detail: { mode: "signIn" } }));
+                  }}
+                  className="flex items-center space-x-3 text-lg font-bold uppercase tracking-widest text-primary/80"
+                >
+                  <User className="w-5 h-5" />
+                  <span>Account Flow</span>
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
