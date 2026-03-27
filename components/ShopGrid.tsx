@@ -90,15 +90,15 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
 
   // Dynamic Grid Classes
   const getGridColsClass = () => {
-    if (gridColumns === 2) return "grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
-    if (gridColumns === 3) return "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6";
-    if (gridColumns === 5) return "grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8";
-    return "grid-cols-2 lg:grid-cols-4";
+    if (gridColumns === 2) return "grid-cols-2 md:grid-cols-2";
+    if (gridColumns === 3) return "grid-cols-2 lg:grid-cols-3";
+    if (gridColumns === 5) return "grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6";
+    return "grid-cols-2 lg:grid-cols-3";
   };
 
   return (
     <section className="py-20 bg-background min-h-screen" id="shop">
-      <div className="container mx-auto px-4 md:px-10 lg:px-16">
+      <div className="mx-auto px-4 md:px-10 lg:px-16 max-w-[1600px]">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 px-2">
           <div className="space-y-2">
             <h2 className="text-3xl md:text-5xl font-black tracking-tight uppercase">Latest Drops</h2>
@@ -128,8 +128,8 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                   transition={{ duration: 0.4, delay: index * 0.02 }}
                   className="group relative flex flex-col"
                 >
-                  {/* Visual Stage */}
-                  <div className="relative aspect-[2/3] md:aspect-[3/4] overflow-hidden bg-zinc-50 dark:bg-zinc-900/40 rounded-[2px] cursor-pointer shadow-sm border border-border/10">
+                  {/* Visual Stage (Taller & Bolder) */}
+                  <div className="relative aspect-[2/3] overflow-hidden bg-zinc-50 dark:bg-zinc-900 shadow-sm border border-border/10">
                     <Link href={`/product/${product.id}`} className="absolute inset-0 z-10">
                       <span className="sr-only">View Details</span>
                     </Link>
@@ -152,8 +152,8 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                     />
 
                     {/* DESKTOP QUICK ADD (Fashion Nova Overlay) */}
-                    <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out bg-white/98 dark:bg-zinc-900/98 p-3 hidden md:block border-t border-border">
-                      <p className="text-[9px] font-black uppercase tracking-[0.15em] mb-2 text-center text-zinc-400">Add to Bag</p>
+                    <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out bg-white dark:bg-zinc-950 p-4 hidden md:block border-t border-border shadow-2xl">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 text-center text-black dark:text-zinc-50">Add to Bag</p>
                       <div className="grid grid-cols-5 gap-1">
                         {product.sizes.slice(0, 5).map((size) => (
                           <button
@@ -209,8 +209,8 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                   <div className="mt-4 flex flex-col space-y-1 px-1">
                     <Link href={`/product/${product.id}`} className="group/link block">
                       <div className="flex justify-between items-start mb-0.5">
-                        <h3 className="text-[12px] md:text-[13px] font-black tracking-tight uppercase line-clamp-1 opacity-90 group-hover/link:underline underline-offset-4">{product.name}</h3>
-                        <span className="text-[14px] md:text-[15px] font-black tracking-tighter tabular-nums text-zinc-800 dark:text-zinc-200">{product.price}</span>
+                        <h3 className="text-[13px] md:text-[15px] font-black tracking-tight uppercase line-clamp-1 text-black dark:text-white group-hover/link:underline underline-offset-8">{product.name}</h3>
+                        <span className="text-[15px] md:text-[17px] font-black tracking-tighter tabular-nums text-black dark:text-zinc-50">{product.price}</span>
                       </div>
                       
                       {/* Dynamic Product Sub-Message (Marketing Layer) */}
@@ -237,7 +237,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                          </div>
 
                          {/* Status Reveal (Animated on desktop) */}
-                         <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest hidden md:block transition-all duration-300 group-hover/swatches:translate-x-0 translate-x-4 opacity-0 group-hover/swatches:opacity-100">
+                         <span className="text-[10px] font-black text-black dark:text-zinc-50 uppercase tracking-[0.2em] hidden md:block transition-all duration-300 group-hover/swatches:translate-x-0 translate-x-4 opacity-0 group-hover/swatches:opacity-100">
                            View Look
                          </span>
                       </div>

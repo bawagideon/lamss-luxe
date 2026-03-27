@@ -11,7 +11,7 @@ export function MobileSidebar() {
   const { isMobileMenuOpen, setMobileMenuOpen } = useUIStore();
   const [activeDept, setActiveDept] = useState("Women");
 
-  const departments = ["Women", "Plus+Curve", "Men", "Sport", "Kids", "Beauty"];
+  const departments = ["Women", "Plus+Curve", "Sport", "Kids", "Beauty"];
 
   const categories = [
     { name: "New In", href: "/collections" },

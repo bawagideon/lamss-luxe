@@ -15,12 +15,12 @@ interface CategoryItem {
 
 export function CategoryShop() {
   const [categories, setCategories] = useState<CategoryItem[]>([
-    { name: "Dresses", slug: "dresses", label: "OUR DRESSES", image: "/placeholder.jpg" },
-    { name: "Matching Sets", slug: "two-piece", label: "OUR SETS", image: "/placeholder.jpg" },
-    { name: "Tops", slug: "tops", label: "OUR TOPS", image: "/placeholder.jpg" },
-    { name: "Swim", slug: "swim", label: "OUR SWIM", image: "/placeholder.jpg" },
-    { name: "Outerwear", slug: "outerwear", label: "OUR LUXE", image: "/placeholder.jpg" },
-    { name: "Accessories", slug: "accessories", label: "OUR ACCS", image: "/placeholder.jpg" },
+    { name: "Dresses", slug: "dresses", label: "OUR DRESSES", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80" },
+    { name: "Matching Sets", slug: "two-piece", label: "OUR SETS", image: "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?auto=format&fit=crop&q=80" },
+    { name: "Tops", slug: "tops", label: "OUR TOPS", image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80" },
+    { name: "Swim", slug: "swim", label: "OUR SWIM", image: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&q=80" },
+    { name: "Outerwear", slug: "outerwear", label: "OUR LUXE", image: "https://images.unsplash.com/photo-1539533377285-b0afb0f7a54a?auto=format&fit=crop&q=80" },
+    { name: "Accessories", slug: "accessories", label: "OUR ACCS", image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80" },
   ]);
 
   useEffect(() => {

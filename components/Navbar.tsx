@@ -120,7 +120,7 @@ export function Navbar() {
           {/* DEPARTMENT TIER (Fashion Nova Style) */}
           <div className="flex items-center justify-center border-t border-border/40 overflow-x-auto no-scrollbar scroll-smooth bg-zinc-50/50 dark:bg-transparent">
             <div className="flex items-center gap-8 md:gap-12 px-6 py-2.5">
-              {["Women", "Plus+Curve", "Men", "Sport", "Kids", "Beauty"].map((dept) => (
+              {["Women", "Plus+Curve", "Sport", "Kids", "Beauty"].map((dept) => (
                 <Link 
                   key={dept}
                   href={`/shop?dept=${dept.toLowerCase()}`}
@@ -141,7 +141,11 @@ export function Navbar() {
           <div className="hidden lg:flex items-center justify-center w-full border-t border-border/40 bg-white/30 dark:bg-background/30 py-2.5 px-4 backdrop-blur-sm">
             <div className="flex flex-wrap items-center justify-center gap-x-10 text-[10px] font-black tracking-[0.2em] uppercase transition-colors duration-300 text-muted-foreground">
               {["Dresses", "Matching Sets", "Tops", "Swim", "Outerwear", "Accessories", "Restocks"].map((cat) => (
-                <Link key={cat} href={`/shop/${cat.toLowerCase().replace(" ", "-")}`} className="hover:text-primary transition-colors whitespace-nowrap">
+                <Link 
+                  key={cat} 
+                  href={`/shop/${cat === 'Matching Sets' ? 'two-piece' : cat.toLowerCase().replace(" ", "-")}`} 
+                  className="hover:text-primary transition-colors whitespace-nowrap"
+                >
                   {cat}
                 </Link>
               ))}
