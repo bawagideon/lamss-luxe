@@ -43,10 +43,8 @@ export function Navbar() {
 
   if (pathname.startsWith("/admin")) return null;
 
-  const isHome = pathname === "/";
-  const isTransparent = isHome && !isScrolled;
-  const navTextColor = isTransparent ? "text-white" : "text-primary dark:text-foreground";
-  const navBgColor = isTransparent ? "bg-transparent" : "bg-white/95 dark:bg-background/95 backdrop-blur-md border-b border-border shadow-sm";
+  const navBgColor = "bg-white/95 dark:bg-background/95 backdrop-blur-md border-b border-border shadow-sm";
+  const navTextColor = "text-primary dark:text-foreground";
 
   return (
     <>
@@ -62,11 +60,11 @@ export function Navbar() {
             
             {/* Left Block: Logo & Primary Links */}
             <div className="flex items-center gap-6 lg:gap-10">
-              {/* Logo (Aligned Left, Expanded Dimensions) */}
+              {/* Logo (Aligned Left) */}
               <Link href="/" className="flex-shrink-0">
-                <div className="relative w-64 h-16 md:w-80 md:h-24 lg:w-[400px] lg:h-32 -ml-4">
-                  <Image src="/Logo-light.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left dark:hidden scale-110 md:scale-125" priority />
-                  <Image src="/Logo-dark.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left hidden dark:block scale-110 md:scale-125" priority />
+                <div className="relative w-48 h-12 md:w-56 md:h-14 lg:w-64 lg:h-16">
+                  <Image src="/Logo-light.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left dark:hidden" priority />
+                  <Image src="/Logo-dark.png" alt="Lamssé Luxe Logo" fill className="object-contain object-left hidden dark:block" priority />
                 </div>
               </Link>
               
@@ -78,17 +76,29 @@ export function Navbar() {
                 >
                   Shop
                 </Link>
+                <Link 
+                  href="/collections" 
+                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname.startsWith('/collections') ? 'border-current' : 'border-transparent hover:border-current'}`}
+                >
+                  Collections
+                </Link>
+                <Link 
+                  href="/community" 
+                  className={`pb-1 border-b-2 hover:opacity-80 transition-all ${pathname.startsWith('/community') ? 'border-current' : 'border-transparent hover:border-current'}`}
+                >
+                  Lamssé Network
+                </Link>
               </div>
             </div>
 
             {/* Right Block: Dynamic Search Component & Utilitarian Icons */}
             <div className={`hidden lg:flex flex-1 items-center justify-end gap-x-6 transition-colors duration-300 ${navTextColor}`}>
               {/* Dynamic Database Search Component */}
-              <SearchBar isTransparent={isTransparent} />
+              <SearchBar isTransparent={false} />
 
               {/* Utility Icons */}
               <div className="flex items-center space-x-5 flex-shrink-0">
-                <RegionSelector isTransparent={isTransparent} />
+                <RegionSelector isTransparent={false} />
                 <ThemeToggle />
                 <Link href="/wishlist" className="hover:opacity-80 transition-opacity" aria-label="Wishlist">
                   <Heart className="w-6 h-6" />
@@ -100,7 +110,7 @@ export function Navbar() {
 
             {/* Mobile Hamburger / Touch Interface */}
             <div className={`lg:hidden flex items-center space-x-4 transition-colors duration-300 ${navTextColor}`}>
-              <RegionSelector isTransparent={isTransparent} />
+              <RegionSelector isTransparent={false} />
               <ThemeToggle />
               <CartSheet />
               <button
@@ -114,14 +124,14 @@ export function Navbar() {
           </div>
 
           {/* BOTTOM TIER: Subcategories - strict route mapping (No 404s/Dropdowns) */}
-          <div className={`hidden lg:flex items-center justify-center w-full border-t transition-all duration-300 ${isTransparent ? 'border-white/10 bg-black/40 backdrop-blur-xl' : 'border-border/60 bg-white/95 dark:bg-background/95'} py-3 px-4`}>
-            <div className={`flex flex-wrap items-center justify-center gap-x-6 lg:gap-x-10 gap-y-2 text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-300 ${navTextColor}`}>
+          <div className="hidden lg:flex items-center justify-center w-full border-t border-border/60 bg-white/50 dark:bg-background/50 py-3 px-4">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 lg:gap-x-10 gap-y-2 text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-300 text-primary dark:text-foreground">
               <Link href="/shop" className="hover:opacity-80 transition-opacity">Shop All</Link>
               <Link href="/shop/tops" className="hover:opacity-80 transition-opacity">Tops</Link>
               <Link href="/shop/two-piece" className="hover:opacity-80 transition-opacity">Two-Piece</Link>
               <Link href="/shop/dresses" className="hover:opacity-80 transition-opacity">Dresses</Link>
               <Link href="/about" className="hover:opacity-80 transition-opacity">About Us</Link>
-              <Link href="/contact" className="hover:opacity-80 transition-opacity">Contact</Link>
+              <Link href="/contact" className="hover:opacity-80 transition-opacity">Contact Us</Link>
             </div>
           </div>
 
@@ -142,6 +152,8 @@ export function Navbar() {
               <Link href="/shop/tops" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Tops</Link>
               <Link href="/shop/two-piece" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Two-Piece</Link>
               <Link href="/shop/dresses" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Shop Dresses</Link>
+              <Link href="/collections" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Collections</Link>
+              <Link href="/community" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-border pb-4 shrink-0 hover:opacity-80 transition-opacity">Lamssé Network</Link>
               <button 
                 onClick={() => {
                   setIsMobileMenuOpen(false);
