@@ -96,22 +96,24 @@ export function Navbar() {
                 <UserProfileDropdown />
               </div>
 
-              {/* Universal Actions */}
-              <GridSwitcher />
+              {/* Mobile/Tablet Only Actions: Grid Switcher & Hamburger */}
+              <div className="flex items-center gap-2 lg:hidden">
+                <GridSwitcher />
+                
+                <button
+                  onClick={toggleMobileMenu}
+                  className="p-1 px-2 hover:opacity-70 transition-opacity"
+                  aria-label="Toggle Menu"
+                >
+                  <div className="flex flex-col gap-[5px]">
+                    <div className="w-7 h-[1.5px] bg-current" />
+                    <div className="w-7 h-[1.5px] bg-current" />
+                    <div className="w-7 h-[1.5px] bg-current" />
+                  </div>
+                </button>
+              </div>
+
               <CartSheet />
-              
-              {/* Specialized Hamburger (Fashion Nova Style) */}
-              <button
-                onClick={toggleMobileMenu}
-                className="p-1 px-2 hover:opacity-70 transition-opacity"
-                aria-label="Toggle Menu"
-              >
-                <div className="flex flex-col gap-[5px]">
-                  <div className="w-7 h-[1.5px] bg-current" />
-                  <div className="w-7 h-[1.5px] bg-current" />
-                  <div className="w-7 h-[1.5px] bg-current" />
-                </div>
-              </button>
             </div>
           </div>
 
