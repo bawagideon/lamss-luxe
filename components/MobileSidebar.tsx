@@ -14,8 +14,9 @@ export function MobileSidebar() {
   const departments = ["Women", "Plus+Curve", "Sport", "Kids", "Beauty"];
 
   const categories = [
-    { name: "New In", href: "/collections" },
-    { name: "Clothing", href: "/shop" },
+    { name: "New In", href: "/collections", highlight: true },
+    { name: "Clothing", href: "/shop", highlight: true },
+    { name: "Community", href: "/community", highlight: true },
     { name: "Dresses", href: "/shop/dresses" },
     { name: "Matching Sets", href: "/shop/two-piece" },
     { name: "Tops", href: "/shop/tops" },
@@ -83,17 +84,17 @@ export function MobileSidebar() {
                   key={cat.href}
                   href={cat.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex justify-between items-center py-4 px-2 text-[14px] font-black uppercase tracking-tight hover:bg-zinc-50 dark:hover:bg-zinc-900/50 rounded-sm group"
+                  className={`flex justify-between items-center py-4 px-2 text-[14px] font-black uppercase tracking-tight hover:bg-zinc-50 dark:hover:bg-zinc-900/50 rounded-sm group ${cat.highlight ? "text-primary border-l-4 border-primary pl-4" : ""}`}
                 >
-                  <span className={`${cat.name === 'Swim' ? 'text-cyan-500' : 'text-primary'}`}>{cat.name}</span>
+                  <span className={`${cat.name === 'Swim' ? 'text-cyan-500' : ''}`}>{cat.name}</span>
                   <ChevronRight className="w-4 h-4 text-zinc-300 group-hover:text-zinc-500 transition-colors" />
                 </Link>
               ))}
               
               <div className="h-[1px] bg-border/40 my-6" />
               
-              <Link href="/collections" className="block py-4 px-2 text-[14px] font-black uppercase tracking-tight text-primary">Festival</Link>
-              <Link href="/collections" className="block py-4 px-2 text-[14px] font-black uppercase tracking-tight text-primary">Jumpsuits & Rompers</Link>
+              <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block py-4 px-2 text-[14px] font-black uppercase tracking-tight text-zinc-500 hover:text-primary">About</Link>
+              <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="block py-4 px-2 text-[14px] font-black uppercase tracking-tight text-zinc-500 hover:text-primary">Contact</Link>
             </div>
 
             {/* Sidebar Footer Area (Fashion Nova Style) */}
