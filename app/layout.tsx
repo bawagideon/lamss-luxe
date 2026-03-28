@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -83,7 +84,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
+          <Suspense fallback={<div className="h-28 md:h-40 bg-background/95 animate-pulse" />}>
+            <Navbar />
+          </Suspense>
           <main className="min-h-screen pt-28 md:pt-40">
             {children}
           </main>
