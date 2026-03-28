@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchBar } from "@/components/SearchBar";
 import { CartSheet } from "@/components/CartSheet";
@@ -20,6 +20,7 @@ export function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const { toggleMobileMenu, setMobileMenuOpen } = useUIStore();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -55,7 +56,7 @@ export function Navbar() {
       >
         <div className="w-full">
           {/* TOP TIER: Logo, Primary Links, Search, Icons */}
-          <div className="container mx-auto px-4 lg:px-6 py-3 md:py-4 flex items-center justify-between gap-6">
+          <div className="container mx-auto px-4 lg:px-6 py-3 md:py-4 flex items-center justify-between gap-6 text-black dark:text-white">
             
             {/* Left Block: 3D Stacked Logo Card & Primary Nav */}
             <div className="flex items-center gap-6 lg:gap-12">
@@ -77,11 +78,28 @@ export function Navbar() {
 
               {/* Primary Strategic Links (Desktop) */}
               <div className="hidden lg:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em]">
-                <Link href="/collections" className="hover:text-primary transition-colors">New In</Link>
-                <Link href="/shop" className="hover:text-primary transition-colors">Clothing</Link>
-                <Link href="/community" className="hover:text-primary transition-colors">Community</Link>
-                <Link href="/about" className="hover:text-primary transition-colors">About</Link>
-                <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
+                {[
+                  { name: "New In", href: "/collections" },
+                  { name: "Clothing", href: "/shop" },
+                  { name: "Community", href: "/community" },
+                  { name: "About", href: "/about" },
+                  { name: "Contact", href: "/contact" }
+                ].map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <Link 
+                      key={link.name}
+                      href={link.href} 
+                      className={`transition-all pb-1 border-b-2 ${
+                        isActive 
+                          ? "text-primary border-primary dark:text-primary" 
+                          : "border-transparent hover:text-primary hover:border-primary/30"
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
@@ -125,8 +143,8 @@ export function Navbar() {
           </div>
 
           {/* UNIFIED NAVIGATION TIER (Full Width Scroller) */}
-          <div className="w-full border-t border-border/40 bg-zinc-50/50 dark:bg-background/50 overflow-x-auto no-scrollbar scroll-smooth">
-            <div className="flex items-center justify-center min-w-max px-6 py-3 gap-8 md:gap-12">
+          <div className="w-full border-t border-border/40 bg-zinc-50/50 dark:bg-background/50 overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth">
+            <div className="flex items-center justify-start lg:justify-center lg:flex-wrap min-w-max lg:min-w-0 px-6 py-3 gap-x-6 gap-y-2 md:gap-x-12">
               {[
                 "Women", "Plus+Curve", "Sport", "Kids", "Beauty",
                 "Dresses", "Matching Sets", "Tops", "Swim", "Outerwear", "Accessories", "Restocks"
@@ -136,12 +154,21 @@ export function Navbar() {
                   ? `/shop?dept=${item.toLowerCase()}` 
                   : `/shop/${item === 'Matching Sets' ? 'two-piece' : item.toLowerCase().replace(" ", "-")}`;
                 
+                const currentDept = searchParams.get('dept');
+                const isActive = isDept 
+                  ? currentDept === item.toLowerCase()
+                  : pathname === href;
+                
                 return (
                   <Link 
                     key={item}
                     href={href}
-                    className={`text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all border-b-2 border-transparent hover:border-primary pb-0.5 whitespace-nowrap active:scale-95 ${
-                      isDept ? "text-primary bg-primary/5 px-3 py-1 rounded-full border-none hover:bg-primary/10" : "text-zinc-600 dark:text-zinc-400 hover:text-primary"
+                    className={`text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all border-b-2 pb-1 whitespace-nowrap active:scale-95 ${
+                      isActive 
+                        ? "text-primary border-primary dark:text-primary" 
+                        : isDept 
+                          ? "text-primary/70 bg-primary/5 px-3 py-1 rounded-full border-none hover:bg-primary/10" 
+                          : "text-zinc-600 dark:text-zinc-400 hover:text-primary border-transparent"
                     }`}
                   >
                     {item}

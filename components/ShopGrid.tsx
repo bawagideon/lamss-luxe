@@ -90,16 +90,16 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
 
   // Dynamic Grid Classes
   const getGridColsClass = () => {
-    if (gridColumns === 2) return "grid-cols-2 md:grid-cols-2";
+    if (gridColumns === 2) return "grid-cols-2";
     if (gridColumns === 3) return "grid-cols-2 lg:grid-cols-3";
-    if (gridColumns === 5) return "grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6";
+    if (gridColumns === 5) return "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5";
     return "grid-cols-2 lg:grid-cols-3";
   };
 
   return (
-    <section className="py-20 bg-background min-h-screen" id="shop">
-      <div className="mx-auto px-4 md:px-10 lg:px-16 max-w-[1600px]">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 px-2">
+    <section className="py-12 bg-background min-h-screen" id="shop">
+      <div className="w-full px-1 md:px-2">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-8 px-4">
           <div className="space-y-2">
             <h2 className="text-3xl md:text-5xl font-black tracking-tight uppercase">Latest Drops</h2>
             <p className="text-muted-foreground text-[10px] md:text-xs font-black uppercase tracking-[0.25em] opacity-60">
@@ -115,21 +115,21 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
         ) : (
           <motion.div 
             layout
-            className={`grid ${getGridColsClass()} gap-x-2 gap-y-10 md:gap-x-6 md:gap-y-16 transition-all duration-500 ease-in-out`}
+            className={`grid ${getGridColsClass()} gap-x-1 gap-y-12 transition-all duration-500 ease-in-out`}
           >
             <AnimatePresence mode="popLayout">
               {liveProducts.map((product, index) => (
                 <motion.div 
                   layout
                   key={product.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4, delay: index * 0.02 }}
                   className="group relative flex flex-col"
                 >
-                  {/* Visual Stage (Taller & Bolder) */}
-                  <div className="relative aspect-[2/3] overflow-hidden bg-zinc-50 dark:bg-zinc-900 shadow-sm border border-border/10">
+                  {/* Visual Stage (Massive & Taller) */}
+                  <div className="relative aspect-[3/5] md:aspect-[0.65] overflow-hidden bg-zinc-50 dark:bg-zinc-900 shadow-sm border border-border/10">
                     <Link href={`/product/${product.id}`} className="absolute inset-0 z-10">
                       <span className="sr-only">View Details</span>
                     </Link>

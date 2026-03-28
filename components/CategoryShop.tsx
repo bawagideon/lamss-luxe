@@ -83,7 +83,7 @@ export function CategoryShop() {
                 <div className="absolute inset-x-0 bottom-0 p-8 z-30 transform transition-transform duration-500 group-hover:-translate-y-2">
                   <div className="flex items-baseline gap-2">
                     <span className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">
-                      NOVA
+                      LAMSSÉ
                     </span>
                     <span className="text-2xl md:text-4xl font-light text-white/90 uppercase tracking-[0.05em] drop-shadow-lg italic">
                       {cat.slug === 'two-piece' ? 'SETS' : cat.name.split(' ')[0]}
