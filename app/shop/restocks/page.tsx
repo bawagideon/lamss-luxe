@@ -28,11 +28,11 @@ export default async function RestocksPage({
       <div className="container mx-auto px-6 text-center max-w-4xl mb-12 md:mb-20">
         <div className="flex items-center justify-center gap-3 mb-4">
           <RefreshCw className="w-6 h-6 text-primary animate-spin-slow" />
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">They're Back</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">They&apos;re Back</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight uppercase">Restocked Favorites</h1>
         <p className="text-lg md:text-xl text-muted-foreground uppercase tracking-widest font-medium">
-          The pieces you couldn't get enough of are back in the vault.
+          The pieces you couldn&apos;t get enough of are back in the vault.
         </p>
       </div>
 
