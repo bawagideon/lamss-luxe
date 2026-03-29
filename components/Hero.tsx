@@ -16,7 +16,7 @@ export function Hero() {
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover z-0"
       >
-        <source src="/Cut-Down.mp4" type="video/mp4" />
+        <source src="/cut-down.mp4" type="video/mp4" />
       </video>
 
       {/* Dark Overlay for Text Readability */}
