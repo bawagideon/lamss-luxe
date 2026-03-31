@@ -52,18 +52,31 @@ export function Navbar() {
 
   if (pathname.startsWith("/admin")) return null;
 
-  const navBgColor = "bg-white/95 dark:bg-background/95 backdrop-blur-md border-b border-border shadow-sm";
+  const navBgColor = isScrolled 
+    ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl" 
+    : "bg-white/95 dark:bg-background/95 backdrop-blur-md";
   const navTextColor = "text-primary dark:text-foreground";
 
   return (
     <>
       <motion.nav
         initial={{ y: -100 }}
-        animate={{ y: isVisible ? 0 : "-100%" }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${navBgColor} ${isScrolled ? "py-1 shadow-md" : "py-0"}`}
+        animate={{ 
+          y: isVisible ? 0 : "-100%",
+        }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none"
       >
-        <div className="w-full">
+        <motion.div
+          animate={{ 
+            width: isScrolled ? "95%" : "100%",
+            maxWidth: isScrolled ? "1200px" : "100%",
+            marginTop: isScrolled ? "12px" : "0px",
+            borderRadius: isScrolled ? "99px" : "0px",
+          }}
+          transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+          className={`relative pointer-events-auto transition-all duration-500 overflow-hidden ${navBgColor} ${isScrolled ? "shadow-2xl ring-1 ring-black/5 dark:ring-white/10" : "border-b border-border shadow-sm"}`}
+        >
           {/* TOP TIER: Logo, Primary Links, Search, Icons */}
           <div className={`container mx-auto px-4 lg:px-6 transition-all duration-500 flex items-center justify-between gap-6 text-black dark:text-white ${isScrolled ? "h-14 md:h-16" : "h-20 md:h-24"}`}>
             
@@ -71,8 +84,11 @@ export function Navbar() {
             <div className="flex items-center gap-6 lg:gap-12">
               <Link href="/" className="flex-shrink-0 group">
                 <motion.div 
-                  animate={{ scale: isScrolled ? 0.85 : 1 }}
-                  className="relative w-14 h-14 md:w-20 md:h-20 bg-white dark:bg-zinc-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-border/50 border-b-[6px] border-b-zinc-200 dark:border-b-zinc-800 flex items-center justify-center p-2.5 transition-all duration-500 overflow-hidden"
+                  animate={{ 
+                    scale: isScrolled ? 0.7 : 1,
+                    borderRadius: isScrolled ? "99px" : "16px"
+                  }}
+                  className={`relative ${isScrolled ? "w-11 h-11" : "w-14 h-14 md:w-20 md:h-20"} bg-white dark:bg-zinc-900 shadow-xl border border-border/50 ${!isScrolled ? "border-b-[6px] border-b-zinc-200 dark:border-b-zinc-800" : ""} flex items-center justify-center p-2 transition-all duration-500 overflow-hidden`}
                 >
                   <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] dark:opacity-[0.1]" />
                   <div className="relative w-full h-full transform transition-transform duration-500 group-hover:scale-110">
@@ -219,7 +235,7 @@ export function Navbar() {
                <SearchBar isTransparent={false} />
             </div>
           )}
-        </div>
+        </motion.div>
       </motion.nav>
 
       {/* Mobile Menu & Search Overlay */}
