@@ -97,12 +97,12 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
   };
 
   return (
-    <section className="py-12 bg-background min-h-screen" id="shop">
+    <section className="pb-16 pt-0 bg-background min-h-screen" id="shop">
       <div className="w-full px-1 md:px-2">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-8 px-4">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-4 px-4 pt-4">
           <div className="space-y-2">
             <h2 className="text-3xl md:text-5xl font-black tracking-tight uppercase">Latest Drops</h2>
-            <p className="text-muted-foreground text-[10px] md:text-xs font-black uppercase tracking-[0.25em] opacity-60">
+            <p className="text-black dark:text-white text-[11px] md:text-sm font-bold uppercase tracking-[0.3em] opacity-80 border-l-4 border-primary pl-4 py-1">
               Curated for the bold.
             </p>
           </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
@@ -7,7 +7,10 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthModal } from "@/components/AuthModal";
 import { Toaster } from "react-hot-toast";
 
-const inter = Inter({ subsets: ["latin"] });
+const plusJakartaSans = Plus_Jakarta_Sans({ 
+  subsets: ["latin"],
+  variable: '--font-jakarta'
+});
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -77,7 +80,7 @@ export default function RootLayout({
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
-      <body className={inter.className}>
+      <body className={plusJakartaSans.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -87,7 +90,7 @@ export default function RootLayout({
           <Suspense fallback={<div className="h-28 md:h-40 bg-background/95 animate-pulse" />}>
             <Navbar />
           </Suspense>
-          <main className="min-h-screen pt-28 md:pt-40">
+          <main className="min-h-screen pt-20 md:pt-32">
             {children}
           </main>
           <AuthModal />

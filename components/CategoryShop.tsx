@@ -43,14 +43,16 @@ export function CategoryShop() {
   }, []);
 
   return (
-    <section className="py-20 bg-[#F9F7F2] relative overflow-hidden">
+    <section className="py-12 md:py-16 bg-[#F9F7F2] relative overflow-hidden" id="categories">
       {/* Vintage Grain Overlay */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
 
       <div className="container mx-auto px-4 md:px-10 lg:px-16 relative z-10">
-        <div className="flex flex-col mb-12">
-          <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-4 text-[#1a1a1a]">Shop By Category</h2>
-          <div className="h-1 w-24 bg-black" />
+        <div className="flex flex-col mb-8 md:mb-12">
+          <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-2 text-[#1a1a1a]">Shop By Category</h2>
+          <p className="text-black text-[11px] md:text-sm font-bold uppercase tracking-[0.3em] opacity-80 border-l-4 border-[#1a1a1a] pl-4 py-1">
+            The Essentials Collection.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -83,7 +85,7 @@ export function CategoryShop() {
                 <div className="absolute inset-x-0 bottom-0 p-8 z-30 transform transition-transform duration-500 group-hover:-translate-y-2">
                   <div className="flex items-baseline gap-2">
                     <span className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">
-                      LAMSSÉ
+                      LUXE
                     </span>
                     <span className="text-2xl md:text-4xl font-light text-white/90 uppercase tracking-[0.05em] drop-shadow-lg italic">
                       {cat.slug === 'two-piece' ? 'SETS' : cat.name.split(' ')[0]}

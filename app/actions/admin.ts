@@ -61,8 +61,8 @@ export async function getAdminMetrics() {
   const { count: ordersCount } = await supabase.from('orders').select('*', { count: 'exact', head: true });
   const { count: activeProducts } = await supabase.from('products').select('*', { count: 'exact', head: true }).gt('stock', 0);
   
-  // Reusing orders counting for waitlist mockup/customers scope
-  const { count: customersCount } = await supabase.from('orders').select('customer_email', { count: 'exact', head: true });
+  // Pull real registered customer count from profiles
+  const { count: customersCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
 
   return {
     totalRevenue: totalRevenue.toFixed(2),

@@ -22,6 +22,7 @@ interface CartState {
   clearCart: () => void;
   getCartTotal: () => number;
   getItemCount: () => number;
+  syncWithServer: (supabase: any, userId: string) => Promise<void>;
 }
 
 export const useCart = create<CartState>()(
@@ -29,7 +30,6 @@ export const useCart = create<CartState>()(
     (set, get) => ({
       cartItems: [],
       addItem: (item) => {
-        // Enforce deterministic ID based on the specific variant chosen
         const id = `${item.productId}-${item.selectedSize}-${item.selectedColor}`;
         set((state) => {
           const existingItem = state.cartItems.find((i) => i.id === id);
@@ -65,6 +65,32 @@ export const useCart = create<CartState>()(
       getItemCount: () => {
         const { cartItems } = get();
         return cartItems.reduce((count, item) => count + item.quantity, 0);
+      },
+      syncWithServer: async (supabase, userId) => {
+        const { cartItems } = get();
+        // 1. Fetch current cart from server
+        const { data, error } = await supabase
+          .from('carts')
+          .select('*')
+          .eq('user_id', userId);
+          
+        if (!error && data) {
+          const serverItems = data.map((d: any) => ({
+            id: d.variant_id,
+            productId: d.product_id,
+            ...d.metadata,
+            quantity: d.quantity
+          }));
+
+          if (cartItems.length > 0) {
+            // MERGE: If there are local items, we sync them up
+            // (Note: AuthModal already calls syncCartOnAuth action, this is secondary sync)
+            set({ cartItems: serverItems }); 
+          } else {
+            // HYDRATE: If local is empty, just take what's on the server
+            set({ cartItems: serverItems });
+          }
+        }
       },
     }),
     {

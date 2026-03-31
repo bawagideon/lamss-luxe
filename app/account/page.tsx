@@ -13,6 +13,13 @@ export default async function AccountOverview() {
 
   const name = profile?.first_name ? profile.first_name.toUpperCase() : "GUEST";
 
+  const { data: wishlistData } = await supabase
+    .from("wishlist")
+    .select("product_id")
+    .eq("user_id", user?.id);
+
+  const wishlistCount = wishlistData?.length || 0;
+
   // Fetch max 3 recent orders
   const { data: recentOrders } = await supabase
     .from("orders")
@@ -33,13 +40,13 @@ export default async function AccountOverview() {
         
         {/* Wishlist Block */}
         <div className="space-y-4">
-          <h2 className="text-xl font-black uppercase tracking-tight">WISHLIST</h2>
+          <h2 className="text-xl font-black uppercase tracking-tight">WISHLIST ({wishlistCount})</h2>
           
           <div className="flex gap-2">
             {/* Primary Image Stub */}
             <div className="flex-1 aspect-[3/4] bg-gray-200 rounded-md overflow-hidden relative">
               <div className="absolute inset-0 bg-gray-200" />
-              {/* Optional: Hydrate actual item here in future */}
+              <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black uppercase opacity-20">Preview</div>
             </div>
             {/* Stacked Thumbnails Stub */}
             <div className="w-[30%] flex flex-col gap-2">

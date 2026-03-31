@@ -9,7 +9,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
-import { createClient } from "@/lib/supabase/client";
+import { syncCartOnAuth, syncWishlistOnAuth, signUpUser } from "@/app/actions/auth-actions";
+import { useCart } from "@/store/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
 
 // --- SCHEMAS ---
 const loginSchema = z.object({
@@ -61,6 +63,7 @@ export function AuthModal() {
   const hasUpper = /[A-Z]/.test(watchPassword || "");
   const hasLower = /[a-z]/.test(watchPassword || "");
   const hasNumber = /[0-9]/.test(watchPassword || "");
+  const wishlistItems = useWishlist((state) => state.wishlistIds);
 
   const onLoginSubmit = async (data: LoginForm) => {
     setIsLoading(true);
@@ -72,6 +75,13 @@ export function AuthModal() {
     if (error) {
       toast.error(error.message);
     } else {
+      // Sync cart & wishlist after login
+      const syncs = [];
+      if (cartItems.length > 0) syncs.push(syncCartOnAuth(cartItems));
+      if (wishlistItems.length > 0) syncs.push(syncWishlistOnAuth(wishlistItems));
+      
+      if (syncs.length > 0) await Promise.all(syncs);
+      
       toast.success("Welcome back!");
       setIsOpen(false);
       window.location.reload(); // Hard reload to force server hydration
@@ -81,26 +91,27 @@ export function AuthModal() {
 
   const onSignupSubmit = async (data: SignupForm) => {
     setIsLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-      options: {
-        data: {
-          first_name: data.firstName,
-          last_name: data.lastName,
-          phone: data.phone,
-        },
-      },
-    });
+    try {
+      const result = await signUpUser({
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+      });
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Account created! Please check your email to verify.");
-      setMode("signIn");
-      loginForm.setValue("email", data.email);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Welcome! Check your email for a special invitation.");
+        setMode("signIn");
+        loginForm.setValue("email", data.email);
+      }
+    } catch (err) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (

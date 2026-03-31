@@ -89,7 +89,7 @@ export function Navbar() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="hidden lg:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em]"
+                    className="hidden lg:flex items-center gap-8 text-[12px] font-bold uppercase tracking-normal"
                   >
                     {[
                       { name: "New In", href: "/collections" },
@@ -141,6 +141,12 @@ export function Navbar() {
                   <Link href="/wishlist" className="hover:opacity-80 transition-opacity">
                     <Heart className={`w-6 h-6 ${isScrolled ? "scale-90" : ""}`} />
                   </Link>
+                  <Link 
+                    href="/shop/new-arrivals" 
+                    className="hidden xl:flex h-10 px-6 items-center justify-center border border-primary text-primary font-bold text-[11px] uppercase tracking-[0.1em] hover:bg-primary hover:text-white transition-all active:scale-95 whitespace-nowrap"
+                  >
+                    Shop the Drop
+                  </Link>
                   <UserProfileDropdown />
                 </div>
 
@@ -190,7 +196,7 @@ export function Navbar() {
                       <Link 
                         key={item}
                         href={href}
-                        className={`text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all border-b-2 pb-1 whitespace-nowrap active:scale-95 ${
+                        className={`text-[11px] md:text-[12px] font-bold uppercase tracking-tight transition-all border-b-2 pb-1 whitespace-nowrap active:scale-95 ${
                           isActive 
                             ? "text-primary border-primary dark:text-primary" 
                             : isDept 
