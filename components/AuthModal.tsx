@@ -63,7 +63,8 @@ export function AuthModal() {
   const hasUpper = /[A-Z]/.test(watchPassword || "");
   const hasLower = /[a-z]/.test(watchPassword || "");
   const hasNumber = /[0-9]/.test(watchPassword || "");
-  const wishlistItems = useWishlist((state) => state.wishlistIds);
+  const { wishlistIds: wishlistItems } = useWishlist();
+  const cartItems = useCart((state) => state.cartItems);
 
   const onLoginSubmit = async (data: LoginForm) => {
     setIsLoading(true);
@@ -107,7 +108,7 @@ export function AuthModal() {
         setMode("signIn");
         loginForm.setValue("email", data.email);
       }
-    } catch (err) {
+    } catch (_err) {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);

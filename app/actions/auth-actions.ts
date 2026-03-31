@@ -76,7 +76,20 @@ export async function signOutUser() {
   return { success: true };
 }
 
-export async function syncCartOnAuth(items: any[]) {
+interface CartItem {
+  id: string;
+  productId: string;
+  name: string;
+  price: string;
+  rawPrice: number;
+  image: string;
+  selectedSize: string;
+  selectedColor: string;
+  quantity: number;
+  maxStock: number;
+}
+
+export async function syncCartOnAuth(items: CartItem[]) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
