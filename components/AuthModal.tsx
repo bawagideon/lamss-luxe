@@ -108,7 +108,7 @@ export function AuthModal() {
         setMode("signIn");
         loginForm.setValue("email", data.email);
       }
-    } catch (_err) {
+    } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
