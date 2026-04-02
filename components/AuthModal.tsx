@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { syncCartOnAuth, syncWishlistOnAuth, signUpUser } from "@/app/actions/auth-actions";
 import { useCart } from "@/store/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
+import { createClient } from "@/lib/supabase/client";
 
 // --- SCHEMAS ---
 const loginSchema = z.object({
@@ -72,7 +73,7 @@ export function AuthModal() {
       email: data.email,
       password: data.password,
     });
-    
+
     if (error) {
       toast.error(error.message);
     } else {
@@ -80,9 +81,9 @@ export function AuthModal() {
       const syncs = [];
       if (cartItems.length > 0) syncs.push(syncCartOnAuth(cartItems));
       if (wishlistItems.length > 0) syncs.push(syncWishlistOnAuth(wishlistItems));
-      
+
       if (syncs.length > 0) await Promise.all(syncs);
-      
+
       toast.success("Welcome back!");
       setIsOpen(false);
       window.location.reload(); // Hard reload to force server hydration
@@ -135,26 +136,26 @@ export function AuthModal() {
               <div className="flex items-center text-[15px] font-bold">
                 <span>Sign In or <button onClick={() => setMode("signUp")} className="underline ml-1 hover:text-gray-600 transition">Create an Account</button></span>
               </div>
-              
+
               <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                 <div className="space-y-2">
-                  <Input 
+                  <Input
                     {...loginForm.register("email")}
-                    type="email" 
-                    placeholder="Email" 
+                    type="email"
+                    placeholder="Email"
                     className="h-12 border-gray-200 focus-visible:ring-black placeholder:text-gray-400"
                   />
                   {loginForm.formState.errors.email && <p className="text-red-500 text-xs font-medium">{loginForm.formState.errors.email.message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Input 
+                  <Input
                     {...loginForm.register("password")}
-                    type="password" 
-                    placeholder="Password" 
+                    type="password"
+                    placeholder="Password"
                     className="h-12 border-gray-200 focus-visible:ring-black placeholder:text-gray-400"
                   />
                 </div>
-                
+
                 <div className="pt-1">
                   <button type="button" className="text-[13px] text-gray-500 underline hover:text-black transition">Forgot password?</button>
                 </div>
@@ -173,7 +174,7 @@ export function AuthModal() {
                 <Input {...signupForm.register("firstName")} type="text" placeholder="First Name" className="h-12 border-gray-200 focus-visible:ring-black" />
                 <Input {...signupForm.register("lastName")} type="text" placeholder="Last Name" className="h-12 border-gray-200 focus-visible:ring-black" />
                 <Input {...signupForm.register("password")} type="password" placeholder="Password" className="h-12 border-gray-200 focus-visible:ring-black" />
-                
+
                 {/* Password Strength Matrix */}
                 <div className="px-1 py-1">
                   <p className="text-[11px] text-gray-500 mb-2 font-medium">Your password must contain at least</p>
@@ -211,7 +212,7 @@ export function AuthModal() {
               </Button>
 
               <div className="text-center pt-2">
-                 <button type="button" onClick={() => setMode("signIn")} className="text-[13px] font-bold text-gray-500 hover:text-black underline transition">Always have an account? Sign In</button>
+                <button type="button" onClick={() => setMode("signIn")} className="text-[13px] font-bold text-gray-500 hover:text-black underline transition">Always have an account? Sign In</button>
               </div>
             </form>
           )}
