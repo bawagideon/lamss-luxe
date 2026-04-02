@@ -31,19 +31,24 @@ export function Navbar() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      // Morphing State Trigger
-      if (currentScrollY > 50) {
+      // Stability Buffer for Island Mode
+      if (currentScrollY > 70) {
         setIsScrolled(true);
-      } else {
+      } else if (currentScrollY < 30) {
         setIsScrolled(false);
       }
 
-      if (currentScrollY > lastScrollY && currentScrollY > 150) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
+      // Stability Buffer for Visibility (Hide on scroll down)
+      // Prevent jitter from micro-scrolls or rubber banding
+      const diff = currentScrollY - lastScrollY;
+      if (Math.abs(diff) > 8) {
+        if (currentScrollY > lastScrollY && currentScrollY > 150) {
+          setIsVisible(false);
+        } else {
+          setIsVisible(true);
+        }
+        setLastScrollY(currentScrollY);
       }
-      setLastScrollY(currentScrollY);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
@@ -53,8 +58,8 @@ export function Navbar() {
   if (pathname.startsWith("/admin")) return null;
 
   const navBgColor = isScrolled 
-    ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl" 
-    : "bg-white/95 dark:bg-background/95 backdrop-blur-md";
+    ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 shadow-2xl" 
+    : "bg-white/95 dark:bg-background/95 backdrop-blur-md border-b border-border shadow-sm";
   const navTextColor = "text-primary dark:text-foreground";
 
   return (
@@ -71,12 +76,24 @@ export function Navbar() {
           animate={{ 
             width: isScrolled ? "95%" : "100%",
             maxWidth: isScrolled ? "1200px" : "100%",
-            marginTop: isScrolled ? "12px" : "0px",
-            borderRadius: isScrolled ? "99px" : "0px",
+            marginTop: isScrolled ? "14px" : "0px",
+            height: isScrolled ? "64px" : "100%", // Fixed height in island mode for stability
           }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-          className={`relative pointer-events-auto transition-all duration-500 overflow-hidden ${navBgColor} ${isScrolled ? "shadow-2xl ring-1 ring-black/5 dark:ring-white/10" : "border-b border-border shadow-sm"}`}
+          className={`relative pointer-events-auto transition-all duration-500`}
         >
+          {/* Background Layer (Handles clipping & glassmorphism) */}
+          <motion.div 
+             animate={{ 
+               borderRadius: isScrolled ? "99px" : "0px",
+             }}
+             className={`absolute inset-0 z-0 overflow-hidden ${navBgColor}`}
+          >
+             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] dark:opacity-[0.1]" />
+          </motion.div>
+
+          {/* Content Layer (Allows overflow for dropdowns) */}
+          <div className="relative z-10 w-full h-full">
           {/* TOP TIER: Logo, Primary Links, Search, Icons */}
           <div className={`container mx-auto px-4 lg:px-6 transition-all duration-500 flex items-center justify-between gap-6 text-black dark:text-white ${isScrolled ? "h-14 md:h-16" : "h-20 md:h-24"}`}>
             
@@ -229,15 +246,9 @@ export function Navbar() {
             )}
           </AnimatePresence>
 
-          {/* MOBILE SEARCH TIER: Only at home top */}
-          {!isScrolled && (
-            <div className="lg:hidden px-4 pb-3 border-t border-border/20 pt-2">
-               <SearchBar isTransparent={false} />
-            </div>
-          )}
+          </div>
         </motion.div>
       </motion.nav>
-
       {/* Mobile Menu & Search Overlay */}
       <MobileSidebar />
     </>
