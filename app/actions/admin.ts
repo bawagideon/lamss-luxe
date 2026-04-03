@@ -342,7 +342,7 @@ export async function fetchCustomers() {
 
   // 3. Map counts to profiles
   const wishlistCounts: Record<string, string[]> = {};
-  wishlistData.forEach((row: any) => {
+  (wishlistData as { user_id: string }[]).forEach((row) => {
     if (!wishlistCounts[row.user_id]) wishlistCounts[row.user_id] = [];
     wishlistCounts[row.user_id].push('marker'); 
   });
@@ -401,7 +401,7 @@ export async function fetchCustomerViewed(viewedIds: string[]) {
   }
   
   // Maintain order (most recent first)
-  const ordered = viewedIds.map(id => (data || []).find(p => (p as any).id === id)).filter(Boolean);
+  const ordered = viewedIds.map(id => (data || []).find(p => p.id === id)).filter(Boolean);
   return ordered;
 }
 

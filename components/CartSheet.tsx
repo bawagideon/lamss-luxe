@@ -39,7 +39,7 @@ export function CartSheet() {
     });
 
     return () => authListener.subscription.unsubscribe();
-  }, [supabase.auth, syncWithServer]);
+  }, [supabase, syncWithServer]);
 
   if (!mounted) {
     // Return a dummy trigger matching the navbar icon size to avoid CLS

@@ -65,7 +65,7 @@ export function ProductDisplay({ product }: { product: Product }) {
     if (mounted && product.id) {
       recordView(product.id, supabase, user?.id);
     }
-  }, [mounted, product.id, user?.id, recordView]);
+  }, [mounted, product.id, user?.id, recordView, supabase]);
 
   const handleAddToBag = () => {
     addItem({

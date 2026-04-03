@@ -49,6 +49,13 @@ interface Product {
   price: number | string;
 }
 
+interface Order {
+  id: string;
+  total_amount: number;
+  status: string;
+  created_at: string;
+}
+
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
@@ -58,7 +65,7 @@ export default function AdminCustomersPage() {
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [viewedProducts, setViewedProducts] = useState<Product[]>([]);
   const [viewedLoading, setViewedLoading] = useState(false);
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
 
   useEffect(() => {

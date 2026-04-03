@@ -9,7 +9,7 @@ import { Loader2, Heart } from "lucide-react";
 
 export function WishlistGrid() {
   const { wishlistIds } = useWishlistStore();
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<{ id: string; name: string; price: number; images: string[] }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

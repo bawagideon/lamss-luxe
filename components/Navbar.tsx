@@ -3,18 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Search, UserCircle, ShoppingBag, Menu, Camera } from "lucide-react";
+import { Heart, Search, Menu, Camera } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { SearchBar } from "@/components/SearchBar";
+import { motion } from "framer-motion";
 import { CartSheet } from "@/components/CartSheet";
 import { UserProfileDropdown } from "@/components/UserProfileDropdown";
-import { RegionSelector } from "@/components/RegionSelector";
 import { useUIStore } from "@/store/useUIStore";
-import { GridSwitcher } from "@/components/GridSwitcher";
 import { MobileSidebar } from "@/components/MobileSidebar";
-import { Badge } from "@/components/ui/badge";
 
 export function Navbar() {
   const [isVisible, setIsVisible] = useState(true);
@@ -61,7 +56,6 @@ export function Navbar() {
   const navBgColor = isScrolled 
     ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 shadow-2xl" 
     : "bg-white/95 dark:bg-background/95 backdrop-blur-md border-b border-border shadow-sm";
-  const navTextColor = "text-primary dark:text-foreground";
 
   return (
     <>

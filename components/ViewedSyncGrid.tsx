@@ -9,7 +9,7 @@ import { Loader2, Eye } from "lucide-react";
 
 export function ViewedGrid() {
   const { viewedIds } = useViewedStore();
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<{ id: string; name: string; price: number; images: string[] }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export function ViewedGrid() {
       try {
         const data = await getProductsByIds(viewedIds);
         // Maintain the order from viewedIds (most recent first)
-        const ordered = viewedIds.map(id => data.find(p => p.id === id)).filter(Boolean);
+        const ordered = viewedIds.map(id => data.find(p => p.id === id)).filter(Boolean) as { id: string; name: string; price: number; images: string[] }[];
         setProducts(ordered);
       } catch (err) {
         console.error("Failed to hydrate viewed products:", err);
@@ -78,7 +78,7 @@ export function ViewedGrid() {
 
         {/* Stacked Side Items */}
         <div className="flex-1 flex flex-col gap-2 overflow-hidden">
-          {products.slice(1, 4).map((product, idx) => (
+          {products.slice(1, 4).map((product) => (
             <Link 
               key={product.id}
               href={`/product/${product.id}`}

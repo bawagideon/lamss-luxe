@@ -7,7 +7,6 @@ import { X, Instagram, Facebook, Youtube, ChevronRight, Globe, History, Search, 
 import { useUIStore } from "@/store/useUIStore";
 import { useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function MobileSidebar() {
@@ -112,7 +111,7 @@ export function MobileSidebar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex justify-between items-center py-4 px-6 text-[14px] font-bold uppercase tracking-wide border-b border-zinc-100 dark:border-zinc-800/50 group transition-colors`}
                 >
-                  <span className={`${(cat as any).special || "text-zinc-900 dark:text-zinc-100"}`}>{cat.name}</span>
+                  <span className={`${'special' in cat && cat.special ? cat.special : "text-zinc-900 dark:text-zinc-100"}`}>{cat.name}</span>
                   <ChevronRight className="w-4 h-4 text-zinc-300 group-hover:text-black transition-colors stroke-[1.5px]" />
                 </Link>
               ))}
@@ -157,7 +156,7 @@ export function MobileSidebar() {
                     </button>
                   </div>
                   <p className="text-[9px] text-zinc-400 mt-6 text-center leading-relaxed font-medium">
-                    By signing up, you agree to Lamssé Luxe's Terms of Service and Privacy Policy. All rights reserved.
+                    By signing up, you agree to Lamssé Luxe&apos;s Terms of Service and Privacy Policy. All rights reserved.
                   </p>
                </div>
 
