@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
             <div>
               <h2 className="text-xl md:text-2xl mt-12 mb-4 text-black dark:text-white">1. Information We Collect</h2>
               <p className="mb-6">
-                We collect information you provide directly to us when you make a purchase, join the Soft Life Queens Network, sign up for our newsletter, or contact customer support. This may include your name, email address, shipping address, and payment information.
+                We collect information you provide directly to us when you make a purchase, join the Luxe Network inner circle, sign up for our newsletter, or contact customer support. This may include your name, email address, shipping address, and payment information.
               </p>
             </div>
 

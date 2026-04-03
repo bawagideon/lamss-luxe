@@ -3,10 +3,10 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Download, Mail, MapPin, Instagram, Bookmark, Calendar } from "lucide-react";
-import Image from "next/image";
+import { Search, Download, Mail, MapPin, Instagram, Bookmark, Calendar, Eye, Package } from "lucide-react";
+import NextImage from "next/image";
 import { useEffect, useState } from "react";
-import { fetchCustomers, fetchNewsletterSubscribers, fetchCustomerWishlist } from "@/app/actions/admin";
+import { fetchCustomers, fetchNewsletterSubscribers, fetchCustomerWishlist, fetchCustomerViewed, fetchCustomerOrders } from "@/app/actions/admin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -20,6 +20,7 @@ interface Customer {
   phone?: string | null;
   created_at: string;
   wishlist?: string[];
+  viewed_ids?: string[];
   instagram_handle?: string | null;
   tiktok_handle?: string | null;
   birthday?: string | null;
@@ -55,6 +56,10 @@ export default function AdminCustomersPage() {
   const [search, setSearch] = useState("");
   const [wishlistProducts, setWishlistProducts] = useState<Product[]>([]);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [viewedProducts, setViewedProducts] = useState<Product[]>([]);
+  const [viewedLoading, setViewedLoading] = useState(false);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -70,14 +75,31 @@ export default function AdminCustomersPage() {
   }, []);
 
   const handleViewProfile = async (customer: Customer) => {
+    // 1. Fetch Wishlist
     if (customer.wishlist && customer.wishlist.length > 0) {
       setWishlistLoading(true);
       const products = await fetchCustomerWishlist(customer.wishlist);
-      setWishlistProducts(products);
+      setWishlistProducts(products as Product[]);
       setWishlistLoading(false);
     } else {
       setWishlistProducts([]);
     }
+
+    // 2. Fetch Viewed History
+    if (customer.viewed_ids && customer.viewed_ids.length > 0) {
+      setViewedLoading(true);
+      const products = await fetchCustomerViewed(customer.viewed_ids);
+      setViewedProducts(products as Product[]);
+      setViewedLoading(false);
+    } else {
+      setViewedProducts([]);
+    }
+
+    // 3. Fetch Orders
+    setOrdersLoading(true);
+    const orderData = await fetchCustomerOrders(customer.id);
+    setOrders(orderData);
+    setOrdersLoading(false);
   };
 
   const filteredCustomers = customers.filter(c => 
@@ -268,6 +290,34 @@ export default function AdminCustomersPage() {
 
                               <Separator />
 
+                              {/* Order Pipeline Section */}
+                              <section>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-4 flex items-center">
+                                  <Package className="w-3 h-3 mr-2" /> Acquisition Record
+                                </h4>
+                                {ordersLoading ? (
+                                  <div className="text-xs animate-pulse text-gray-400 font-bold uppercase tracking-widest">Fetching PIPELINE...</div>
+                                ) : orders.length === 0 ? (
+                                  <div className="text-sm text-gray-400 italic">No transactional record found.</div>
+                                ) : (
+                                  <div className="divide-y divide-gray-100 bg-gray-50/50 rounded-lg overflow-hidden border">
+                                    {orders.map((o) => (
+                                      <div key={o.id} className="p-3 flex justify-between items-center bg-white border-b last:border-0">
+                                         <div>
+                                            <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.1em]">#{o.id.slice(0, 8)}</p>
+                                            <p className="text-xs font-bold">${o.total_amount}</p>
+                                         </div>
+                                         <Badge className="text-[9px] uppercase font-black tracking-widest bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-50">
+                                            {o.status || "paid"}
+                                         </Badge>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </section>
+
+                              <Separator />
+
                               {/* Wishlist Section */}
                               <section>
                                 <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-4 flex items-center">
@@ -282,7 +332,35 @@ export default function AdminCustomersPage() {
                                     {wishlistProducts.map((p) => (
                                       <div key={p.id} className="flex items-center p-2 border border-gray-100 rounded-lg group hover:border-black transition-all">
                                         <div className="relative w-12 h-12 bg-gray-100 rounded overflow-hidden mr-3">
-                                          <Image src={p.image_url} alt={p.name} fill className="object-cover" />
+                                          <NextImage src={p.image_url} alt={p.name} fill className="object-cover" />
+                                        </div>
+                                        <div className="flex-1">
+                                          <div className="text-xs font-black uppercase tracking-tight">{p.name}</div>
+                                          <div className="text-[10px] font-bold text-primary">${p.price}</div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </section>
+
+                              <Separator />
+
+                              {/* Viewed History Section */}
+                              <section>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-4 flex items-center">
+                                  <Eye className="w-3 h-3 mr-2" /> Browsing Journey
+                                </h4>
+                                {viewedLoading ? (
+                                  <div className="text-xs animate-pulse text-gray-400 font-bold uppercase tracking-widest">Hydrating History...</div>
+                                ) : viewedProducts.length === 0 ? (
+                                  <div className="text-sm text-gray-400 italic">No recent activity recorded.</div>
+                                ) : (
+                                  <div className="grid grid-cols-1 gap-2">
+                                    {viewedProducts.map((p) => (
+                                      <div key={p.id} className="flex items-center p-2 border border-gray-100 rounded-lg group hover:border-black transition-all">
+                                        <div className="relative w-12 h-12 bg-gray-100 rounded overflow-hidden mr-3">
+                                          <NextImage src={p.image_url} alt={p.name} fill className="object-cover" />
                                         </div>
                                         <div className="flex-1">
                                           <div className="text-xs font-black uppercase tracking-tight">{p.name}</div>

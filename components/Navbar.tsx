@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart } from "lucide-react";
+import { Heart, Search, UserCircle, ShoppingBag, Menu, Camera } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchBar } from "@/components/SearchBar";
@@ -14,6 +14,7 @@ import { RegionSelector } from "@/components/RegionSelector";
 import { useUIStore } from "@/store/useUIStore";
 import { GridSwitcher } from "@/components/GridSwitcher";
 import { MobileSidebar } from "@/components/MobileSidebar";
+import { Badge } from "@/components/ui/badge";
 
 export function Navbar() {
   const [isVisible, setIsVisible] = useState(true);
@@ -93,159 +94,102 @@ export function Navbar() {
           </motion.div>
 
           {/* Content Layer (Allows overflow for dropdowns) */}
-          <div className="relative z-10 w-full h-full">
-          {/* TOP TIER: Logo, Primary Links, Search, Icons */}
-          <div className={`container mx-auto px-4 lg:px-6 transition-all duration-500 flex items-center justify-between gap-6 text-black dark:text-white ${isScrolled ? "h-14 md:h-16" : "h-20 md:h-24"}`}>
-            
-            {/* Left Block: 3D Stacked Logo Card & Primary Nav */}
-            <div className="flex items-center gap-6 lg:gap-12">
+          <div className="relative z-10 w-full h-full flex flex-col">
+            {/* TIER 1: Logo & Icons (Mobile Layout as shared image 2) */}
+            <div className={`container mx-auto px-4 lg:px-6 flex items-center justify-between transition-all duration-500 text-black dark:text-white ${isScrolled ? "h-14 md:h-16" : "h-16 md:h-20"}`}>
+              
+              {/* Logo (Centered or Left based on device) */}
               <Link href="/" className="flex-shrink-0 group">
-                <motion.div 
-                  animate={{ 
-                    scale: isScrolled ? 0.7 : 1,
-                    borderRadius: isScrolled ? "99px" : "16px"
-                  }}
-                  className={`relative ${isScrolled ? "w-11 h-11" : "w-14 h-14 md:w-20 md:h-20"} bg-white dark:bg-zinc-900 shadow-xl border border-border/50 ${!isScrolled ? "border-b-[6px] border-b-zinc-200 dark:border-b-zinc-800" : ""} flex items-center justify-center p-2 transition-all duration-500 overflow-hidden`}
-                >
-                  <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] dark:opacity-[0.1]" />
-                  <div className="relative w-full h-full transform transition-transform duration-500 group-hover:scale-110">
-                    <Image src="/Logo-light.png" alt="Logo" fill className="object-contain dark:hidden" priority />
-                    <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
-                  </div>
-                </motion.div>
+                <div className={`relative ${isScrolled ? "w-32 h-6" : "w-40 h-8 md:w-48 md:h-10"} transition-all duration-500`}>
+                  <Image src="/Logo-light.png" alt="Logo" fill className="object-contain object-left dark:hidden" priority />
+                  <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain object-left hidden dark:block" priority />
+                </div>
               </Link>
 
-              {/* Primary Strategic Links (Hidden on Scrolled for "Cuter" bar) */}
-              <AnimatePresence>
-                {!isScrolled && (
-                  <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="hidden lg:flex items-center gap-8 text-[12px] font-bold uppercase tracking-normal"
-                  >
-                    {[
-                      { name: "New In", href: "/collections" },
-                      { name: "Clothing", href: "/shop" },
-                      { name: "Community", href: "/community" },
-                      { name: "About", href: "/about" },
-                      { name: "Contact", href: "/contact" }
-                    ].map((link) => {
-                      const isActive = pathname === link.href;
-                      return (
-                        <Link 
-                          key={link.name}
-                          href={link.href} 
-                          className={`transition-all pb-1 border-b-2 ${
-                            isActive 
-                              ? "text-primary border-primary dark:text-primary" 
-                              : "border-transparent hover:text-primary hover:border-primary/30"
-                          }`}
-                        >
-                          {link.name}
-                        </Link>
-                      );
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Right Block: Search, Icons & Mobile Switcher */}
-            <div className="flex items-center gap-4 flex-1 justify-end">
-              <AnimatePresence>
-                {!isScrolled && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="hidden xl:flex flex-1 max-w-md mx-4"
-                  >
-                    <SearchBar isTransparent={false} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div className={`flex items-center gap-3 md:gap-5 transition-colors duration-300 ${navTextColor}`}>
-                {/* Desktop Only Actions */}
-                <div className="hidden lg:flex items-center space-x-4">
-                  <RegionSelector isTransparent={false} />
-                  <ThemeToggle />
-                  <Link href="/wishlist" className="hover:opacity-80 transition-opacity">
-                    <Heart className={`w-6 h-6 ${isScrolled ? "scale-90" : ""}`} />
-                  </Link>
-                  <Link 
-                    href="/shop/new-arrivals" 
-                    className="hidden xl:flex h-10 px-6 items-center justify-center border border-primary text-primary font-bold text-[11px] uppercase tracking-[0.1em] hover:bg-primary hover:text-white transition-all active:scale-95 whitespace-nowrap"
-                  >
-                    Shop the Drop
-                  </Link>
-                  <UserProfileDropdown />
+              {/* Action Icons (Desktop: Wide, Mobile: Condensed Row) */}
+              <div className="flex items-center gap-3 md:gap-5">
+                {/* Desktop Primary Nav (Only on wide screens when not scrolled) */}
+                <div className="hidden lg:flex items-center gap-6 mr-6 text-[11px] font-black uppercase tracking-widest">
+                  <Link href="/collections" className="hover:text-primary transition-colors">New In</Link>
+                  <Link href="/shop" className="hover:text-primary transition-colors">Clothing</Link>
+                  <Link href="/community" className="hover:text-primary transition-colors">Community</Link>
                 </div>
 
-                {/* Mobile/Tablet Only Actions: Grid Switcher & Hamburger */}
-                <div className="flex items-center gap-2 lg:hidden">
-                  <GridSwitcher />
-                  
-                  <button onClick={toggleMobileMenu} className="p-1 px-2 hover:opacity-70 transition-opacity">
-                    <div className="flex flex-col gap-[5px]">
-                      <div className={`w-7 h-[1.5px] bg-current transition-all ${isScrolled ? "w-5" : "w-7"}`} />
-                      <div className="w-7 h-[1.5px] bg-current" />
-                      <div className={`w-7 h-[1.5px] bg-current transition-all ${isScrolled ? "w-5" : "w-7"}`} />
-                    </div>
+                {/* Shared Action Icons */}
+                <div className="flex items-center gap-4 md:gap-6">
+                  {/* User Profile */}
+                  <div className="relative">
+                    <UserProfileDropdown />
+                  </div>
+
+                  {/* Wishlist */}
+                  <Link href="/wishlist" className="hover:opacity-80 transition-opacity">
+                    <Heart className="w-6 h-6 stroke-[1.5px]" />
+                  </Link>
+
+                  {/* Cart with Badge */}
+                  <div className="relative">
+                    <CartSheet />
+                  </div>
+
+                  {/* Mobile Sidebar Toggle (The Hamburger) */}
+                  <button onClick={toggleMobileMenu} className="lg:hidden p-1 hover:opacity-70 transition-opacity">
+                    <Menu className="w-7 h-7 stroke-[1.5px]" />
                   </button>
                 </div>
-
-                <CartSheet />
               </div>
             </div>
-          </div>
 
-          {/* UNIFIED NAVIGATION TIER: Horizontal Scroll (Always for mobile, hidden on scrolled) */}
-          <AnimatePresence>
-            {!isScrolled && (
-              <motion.div 
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="w-full border-t border-border/40 bg-zinc-50/50 dark:bg-background/50 overflow-x-auto no-scrollbar scroll-smooth"
-              >
-                <div className="flex items-center justify-start lg:justify-center min-w-max px-6 py-4 gap-x-8 md:gap-x-12">
-                  {[
-                    "Women", "Plus+Curve", "Beauty",
-                    "Dresses", "Matching Sets", "Tops", "Swim", "Outerwear", "Accessories", "Restocks"
-                  ].map((item) => {
-                    const isDept = ["Women", "Plus+Curve", "Beauty"].includes(item);
-                    const href = isDept 
-                      ? `/shop?dept=${item.toLowerCase()}` 
-                      : `/shop/${item === 'Matching Sets' ? 'two-piece' : item.toLowerCase().replace(" ", "-")}`;
-                    
-                    const currentDept = searchParams.get('dept');
-                    const isActive = isDept 
-                      ? currentDept === item.toLowerCase()
-                      : pathname === href;
-                    
-                    return (
-                      <Link 
-                        key={item}
-                        href={href}
-                        className={`text-[11px] md:text-[12px] font-bold uppercase tracking-tight transition-all border-b-2 pb-1 whitespace-nowrap active:scale-95 ${
-                          isActive 
-                            ? "text-primary border-primary dark:text-primary" 
-                            : isDept 
-                              ? "text-primary/70 bg-primary/5 px-3 py-1 rounded-full border-none hover:bg-primary/10" 
-                              : "text-zinc-600 dark:text-zinc-400 hover:text-primary border-transparent"
-                        }`}
-                      >
-                        {item}
-                      </Link>
-                    );
-                  })}
+            {/* TIER 2: Department Tabs (Horizontal Scroll) */}
+            <div className="w-full border-t border-border/40 bg-white dark:bg-black overflow-x-auto no-scrollbar scroll-smooth">
+              <div className="flex items-center justify-start lg:justify-center min-w-max px-6 py-3 gap-x-8 md:gap-x-12">
+                {[
+                  "Women", "Plus+Curve", "Beauty",
+                  "Dresses", "Matching Sets", "Tops", "Swim", "Accessories"
+                ].map((item) => {
+                  const isDept = ["Women", "Plus+Curve", "Beauty"].includes(item);
+                  const href = isDept 
+                    ? `/shop?dept=${item.toLowerCase()}` 
+                    : `/shop/${item === 'Matching Sets' ? 'two-piece' : item.toLowerCase().replace(" ", "-")}`;
+                  
+                  const isActive = pathname === href || (isDept && searchParams.get('dept') === item.toLowerCase());
+                  
+                  return (
+                    <Link 
+                      key={item}
+                      href={href}
+                      className={`text-[11px] font-black uppercase tracking-[0.1em] transition-all border-b-2 pb-1 whitespace-nowrap active:scale-95 ${
+                        isActive 
+                          ? "text-primary border-primary" 
+                          : "text-zinc-500 hover:text-primary border-transparent"
+                      }`}
+                    >
+                      {item}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* TIER 3: Persistent Search (Mobile & Desktop) */}
+            <div className="w-full px-4 py-2 border-t border-border/40 bg-zinc-50/50 dark:bg-background/50">
+              <div className="container mx-auto max-w-4xl relative">
+                <div className="relative flex items-center bg-white dark:bg-zinc-900 border border-border/60 rounded-full h-11 px-4 shadow-sm group hover:border-black transition-colors">
+                  <Search className="w-5 h-5 text-zinc-400 mr-3" />
+                  <input 
+                    type="text" 
+                    placeholder={`Search within ${searchParams.get('dept') || "Women's"} Clothing...`}
+                    className="flex-1 bg-transparent border-none outline-none text-[13px] font-bold text-zinc-900 dark:text-zinc-100 placeholder-zinc-400"
+                    onFocus={() => {
+                        // We can potentially trigger the full SearchBar overlay here
+                    }}
+                  />
+                  <div className="flex items-center gap-3 pl-2 border-l border-border/40 ml-2">
+                    <Camera className="w-5 h-5 text-zinc-400 cursor-pointer hover:text-black" />
+                  </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
+              </div>
+            </div>
           </div>
         </motion.div>
       </motion.nav>

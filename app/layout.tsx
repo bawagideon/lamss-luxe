@@ -19,12 +19,13 @@ const jsonLd = {
   "description": "Leading fashion clothes, affordable women's clothing, and community for queens.",
   "url": "https://www.lamsseluxe.ca",
   "telephone": "+18000000000",
-  "email": "support@lamsseluxe.com",
+  "email": "lamsseluxe@gmail.com",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Fashion District",
-    "addressLocality": "Toronto",
-    "addressRegion": "ON",
+    "streetAddress": "7, Exmouth street",
+    "addressLocality": "St. John’s",
+    "addressRegion": "NL",
+    "postalCode": "A1B 2E1",
     "addressCountry": "CA"
   },
   "sameAs": [

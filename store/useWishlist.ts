@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 
 interface WishlistState {
   wishlistIds: string[];
-  toggleWishlist: (id: string) => void;
+  toggleWishlist: (id: string, supabase?: any, userId?: string) => void;
   syncWithServer: (supabase: any, userId: string) => Promise<void>;
 }
 
@@ -11,7 +11,7 @@ export const useWishlistStore = create<WishlistState>()(
   persist(
     (set, get) => ({
       wishlistIds: [],
-      toggleWishlist: (id) => {
+      toggleWishlist: async (id, supabase, userId) => {
         const { wishlistIds } = get();
         const exists = wishlistIds.includes(id);
         const next = exists
@@ -20,8 +20,17 @@ export const useWishlistStore = create<WishlistState>()(
         
         set({ wishlistIds: next });
         
-        // Dispatch event for any non-zustand components
+        // Dispatch event for any legacy components
         window.dispatchEvent(new Event("wishlist_updated"));
+
+        // PERSISTENCE: If user is logged in, sync to Supabase instantly
+        if (supabase && userId) {
+          if (exists) {
+            await supabase.from('wishlist').delete().eq('user_id', userId).eq('product_id', id);
+          } else {
+            await supabase.from('wishlist').insert({ user_id: userId, product_id: id });
+          }
+        }
       },
       syncWithServer: async (supabase, userId) => {
         const { wishlistIds } = get();

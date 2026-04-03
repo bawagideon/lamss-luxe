@@ -6,17 +6,40 @@ import Link from "next/link";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/useCart";
-import { ShoppingBag, Minus, Plus } from "lucide-react";
+import { ShoppingBag, Minus, Plus, CheckCircle2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 import { createCheckoutSession } from "@/app/actions/checkout";
 
 export function CartSheet() {
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { cartItems, getItemCount, getCartTotal, updateQuantity, removeItem } = useCart();
+  const [user, setUser] = useState<User | null>(null);
+  const { cartItems, getItemCount, getCartTotal, updateQuantity, removeItem, syncWithServer } = useCart();
+  const supabase = createClient();
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // Auth Awareness & Syncing
+    supabase.auth.getUser().then(({ data }) => {
+      const currentUser = data?.user || null;
+      setUser(currentUser);
+      if (currentUser) {
+        syncWithServer(supabase, currentUser.id);
+      }
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      const currentUser = session?.user || null;
+      setUser(currentUser);
+      if (currentUser) {
+        syncWithServer(supabase, currentUser.id);
+      }
+    });
+
+    return () => authListener.subscription.unsubscribe();
+  }, [supabase.auth, syncWithServer]);
 
   if (!mounted) {
     // Return a dummy trigger matching the navbar icon size to avoid CLS
@@ -51,9 +74,9 @@ export function CartSheet() {
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <button className="hover:opacity-80 transition-opacity relative" aria-label="Cart">
-          <ShoppingBag className="w-6 h-6" />
+          <ShoppingBag className="w-6 h-6 stroke-[1.5px]" />
           {count > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-md animate-in zoom-in-50 duration-300">
+            <span className="absolute -top-1.5 -right-1.5 bg-[#cc0000] text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-black shadow-lg animate-in zoom-in-50 duration-300">
               {count}
             </span>
           )}
@@ -70,26 +93,34 @@ export function CartSheet() {
           <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-6">
             <div className="space-y-2">
               <h2 className="text-xl font-bold tracking-tight">Your bag is empty.</h2>
-              <p className="text-sm text-muted-foreground font-medium">Have an account? Sign in to view your bag</p>
+              <p className="text-sm text-muted-foreground font-medium">
+                {user 
+                  ? `Go ahead and find something you love, ${user.user_metadata?.first_name || 'Queen'}.`
+                  : "Have an account? Sign in to view your bag"
+                }
+              </p>
             </div>
-            <div className="flex gap-3 w-full max-w-sm">
+            <div className={`flex gap-3 w-full max-w-sm ${user ? "justify-center" : ""}`}>
               <Button 
                 onClick={() => setIsOpen(false)} 
                 asChild 
-                className="flex-1 rounded-full bg-black text-white hover:bg-black/90 font-bold tracking-wide h-12"
+                className="flex-1 max-w-[240px] rounded-full bg-black text-white hover:bg-black/90 font-bold tracking-wide h-12"
               >
                 <Link href="/shop">Start Shopping</Link>
               </Button>
-              <Button 
-                onClick={() => {
-                  setIsOpen(false);
-                  document.dispatchEvent(new CustomEvent('open-auth-modal'));
-                }} 
-                className="flex-1 rounded-full bg-gray-100 text-black hover:bg-gray-200 hover:text-black font-bold tracking-wide border-none h-12"
-                variant="outline"
-              >
-                Sign In
-              </Button>
+              
+              {!user && (
+                <Button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    document.dispatchEvent(new CustomEvent('open-auth-modal'));
+                  }} 
+                  className="flex-1 rounded-full bg-gray-100 text-black hover:bg-gray-200 hover:text-black font-bold tracking-wide border-none h-12"
+                  variant="outline"
+                >
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         ) : (
@@ -136,7 +167,14 @@ export function CartSheet() {
             {/* Scrollable Items Payload */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-50/50 dark:bg-zinc-950">
               <div className="bg-white dark:bg-zinc-900 border text-[13px] text-center font-medium p-3 hover:border-black dark:hover:border-white transition-colors rounded-lg shadow-sm">
-                Don&apos;t lose your bag! Sync it to <button onClick={() => { setIsOpen(false); document.dispatchEvent(new CustomEvent('open-auth-modal')); }} className="underline underline-offset-4 font-bold hover:text-primary transition-colors">your email.</button>
+                {user ? (
+                   <div className="flex items-center justify-center gap-2 text-green-600 dark:text-green-500 font-bold">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Bag synced to {user.email}</span>
+                   </div>
+                ) : (
+                  <>Don&apos;t lose your bag! Sync it to <button onClick={() => { setIsOpen(false); document.dispatchEvent(new CustomEvent('open-auth-modal')); }} className="underline underline-offset-4 font-bold hover:text-primary transition-colors">your email.</button></>
+                )}
               </div>
 
               {cartItems.map((item) => (

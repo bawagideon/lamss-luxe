@@ -18,9 +18,10 @@ export function CategoryShop() {
     { name: "Dresses", slug: "dresses", label: "OUR DRESSES", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80" },
     { name: "Matching Sets", slug: "two-piece", label: "OUR SETS", image: "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?auto=format&fit=crop&q=80" },
     { name: "Tops", slug: "tops", label: "OUR TOPS", image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80" },
-    { name: "Swim", slug: "swim", label: "OUR SWIM", image: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&q=80" },
-    { name: "Outerwear", slug: "outerwear", label: "OUR LUXE", image: "https://images.unsplash.com/photo-1539533377285-b0afb0f7a54a?auto=format&fit=crop&q=80" },
+    { name: "Bottoms", slug: "bottoms", label: "OUR BOTTOMS", image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&q=80" },
     { name: "Accessories", slug: "accessories", label: "OUR ACCS", image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80" },
+    { name: "Shoes", slug: "shoes", label: "OUR SHOES", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80" },
+    { name: "BodyCTRL", slug: "body-ctrl", label: "OUR BODY", image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80" },
   ]);
 
   useEffect(() => {
@@ -42,68 +43,88 @@ export function CategoryShop() {
     });
   }, []);
 
-  return (
-    <section className="py-12 md:py-16 bg-[#F9F7F2] relative overflow-hidden" id="categories">
-      {/* Vintage Grain Overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
+  // Split categories for bento grid logic
+  const main = categories.slice(0, 3); // Dresses, Matching Sets, Tops
+  const footer = categories.slice(3); // Bottoms, Accessories, Shoes, BodyCTRL
 
-      <div className="container mx-auto px-4 md:px-10 lg:px-16 relative z-10">
-        <div className="flex flex-col mb-8 md:mb-12">
-          <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-2 text-[#1a1a1a]">Shop By Category</h2>
-          <p className="text-black text-[11px] md:text-sm font-bold uppercase tracking-[0.3em] opacity-80 border-l-4 border-[#1a1a1a] pl-4 py-1">
-            The Essentials Collection.
-          </p>
+  return (
+    <section className="py-12 md:py-20 bg-white" id="categories">
+      <div className="container mx-auto px-4 md:px-10">
+        <div className="flex flex-col mb-10">
+          <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase mb-2">Shop By Category</h2>
+          <div className="h-1 w-20 bg-black" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {categories.map((cat, idx) => (
-            <motion.div
-              key={cat.slug}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-            >
-              <Link
-                href={`/shop/${cat.slug}`}
-                className="group relative block aspect-[4/5] overflow-hidden rounded-[2px] shadow-xl border border-black/5"
-              >
-                {/* Vintage Card Base */}
-                <div className="absolute inset-0 bg-[#E8E2D6] z-0 transition-transform duration-700 group-hover:scale-105" />
+        {/* BRIGHT BENTO GRID (Exactly as shared image) */}
+        <div className="flex flex-col gap-1 md:gap-2">
+          {/* TOP SECTION: 1 Large + 2 Stacked */}
+          <div className="grid grid-cols-2 gap-1 md:gap-2">
+             {/* Large Left: Dresses (row-span-2) */}
+             {main[0] && (
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="row-span-2"
+                >
+                  <CategoryCard item={main[0]} isLarge />
+                </motion.div>
+             )}
 
-                {/* Dynamic Image with Grainy Overlay */}
-                <div className="absolute inset-0 z-10 overflow-hidden mix-blend-multiply opacity-90 group-hover:opacity-100 transition-opacity">
-                  <Image
-                    src={cat.image}
-                    alt={cat.name}
-                    fill
-                    className="object-cover grayscale-[20%] sepia-[10%] group-hover:grayscale-0 group-hover:sepia-0 transition-all duration-700"
-                  />
-                </div>
+             {/* Stacked Right: Matching Sets & Tops */}
+             <div className="grid grid-rows-2 gap-1 md:gap-2">
+                {main.slice(1).map((cat, idx) => (
+                   <motion.div
+                      key={cat.slug}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 + idx * 0.1 }}
+                   >
+                     <CategoryCard item={cat} />
+                   </motion.div>
+                ))}
+             </div>
+          </div>
 
-                {/* The "NOVA" Branding Overlay (Styled as shared image) */}
-                <div className="absolute inset-x-0 bottom-0 p-8 z-30 transform transition-transform duration-500 group-hover:-translate-y-2">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">
-                      LUXE
-                    </span>
-                    <span className="text-2xl md:text-4xl font-light text-white/90 uppercase tracking-[0.05em] drop-shadow-lg italic">
-                      {cat.slug === 'two-piece' ? 'SETS' : cat.name.split(' ')[0]}
-                    </span>
-                  </div>
-                  <div className="mt-4 flex items-center gap-3">
-                    <div className="h-[2px] w-8 bg-white/60" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Explore Collection</span>
-                  </div>
-                </div>
-
-                {/* Hover Glow / Grain Intensity */}
-                <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-              </Link>
-            </motion.div>
-          ))}
+          {/* BOTTOM ROW: 4 Columns Matrix (Consistent with image) */}
+          <div className="grid grid-cols-4 gap-1 md:gap-2">
+             {footer.map((cat, idx) => (
+                <motion.div
+                  key={cat.slug}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+                >
+                  <CategoryCard item={cat} />
+                </motion.div>
+             ))}
+          </div>
         </div>
       </div>
     </section>
+  );
+}
+
+// Sub-component for individual category cards
+function CategoryCard({ item, isLarge = false }: { item: CategoryItem; isLarge?: boolean }) {
+  return (
+    <Link
+      href={`/shop/${item.slug}`}
+      className={`group relative block overflow-hidden bg-zinc-100 ${isLarge ? 'h-full aspect-[4/7] md:aspect-auto' : 'aspect-[4/3] md:aspect-[16/10]'}`}
+    >
+      <Image
+        src={item.image}
+        alt={item.name}
+        fill
+        className="object-cover transition-transform duration-1000 group-hover:scale-105"
+      />
+      
+      {/* Centered-Bottom Branded Text Overlay (Image Style) */}
+      <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col items-center justify-end h-1/2 bg-gradient-to-t from-black/50 to-transparent">
+         <span className="text-[14px] md:text-2xl font-black text-white uppercase tracking-tight drop-shadow-lg text-center transform transition-transform duration-500 group-hover:-translate-y-1">
+           {item.name}
+         </span>
+      </div>
+    </Link>
   );
 }

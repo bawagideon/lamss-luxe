@@ -35,7 +35,7 @@ export function Footer() {
             <h3 className="font-black mb-4 uppercase text-sm tracking-widest text-[#1a1a1a] dark:text-white">Company</h3>
             <ul className="space-y-3 text-[11px] font-black uppercase tracking-[0.1em] text-muted-foreground">
               <li><Link href="/about" className="hover:text-primary transition-colors">About & Founder Story</Link></li>
-              <li><Link href="/community" className="hover:text-primary transition-colors">Lamssé Network Experience</Link></li>
+              <li><Link href="/community" className="hover:text-primary transition-colors">The Luxe Experience</Link></li>
               <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
               <li><Link href="/shipping-returns" className="hover:text-primary transition-colors">Shipping & Returns</Link></li>
             </ul>

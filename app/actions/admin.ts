@@ -318,16 +318,39 @@ export async function getAdminProducts() {
 export async function fetchCustomers() {
   noStore();
   const supabase = getAdminSupabase();
-  const { data, error } = await supabase
+  
+  // 1. Fetch all profiles
+  const { data: profiles, error: pError } = await supabase
     .from('profiles')
     .select('*')
     .order('created_at', { ascending: false });
   
-  if (error) {
-    console.error("Error fetching customers from profiles:", error);
+  if (pError) {
+    console.error("Error fetching customers from profiles:", pError);
     return [];
   }
-  return data || [];
+
+  // 2. Fetch all wishlist records to map counts
+  const { data: wishlistData, error: wError } = await supabase
+    .from('wishlist')
+    .select('user_id');
+
+  if (wError) {
+    console.warn("Could not aggregate wishlist counts:", wError.message);
+    return profiles || [];
+  }
+
+  // 3. Map counts to profiles
+  const wishlistCounts: Record<string, string[]> = {};
+  wishlistData.forEach((row: any) => {
+    if (!wishlistCounts[row.user_id]) wishlistCounts[row.user_id] = [];
+    wishlistCounts[row.user_id].push('marker'); 
+  });
+
+  return (profiles || []).map(p => ({
+    ...p,
+    wishlist: wishlistCounts[p.id] || []
+  }));
 }
 
 export async function fetchNewsletterSubscribers() {
@@ -357,6 +380,42 @@ export async function fetchCustomerWishlist(wishlistIds: string[]) {
   
   if (error) {
     console.error("Error fetching customer wishlist details:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function fetchCustomerViewed(viewedIds: string[]) {
+  noStore();
+  if (!viewedIds || viewedIds.length === 0) return [];
+  
+  const supabase = getAdminSupabase();
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, name, price, image_url')
+    .in('id', viewedIds);
+  
+  if (error) {
+    console.error("Error fetching customer viewed history details:", error);
+    return [];
+  }
+  
+  // Maintain order (most recent first)
+  const ordered = viewedIds.map(id => (data || []).find(p => (p as any).id === id)).filter(Boolean);
+  return ordered;
+}
+
+export async function fetchCustomerOrders(userId: string) {
+  noStore();
+  const supabase = getAdminSupabase();
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error("Error fetching customer orders:", error);
     return [];
   }
   return data || [];

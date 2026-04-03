@@ -6,14 +6,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getCommunityMoments } from "@/app/actions/community";
 
-const fallbackImages = [
-  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?q=80&w=600&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1518049362265-d5b2a6467637?q=80&w=600&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=600&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?q=80&w=600&auto=format&fit=crop"
-];
-
 interface Moment {
   id: string;
   image_url: string;
@@ -21,12 +13,10 @@ interface Moment {
 }
 
 export function Gallery({ initialMoments }: { initialMoments?: Moment[] }) {
-  const [moments, setMoments] = useState<Moment[]>([]);
+  const [moments, setMoments] = useState<Moment[]>(initialMoments || []);
 
   useEffect(() => {
-    if (initialMoments && initialMoments.length > 0) {
-      setMoments(initialMoments);
-    } else {
+    if (!initialMoments || initialMoments.length === 0) {
       getCommunityMoments().then(data => {
         if (data && data.length > 0) {
           setMoments(data);
@@ -35,10 +25,7 @@ export function Gallery({ initialMoments }: { initialMoments?: Moment[] }) {
     }
   }, [initialMoments]);
 
-  // If no database moments exist yet, use fallback placeholders for the "premium" look
-  const displayMoments = moments.length > 0 
-    ? moments 
-    : fallbackImages.map((img, i) => ({ id: `fallback-${i}`, image_url: img, instagram_link: null }));
+  const displayMoments = moments;
 
   return (
     <section className="py-24 bg-background" id="gallery">

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, X, Loader2 } from "lucide-react";
+import { Search, X, Loader2, Camera } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { searchProducts, getActiveProducts } from "@/app/actions/products";
+import { useUIStore } from "@/store/useUIStore";
+import { useSearchParams } from "next/navigation";
 
 interface SearchProduct {
   id: string;
@@ -21,8 +23,19 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
   const [results, setResults] = useState<SearchProduct[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [trending, setTrending] = useState<SearchProduct[]>([]);
+  const { isSearchOpen, setSearchOpen } = useUIStore();
+  const searchParams = useSearchParams();
   
   const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Sync global isSearchOpen with local isFocused
+  useEffect(() => {
+    if (isSearchOpen) setIsFocused(true);
+  }, [isSearchOpen]);
+
+  useEffect(() => {
+    if (!isFocused) setSearchOpen(false);
+  }, [isFocused, setSearchOpen]);
 
   // Debounce query
   useEffect(() => {
@@ -75,16 +88,18 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
         <Search className={`w-4 h-4 mr-3 opacity-60 flex-shrink-0 ${isFocused ? 'text-black opacity-100' : ''}`} />
         <input 
           type="text" 
-          placeholder="Search within Lamssé Luxe..." 
+          placeholder={`Search within ${searchParams.get('dept') || "Women's"} Clothing...`} 
           className={`bg-transparent border-none outline-none w-full text-xs font-bold tracking-wide ${isFocused ? 'text-black placeholder-gray-500' : 'placeholder-current opacity-80'}`}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
         />
-        {isFocused && (
+        {isFocused ? (
           <button onClick={() => { setQuery(""); setIsFocused(false); }} className="ml-2 text-black opacity-50 hover:opacity-100 transition-opacity">
             <X className="w-4 h-4" />
           </button>
+        ) : (
+          <Camera className="w-4 h-4 ml-2 opacity-50" />
         )}
       </div>
 

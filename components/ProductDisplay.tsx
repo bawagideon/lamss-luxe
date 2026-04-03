@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronRight, Heart } from "lucide-react";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/store/useCart";
+import { useViewedStore } from "@/store/useViewedStore";
+import { createClient } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Link from "next/link";
@@ -52,9 +54,18 @@ export function ProductDisplay({ product }: { product: Product }) {
     ? Array.from(new Set(rawImages))
     : ["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop"];
 
-  const { wishlistIds, toggleWishlist, mounted } = useWishlist();
+  const { wishlistIds, toggleWishlist, mounted, user } = useWishlist();
   const isWished = mounted && wishlistIds.includes(product.id);
   const { addItem } = useCart();
+  const { recordView } = useViewedStore();
+  const supabase = createClient();
+
+  // Record view on mount
+  useEffect(() => {
+    if (mounted && product.id) {
+      recordView(product.id, supabase, user?.id);
+    }
+  }, [mounted, product.id, user?.id, recordView]);
 
   const handleAddToBag = () => {
     addItem({

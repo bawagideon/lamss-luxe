@@ -33,18 +33,18 @@ export default function ContactPage() {
               <div className="flex items-start space-x-4 mb-6">
                 <Mail className="w-6 h-6 text-primary mt-1" />
                 <div>
-                  <p className="font-bold text-lg">Customer Support Email</p>
-                  <p className="text-muted-foreground">Have a question about your order? We&apos;re here to help.</p>
-                  <a href="mailto:support@lamsseluxe.com" className="text-primary hover:underline mt-2 inline-block">support@lamsseluxe.com</a>
+                  <p className="font-bold text-lg">Official Email</p>
+                  <p className="text-muted-foreground">General inquiries, orders, and collaborations.</p>
+                  <a href="mailto:lamsseluxe@gmail.com" className="text-primary hover:underline mt-2 inline-block font-bold">lamsseluxe@gmail.com</a>
                 </div>
               </div>
 
               <div className="flex items-start space-x-4">
                 <Briefcase className="w-6 h-6 text-primary mt-1" />
                 <div>
-                  <p className="font-bold text-lg">Business Inquiries & Collabs</p>
-                  <p className="text-muted-foreground">For press, partnerships, and collabs.</p>
-                  <a href="mailto:collab@lamsseluxe.com" className="text-primary hover:underline mt-2 inline-block">collab@lamsseluxe.com</a>
+                  <p className="font-bold text-lg">Physical Storefront</p>
+                  <p className="text-muted-foreground italic font-medium">7, Exmouth street, St. John’s NL, A1B 2E1</p>
+                  <p className="text-xs text-muted-foreground mt-1 uppercase tracking-widest">Flagship Location</p>
                 </div>
               </div>
             </div>

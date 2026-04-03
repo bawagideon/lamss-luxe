@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { WishlistGrid } from "@/components/WishlistSyncGrid";
+import { ViewedGrid } from "@/components/ViewedSyncGrid";
 
 export default async function AccountOverview() {
   const supabase = createClient();
@@ -13,6 +15,7 @@ export default async function AccountOverview() {
 
   const name = profile?.first_name ? profile.first_name.toUpperCase() : "GUEST";
 
+  // Fetch count server-side for initial SEO/hydration, but client-side handles the "Live" grid
   const { data: wishlistData } = await supabase
     .from("wishlist")
     .select("product_id")
@@ -38,48 +41,35 @@ export default async function AccountOverview() {
       {/* Twin Column Arrays (Image 2 Aesthetic) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         
-        {/* Wishlist Block */}
+        {/* Wishlist Block (REAL-TIME SYNCED) */}
         <div className="space-y-4">
-          <h2 className="text-xl font-black uppercase tracking-tight">WISHLIST ({wishlistCount})</h2>
-          
-          <div className="flex gap-2">
-            {/* Primary Image Stub */}
-            <div className="flex-1 aspect-[3/4] bg-gray-200 rounded-md overflow-hidden relative">
-              <div className="absolute inset-0 bg-gray-200" />
-              <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black uppercase opacity-20">Preview</div>
-            </div>
-            {/* Stacked Thumbnails Stub */}
-            <div className="w-[30%] flex flex-col gap-2">
-              <div className="flex-1 bg-gray-100 border border-gray-200 rounded-md" />
-              <div className="flex-1 bg-gray-100 border border-gray-200 rounded-md" />
-              <div className="flex-1 bg-gray-100 border border-gray-200 rounded-md" />
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black uppercase tracking-tight">WISHLIST</h2>
+            <Link href="/account/wishlist" className="text-xs font-bold underline underline-offset-4 text-gray-400 hover:text-black">
+              Manage Items
+            </Link>
           </div>
+          
+          <WishlistGrid />
           
           <Link href="/account/wishlist" className="block w-full text-center py-3.5 border border-black rounded-full font-bold text-sm tracking-wide hover:bg-black hover:text-white transition-colors">
             View all
           </Link>
         </div>
 
-        {/* Viewed Block */}
+        {/* Viewed Block (REAL-TIME SYNCED) */}
         <div className="space-y-4">
-          <h2 className="text-xl font-black uppercase tracking-tight">VIEWED</h2>
-          
-          <div className="flex gap-2">
-            {/* Primary Image Stub */}
-            <div className="flex-1 aspect-[3/4] bg-gray-300 rounded-md overflow-hidden relative">
-              <div className="absolute inset-0 bg-gray-300" />
-            </div>
-            {/* Stacked Thumbnails Stub */}
-            <div className="w-[30%] flex flex-col gap-2">
-              <div className="flex-1 bg-gray-100 border border-gray-200 rounded-md" />
-              <div className="flex-1 bg-gray-100 border border-gray-200 rounded-md" />
-              <div className="flex-1 bg-gray-100 border border-gray-200 rounded-md" />
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black uppercase tracking-tight">VIEWED</h2>
+            <Link href="/shop" className="text-xs font-bold underline underline-offset-4 text-gray-400 hover:text-black">
+              Discover More
+            </Link>
           </div>
           
+          <ViewedGrid />
+          
           <Link href="/shop" className="block w-full text-center py-3.5 border border-black rounded-full font-bold text-sm tracking-wide hover:bg-black hover:text-white transition-colors">
-            View all
+            Continue Shopping
           </Link>
         </div>
 

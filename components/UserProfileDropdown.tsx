@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { User, Gauge, Package, Edit, Bell, Star, Gift } from "lucide-react";
+import { UserCircle, User, Gauge, Package, Edit, Bell, Star, Gift } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -57,7 +57,7 @@ export function UserProfileDropdown() {
       onMouseLeave={handleMouseLeave}
     >
       <Link href="/account" className="hover:opacity-80 transition-opacity flex items-center h-full py-2" aria-label="Account">
-        <User className="w-6 h-6" />
+        <UserCircle className="w-6 h-6 stroke-[1.5px]" />
       </Link>
 
       <AnimatePresence>

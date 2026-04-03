@@ -12,6 +12,14 @@ const getAdminSupabase = () => createSupabaseAdmin(
   }
 );
 
+const DEFAULT_MOMENTS = [
+  { image_url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" },
+  { image_url: "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?q=80&w=800&auto=format&fit=crop" },
+  { image_url: "https://images.unsplash.com/photo-1518049362265-d5b2a6467637?q=80&w=800&auto=format&fit=crop" },
+  { image_url: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=800&auto=format&fit=crop" },
+  { image_url: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?q=80&w=800&auto=format&fit=crop" }
+];
+
 // Private Helper: Hydrates raw browser File payloads into absolute Supabase CDNs for community bucket
 async function uploadCommunityImage(file: File | null) {
   if (!file || file.size === 0) return null;
@@ -52,12 +60,17 @@ export async function getCommunityMoments() {
       .from('community_moments')
       .select('*')
       .order('created_at', { ascending: false });
-    
-    if (error) {
-       // Table might not exist yet if SQL wasn't run, return empty array gracefully
-       console.warn("community_moments table might not exist:", error.message);
-       return [];
+
+    if (!data || data.length === 0) {
+      // Auto-seeding: Only if we are in a state where there are no moments
+      const { data: seededData, error: seedError } = await supabase
+        .from('community_moments')
+        .insert(DEFAULT_MOMENTS)
+        .select();
+      
+      if (!seedError && seededData) return seededData;
     }
+
     return data || [];
   } catch (err) {
     console.error("Fatal Error in getCommunityMoments:", err);

@@ -54,10 +54,12 @@ export const BrandNewsletter = ({
         <Hr style={hr} />
         <Section style={footer}>
           <Text style={footerText}>
-            Follow the Soft Life Revolution on <Link href="https://instagram.com/lamsseluxe" style={link}>Instagram</Link> and <Link href="https://tiktok.com/@lamsseluxe" style={link}>TikTok</Link>.
+            Follow the Soft Life Revolution on <Link href="https://instagram.com/lamsseluxe.ca" style={link}>Instagram</Link> and <Link href="https://tiktok.com/@lamsseluxe.ca" style={link}>TikTok</Link>.
           </Text>
           <Text style={footerSubtext}>
-            You are receiving this because you signed up for the Lamssé Luxe community.
+            You are receiving this because you signed up for the Luxe Network community.
+            <br />
+            7, Exmouth street, St. John’s NL, A1B 2E1
             <br />
             <Link href="#" style={link}>Unsubscribe</Link>
           </Text>
