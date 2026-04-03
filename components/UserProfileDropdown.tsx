@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { UserCircle, User, Gauge, Package, Edit, Bell, Star, Gift } from "lucide-react";
+import { UserCircle, Gauge, Package, Edit, Bell, Star, Gift } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";

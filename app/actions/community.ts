@@ -56,7 +56,7 @@ export async function getCommunityMoments() {
   noStore();
   try {
     const supabase = getAdminSupabase();
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('community_moments')
       .select('*')
       .order('created_at', { ascending: false });
