@@ -234,11 +234,3 @@ export function Navbar() {
     </>
   );
 }
-          </div>
-        </motion.div>
-      </motion.nav>
-      {/* Mobile Menu & Search Overlay */}
-      <MobileSidebar />
-    </>
-  );
-}
