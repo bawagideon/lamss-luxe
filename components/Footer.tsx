@@ -5,6 +5,20 @@ import { ChevronRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export function Footer() {
+  const shopLinks = [
+    { label: "Tops", href: "/shop/tops" },
+    { label: "Two-Piece", href: "/shop/two-piece" },
+    { label: "Dresses", href: "/shop/dresses" },
+    { label: "New Arrivals", href: "/shop/new-in" }
+  ];
+
+  const companyLinks = [
+    { label: "About & Founder Story", href: "/about" },
+    { label: "Luxe Network Experience", href: "/community" },
+    { label: "Contact", href: "/contact" },
+    { label: "Shipping & Returns", href: "/shipping-returns" }
+  ];
+
   return (
     <footer className="bg-[#1A1A1A] pt-24 pb-12 text-white overflow-hidden">
       <div className="container mx-auto px-6">
@@ -26,9 +40,9 @@ export function Footer() {
           <div className="flex flex-col gap-10">
             <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white">Shop</h3>
             <div className="flex flex-col gap-6 text-[11px] font-black uppercase tracking-[0.2em]">
-              {["Tops", "Two-Piece", "Dresses", "New Arrivals"].map(link => (
-                <Link key={link} href={`/shop/${link.toLowerCase().replace(" ", "-")}`} className="text-zinc-400 hover:text-[#FF2B8B] transition-colors">
-                  {link}
+              {shopLinks.map(link => (
+                <Link key={link.label} href={link.href} className="text-zinc-400 hover:text-[#FF2B8B] transition-colors">
+                  {link.label}
                 </Link>
               ))}
             </div>
@@ -38,9 +52,9 @@ export function Footer() {
           <div className="flex flex-col gap-10">
             <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white">Company</h3>
             <div className="flex flex-col gap-6 text-[11px] font-black uppercase tracking-[0.2em]">
-              {["About & Founder Story", "Lamssé Network Experience", "Contact", "Shipping & Returns"].map(link => (
-                <Link key={link} href="#" className="text-zinc-400 hover:text-[#FF2B8B] transition-colors">
-                  {link}
+              {companyLinks.map(link => (
+                <Link key={link.label} href={link.href} className="text-zinc-400 hover:text-[#FF2B8B] transition-colors">
+                  {link.label}
                 </Link>
               ))}
             </div>
@@ -99,16 +113,16 @@ export function Footer() {
                 <AccordionItem value="shop" className="border-white/5">
                   <AccordionTrigger className="text-[11px] font-black uppercase tracking-[0.3em] py-6 text-white">Shop</AccordionTrigger>
                   <AccordionContent className="flex flex-col gap-5 pb-6">
-                    {["Tops", "Two-Piece", "Dresses", "New Arrivals"].map(link => (
-                      <Link key={link} href="#" className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{link}</Link>
+                    {shopLinks.map(link => (
+                      <Link key={link.label} href={link.href} className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{link.label}</Link>
                     ))}
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="company" className="border-white/5">
                   <AccordionTrigger className="text-[11px] font-black uppercase tracking-[0.3em] py-6 text-white">Company</AccordionTrigger>
                   <AccordionContent className="flex flex-col gap-5 pb-6">
-                    {["About & Founder Story", "Lamssé Network Experience", "Contact", "Shipping & Returns"].map(link => (
-                      <Link key={link} href="#" className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{link}</Link>
+                    {companyLinks.map(link => (
+                      <Link key={link.label} href={link.href} className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{link.label}</Link>
                     ))}
                   </AccordionContent>
                 </AccordionItem>
@@ -124,7 +138,7 @@ export function Footer() {
           <div className="flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
-            <Link href="#" className="hover:text-[#FF2B8B] transition-colors">Instagram</Link>
+            <a href="https://instagram.com/lamsseluxe.ca" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF2B8B] transition-colors">Instagram</a>
           </div>
         </div>
       </div>

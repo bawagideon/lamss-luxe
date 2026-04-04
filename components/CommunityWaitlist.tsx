@@ -53,7 +53,7 @@ export function CommunityWaitlist() {
         >
           <h2 className="text-sm font-bold tracking-[0.3em] uppercase text-primary mb-4">The Experience</h2>
           <h3 className="text-4xl md:text-5xl font-black text-white mb-2 leading-tight">Exclusive Event RSVP</h3>
-          <h4 className="text-xl md:text-2xl font-bold text-gray-300 mb-8">by Lamssé Network</h4>
+          <h4 className="text-xl md:text-2xl font-bold text-gray-300 mb-8">by Luxe Network</h4>
           <div className="text-lg text-gray-200 mb-10 leading-relaxed max-w-2xl mx-auto space-y-4">
             <p>RSVP for our upcoming exclusive events and community gatherings.</p>
             <p>A space to connect, express, and step fully into who you are becoming.</p>
