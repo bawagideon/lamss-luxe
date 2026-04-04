@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, Search, Menu, Camera, UserCircle, ShoppingBag } from "lucide-react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { Heart, Search, Menu, Camera } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { CartSheet } from "@/components/CartSheet";
 import { UserProfileDropdown } from "@/components/UserProfileDropdown";
@@ -19,7 +19,6 @@ export function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const { toggleMobileMenu, setMobileMenuOpen } = useUIStore();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     setMobileMenuOpen(false);
