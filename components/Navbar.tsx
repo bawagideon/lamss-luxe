@@ -12,6 +12,8 @@ import { useUIStore } from "@/store/useUIStore";
 import { MobileSidebar } from "@/components/MobileSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { RegionSelector } from "@/components/RegionSelector";
+import { SearchBar } from "@/components/SearchBar";
+import { GridSwitcher } from "@/components/GridSwitcher";
 
 export function Navbar() {
   const [isVisible, setIsVisible] = useState(true);
@@ -101,26 +103,24 @@ export function Navbar() {
                         <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain object-left hidden dark:block" priority />
                       </div>
                     </Link>
-                    <div className="flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-white">
-                      <Link href="/shop/new-in" className="hover:text-pink-500 transition-colors">New In</Link>
-                      <Link href="/shop" className="hover:text-pink-500 transition-colors">Clothing</Link>
-                      <Link href="/community" className="hover:text-pink-500 transition-colors">Community</Link>
-                      <Link href="/about" className="hover:text-pink-500 transition-colors">About</Link>
-                      <Link href="/contact" className="hover:text-pink-500 transition-colors">Contact</Link>
+                    <div className="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900 dark:text-white">
+                      {[
+                        { name: "New In", href: "/shop/new-in" },
+                        { name: "Clothing", href: "/shop" },
+                        { name: "Community", href: "/community" },
+                        { name: "About", href: "/about" },
+                        { name: "Contact", href: "/contact" }
+                      ].map(link => (
+                        <Link key={link.name} href={link.href} className="hover:text-[#FF2B8B] transition-colors whitespace-nowrap">
+                          {link.name}
+                        </Link>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Center: Search Bar (Image Style) */}
+                  {/* Center: Search Bar (Integrated component with dropsheet) */}
                   <div className="flex-1 max-w-md">
-                    <div className="relative flex items-center bg-zinc-100/50 dark:bg-zinc-900/50 border border-transparent rounded-full h-11 px-4 focus-within:bg-white focus-within:border-zinc-200 transition-all group">
-                      <Search className="w-4 h-4 text-zinc-400 mr-3" />
-                      <input 
-                        type="text" 
-                        placeholder="Search within Lamssé Luxe..."
-                        className="flex-1 bg-transparent border-none outline-none text-[12px] font-bold text-zinc-900 dark:text-zinc-100 placeholder-zinc-400"
-                      />
-                      <Camera className="w-4 h-4 text-zinc-300 ml-2 cursor-pointer hover:text-black" />
-                    </div>
+                    <SearchBar isTransparent={false} />
                   </div>
 
                   {/* Right: Actions (Image Alignment) */}
@@ -128,10 +128,10 @@ export function Navbar() {
                     <RegionSelector />
                     <ThemeToggle />
                     <Link href="/wishlist">
-                      <Heart className="w-6 h-6 stroke-[1.5px] hover:text-pink-500 transition-colors" />
+                      <Heart className="w-6 h-6 stroke-[1.5px] hover:text-[#FF2B8B] transition-colors" />
                     </Link>
                     
-                    <button className="px-5 py-2.5 border-2 border-pink-100 text-pink-500 text-[10px] font-black uppercase tracking-[0.2em] rounded-sm hover:bg-pink-50 transition-all">
+                    <button className="px-5 py-2.5 border-2 border-[#FF2B8B] text-[#FF2B8B] text-[10px] font-black uppercase tracking-[0.2em] rounded-sm hover:bg-[#FF2B8B] hover:text-white transition-all">
                        Shop The Drop
                     </button>
 
@@ -140,19 +140,19 @@ export function Navbar() {
                   </div>
                </div>
 
-               {/* TIER 2: Desktop Categories Header (Image Layout 2) */}
+               {/* TIER 2: Desktop Categories Header (Centered Symmetry) */}
                {!isScrolled && (
-                 <div className="container mx-auto px-6 border-t border-border/50 h-14 flex items-center justify-between">
+                 <div className="container mx-auto px-6 border-t border-border/50 h-14 flex items-center justify-center gap-10">
                     {/* Dept Pills */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                        {["Women", "Plus+Curve", "Beauty"].map(dept => (
                          <Link 
                            key={dept} 
                            href={`/shop?dept=${dept.toLowerCase()}`}
-                           className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+                           className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
                               dept === "Women" 
-                                ? "bg-pink-50 text-pink-500 border border-pink-100" 
-                                : "bg-transparent text-zinc-500 hover:bg-zinc-50"
+                                ? "bg-pink-50 text-pink-500 border border-pink-100 shadow-sm" 
+                                : "bg-transparent text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"
                            }`}
                         >
                            {dept}
@@ -160,15 +160,23 @@ export function Navbar() {
                        ))}
                     </div>
 
-                    {/* Category Links */}
-                    <div className="flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-zinc-600">
-                       {["Dresses", "Matching Sets", "Tops", "Swim", "Outerwear", "Accessories", "Restocks"].map(cat => (
+                    {/* Category Links with Explicit Slug Mapping */}
+                    <div className="flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400">
+                       {[
+                         { name: "Dresses", slug: "dresses" },
+                         { name: "Matching Sets", slug: "two-piece" },
+                         { name: "Tops", slug: "tops" },
+                         { name: "Swim", slug: "swim" },
+                         { name: "Outerwear", slug: "outerwear" },
+                         { name: "Accessories", slug: "accessories" },
+                         { name: "Restocks", slug: "restocks" }
+                       ].map(cat => (
                          <Link 
-                           key={cat} 
-                           href={`/shop/${cat.toLowerCase().replace(" ", "-")}`}
-                           className="hover:text-pink-500 transition-colors"
+                           key={cat.slug} 
+                           href={`/shop/${cat.slug}`}
+                           className="hover:text-pink-500 transition-colors whitespace-nowrap"
                          >
-                           {cat}
+                           {cat.name}
                          </Link>
                        ))}
                     </div>
@@ -178,50 +186,60 @@ export function Navbar() {
 
             {/* MOBILE VIEW (Visible on <lg) */}
             <div className="flex lg:hidden flex-col">
-              {/* TIER 1: Logo & Basic Icons */}
-              <div className={`container mx-auto px-4 h-16 flex items-center justify-between transition-all duration-500 text-black dark:text-white`}>
-                <Link href="/" className="flex-shrink-0 group">
-                  <div className={`relative ${isScrolled ? "w-28 h-6" : "w-36 h-8"} transition-all duration-500`}>
-                    <Image src="/Logo-light.png" alt="Logo" fill className="object-contain object-left dark:hidden" priority />
-                    <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain object-left hidden dark:block" priority />
-                  </div>
-                </Link>
+              {/* TIER 1: Logo, Grid Switcher & Basic Icons */}
+              <div className={`container mx-auto px-4 h-16 grid grid-cols-3 items-center transition-all duration-500 text-black dark:text-white relative z-30`}>
+                {/* Left: Logo */}
+                <div className="flex justify-start">
+                  <Link href="/" className="flex-shrink-0 group">
+                    <div className={`relative ${isScrolled ? "w-24 h-5" : "w-28 h-6"} transition-all duration-500`}>
+                      <Image src="/Logo-light.png" alt="Logo" fill className="object-contain object-left dark:hidden" priority />
+                      <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain object-left hidden dark:block" priority />
+                    </div>
+                  </Link>
+                </div>
 
-                <div className="flex items-center gap-4">
+                {/* Center: Grid Switcher (Prominent & Centered) */}
+                <div className="flex justify-center">
+                   <GridSwitcher />
+                </div>
+
+                {/* Right: Actions */}
+                <div className="flex justify-end items-center gap-2">
+                  <Link href="/wishlist" className="p-1">
+                    <Heart className="w-5 h-5 stroke-[1.5px] hover:text-pink-500 transition-colors" />
+                  </Link>
                   <UserProfileDropdown />
                   <CartSheet />
                   <button onClick={toggleMobileMenu} className="p-1 hover:opacity-70">
-                    <Menu className="w-7 h-7 stroke-[1.5px]" />
+                    <Menu className="w-6 h-6 stroke-[1.5px]" />
                   </button>
                 </div>
               </div>
 
-              {/* TIER 2: Mobile Horizontal Scroller */}
-              <div className="w-full border-t border-border/40 bg-white dark:bg-black overflow-x-auto no-scrollbar py-3 px-4">
-                <div className="flex items-center gap-8 min-w-max">
-                  {["Women", "Luxe", "Beauty", "Dresses", "Sets", "Tops", "Swim"].map((item) => (
+              {/* TIER 2: Mobile Horizontal Scroller - Unified Core Nav */}
+              <div className="w-full border-t border-border/40 bg-white dark:bg-black overflow-x-auto no-scrollbar py-3 px-4 shadow-sm relative z-20">
+                <div className="flex items-center justify-between min-w-max gap-8 px-2">
+                  {[
+                    { name: "New In", href: "/shop/new-in" },
+                    { name: "Clothing", href: "/shop" },
+                    { name: "Community", href: "/community" },
+                    { name: "About", href: "/about" },
+                    { name: "Contact", href: "/contact" }
+                  ].map((item) => (
                     <Link 
-                      key={item}
-                      href={`/shop`}
-                      className="text-[10px] font-black uppercase tracking-[0.15em] text-zinc-500"
+                      key={item.name}
+                      href={item.href}
+                      className="text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400 hover:text-[#FF2B8B] transition-colors active:text-[#FF2B8B]"
                     >
-                      {item}
+                      {item.name}
                     </Link>
                   ))}
                 </div>
               </div>
 
               {/* TIER 3: Mobile Search Input */}
-              <div className="w-full px-4 py-2 border-t border-border/40 bg-zinc-50/50 dark:bg-background/50">
-                <div className="relative flex items-center bg-white dark:bg-zinc-900 border border-border/60 rounded-full h-10 px-4 shadow-sm">
-                  <Search className="w-4 h-4 text-zinc-400 mr-2" />
-                  <input 
-                    type="text" 
-                    placeholder="Search Lamssé Luxe..."
-                    className="flex-1 bg-transparent border-none outline-none text-[12px] font-bold text-zinc-900 dark:text-zinc-100"
-                  />
-                  <Camera className="w-4 h-4 text-zinc-300 ml-2" />
-                </div>
+              <div className="w-full px-4 py-2 border-t border-border/40 bg-zinc-50/50 dark:bg-background/50 relative z-10">
+                <SearchBar isTransparent={false} />
               </div>
             </div>
 

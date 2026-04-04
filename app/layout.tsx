@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Outfit } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
@@ -7,9 +7,9 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthModal } from "@/components/AuthModal";
 import { Toaster } from "react-hot-toast";
 
-const plusJakartaSans = Plus_Jakarta_Sans({ 
+const outfit = Outfit({ 
   subsets: ["latin"],
-  variable: '--font-jakarta'
+  variable: '--font-outfit'
 });
 
 const jsonLd = {
@@ -81,7 +81,7 @@ export default function RootLayout({
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
-      <body className={plusJakartaSans.className}>
+      <body className={outfit.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

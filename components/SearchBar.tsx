@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, X, Loader2, Camera } from "lucide-react";
+import { Search, X, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { searchProducts, getActiveProducts } from "@/app/actions/products";
@@ -78,12 +78,12 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
 
   return (
     <div ref={searchContainerRef} className="flex flex-1 xl:max-w-md max-w-sm relative">
-      <div className={`flex flex-1 w-full px-5 py-2.5 rounded-full border transition-colors z-50 ${
+      <div className={`flex flex-1 w-full px-5 py-2.5 rounded-full border transition-all ${
         isFocused 
-          ? "border-black bg-white text-black drop-shadow-sm" 
+          ? "border-black bg-white text-black drop-shadow-sm z-50" 
           : isTransparent 
-            ? "border-white/30 bg-white/10 text-white placeholder-white/80" 
-            : "border-border bg-muted/50 text-foreground"
+            ? "border-white/30 bg-white/10 text-white placeholder-white/80 z-10" 
+            : "border-border bg-muted/50 text-foreground z-10"
       }`}>
         <Search className={`w-4 h-4 mr-3 opacity-60 flex-shrink-0 ${isFocused ? 'text-black opacity-100' : ''}`} />
         <input 
@@ -94,12 +94,10 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
         />
-        {isFocused ? (
+        {isFocused && (
           <button onClick={() => { setQuery(""); setIsFocused(false); }} className="ml-2 text-black opacity-50 hover:opacity-100 transition-opacity">
             <X className="w-4 h-4" />
           </button>
-        ) : (
-          <Camera className="w-4 h-4 ml-2 opacity-50" />
         )}
       </div>
 

@@ -48,11 +48,11 @@ export function CategoryShop() {
   const footer = categories.slice(3); // Bottoms, Accessories, Shoes, BodyCTRL
 
   return (
-    <section className="py-12 md:py-20 bg-white" id="categories">
+    <section className="py-12 md:py-20 bg-white dark:bg-zinc-950 transition-colors duration-500" id="categories">
       <div className="container mx-auto px-4 md:px-10">
         <div className="flex flex-col mb-10">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase mb-2">Shop By Category</h2>
-          <div className="h-1 w-20 bg-black" />
+          <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase mb-2 text-zinc-900 dark:text-white">Shop By Category</h2>
+          <div className="h-1.5 w-20 bg-black dark:bg-white" />
         </div>
 
         {/* BRIGHT BENTO GRID (Exactly as shared image) */}

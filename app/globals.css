@@ -59,24 +59,29 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-black uppercase tracking-tight;
-    line-height: 0.95;
+    @apply uppercase tracking-tight font-black;
+    line-height: 0.9;
   }
 
-  h1 { @apply text-4xl md:text-6xl; }
-  h2 { @apply text-3xl md:text-5xl; }
-  h3 { @apply text-xl md:text-3xl font-bold; }
+  h1 { @apply text-4xl md:text-7xl tracking-tighter; }
+  h2 { @apply text-3xl md:text-5xl tracking-tighter; }
+  h3 { @apply text-xl md:text-2xl font-black tracking-widest; }
 
   .nav-link {
-    @apply font-bold uppercase tracking-normal text-[11px] md:text-[12px];
+    @apply font-black uppercase tracking-[0.15em] text-[10px] md:text-[11px] transition-all;
   }
 
   .btn-premium {
-    @apply font-bold uppercase tracking-[0.1em] text-[11px] md:text-[12px] transition-all active:scale-95;
+    @apply font-black uppercase tracking-[0.2em] text-[10px] md:text-[11px] transition-all active:scale-95;
   }
 
   .breadcrumb {
-    @apply font-bold uppercase tracking-widest text-[9px] md:text-[10px] text-muted-foreground;
+    @apply font-black uppercase tracking-[0.3em] text-[8px] md:text-[9px] text-muted-foreground/60;
+  }
+
+  /* Luxe Pink Highlight Class */
+  .pink-highlight {
+    @apply text-[#FF2B8B] hover:text-[#D11A6B] transition-colors;
   }
 }
 
