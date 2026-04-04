@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import { ChevronRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export function Footer() {

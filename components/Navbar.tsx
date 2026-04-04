@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, Search, Menu, Camera } from "lucide-react";
+import { Heart, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { CartSheet } from "@/components/CartSheet";
