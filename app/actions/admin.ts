@@ -105,28 +105,7 @@ export async function getAdminAllOrders() {
 }
 
 // Private Helper: Hydrates raw browser File payloads into absolute Supabase CDNs
-async function uploadProductImage(file: File | null) {
-  if (!file || file.size === 0) return null;
-  const supabase = getAdminSupabase();
-  
-  // Failsafe: Ensure target bucket 'products' physically exists natively before upload
-  const { data: buckets } = await supabase.storage.listBuckets();
-  if (!buckets?.find(b => b.name === 'products')) {
-    await supabase.storage.createBucket('products', { public: true });
-  }
 
-  const fileExt = file.name.split('.').pop();
-  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-  
-  const { error } = await supabase.storage.from('products').upload(fileName, file, { cacheControl: '3600', upsert: false });
-  if (error) {
-    console.error("Supabase Storage Upload Error:", error);
-    return null;
-  }
-  
-  const { data } = supabase.storage.from('products').getPublicUrl(fileName);
-  return data.publicUrl;
-}
 
 // 3. Product Catalog Sandbox
 export async function addProduct(formData: FormData) {
