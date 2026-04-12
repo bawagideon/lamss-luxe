@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState, useTransition } from "react";
-import { getAdminProducts, addProduct, deleteProduct, editProduct } from "@/app/actions/admin";
+import { getAdminProducts, addProduct, deleteProduct, editProduct, uploadSingleImage } from "@/app/actions/admin";
 import toast from "react-hot-toast";
 import imageCompression from "browser-image-compression";
 import { createClient } from "@/lib/supabase/client";
@@ -90,20 +90,17 @@ export default function AdminProductsPage() {
       // 1. Client-Side Asset Dispatch (Bypassing Vercel's 4.5MB Server Limit)
       // We upload each compressed file individually and replace the FormData entry with the URL string.
       const uploadPromises = Object.entries(compressedFiles).map(async ([fieldName, file]) => {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        // Create a dedicated FormData for this single image upload proxy
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', file);
+        
+        const res = await uploadSingleImage(uploadFormData);
+        
+        if (res.error || !res.url) {
+          throw new Error(`Upload failed for ${fieldName}: ${res.error || 'Unknown Error'}`);
+        }
 
-        const { error: uploadError } = await supabase.storage
-          .from('products')
-          .upload(fileName, file);
-
-        if (uploadError) throw new Error(`Upload failed for ${fieldName}: ${uploadError.message}`);
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('products')
-          .getPublicUrl(fileName);
-
-        return { fieldName, publicUrl };
+        return { fieldName, publicUrl: res.url };
       });
 
       const uploadedFiles = await Promise.all(uploadPromises);

@@ -104,10 +104,38 @@ export async function getAdminAllOrders() {
   return data || [];
 }
 
-// Private Helper: Hydrates raw browser File payloads into absolute Supabase CDNs
+// 3. Secure Asset Pivot (Proxies client uploads to bypass RLS and 4.5MB limits)
+export async function uploadSingleImage(formData: FormData) {
+  noStore();
+  try {
+    const file = formData.get('file') as File;
+    if (!file || file.size === 0) return { error: "No file provided" };
 
+    const supabase = getAdminSupabase();
+    
+    // Failsafe: Ensure target bucket 'products' physically exists natively before upload
+    const { data: buckets } = await supabase.storage.listBuckets();
+    if (!buckets?.find(b => b.name === 'products')) {
+      await supabase.storage.createBucket('products', { public: true });
+    }
 
-// 3. Product Catalog Sandbox
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    
+    const { error } = await supabase.storage.from('products').upload(fileName, file, { 
+      cacheControl: '3600', 
+      upsert: false 
+    });
+
+    if (error) throw error;
+    
+    const { data } = supabase.storage.from('products').getPublicUrl(fileName);
+    return { url: data.publicUrl };
+  } catch (error) {
+    console.error("Single Upload Error:", error);
+    return { error: error instanceof Error ? error.message : "Internal Upload Error" };
+  }
+}
 export async function addProduct(formData: FormData) {
   noStore();
   try {
