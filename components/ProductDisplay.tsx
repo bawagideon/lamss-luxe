@@ -39,6 +39,15 @@ export function ProductDisplay({ product }: { product: Product }) {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || "");
 
+  // Auto-selection engine for single-option products
+  useEffect(() => {
+    const availableSizes = product.sizes && product.sizes.length > 0 ? product.sizes : ["XS", "S", "M", "L", "XL"];
+    const availableColors = product.colors && product.colors.length > 0 ? product.colors : ["Midnight Black", "Taupe"];
+
+    if (availableSizes.length === 1) setSelectedSize(availableSizes[0]);
+    if (availableColors.length === 1) setSelectedColor(availableColors[0]);
+  }, [product.sizes, product.colors]);
+
   // 1. Resolve active image set based on selected color (JSONB variant data)
   const activeVariant = product.color_images?.[selectedColor] || { main: null, front: null, side: null, back: null };
   

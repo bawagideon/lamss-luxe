@@ -147,16 +147,11 @@ export async function addProduct(formData: FormData) {
     const marketing_message = formData.get('marketing_message') as string || null;
     
     // Parse the multipart binary blobs
-    const mainFile = formData.get('image_main') as File | null;
-    const frontFile = formData.get('image_front') as File | null;
-    const sideFile = formData.get('image_side') as File | null;
-    const backFile = formData.get('image_back') as File | null;
-
-    // Dispatch blobs into CDNs synchronously
-    const image_main = await uploadProductImage(mainFile) || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200&auto=format&fit=crop"; 
-    const image_front = await uploadProductImage(frontFile);
-    const image_side = await uploadProductImage(sideFile);
-    const image_back = await uploadProductImage(backFile);
+    // Receive as URLs (already uploaded by the client to bypass the 4.5MB Vercel limit)
+    const image_main = (formData.get('image_main') as string) || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200&auto=format&fit=crop"; 
+    const image_front = formData.get('image_front') as string || null;
+    const image_side = formData.get('image_side') as string || null;
+    const image_back = formData.get('image_back') as string || null;
 
     const sizes = sizesStr.split(',').map(s => s.trim()).filter(Boolean);
     
@@ -173,18 +168,17 @@ export async function addProduct(formData: FormData) {
     // 4. Variant Image Processing (JSONB)
     const color_images: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
     for (const color of colors) {
-      const vMain = formData.get(`variant_image_${color}_main`) as File | null;
-      const vFront = formData.get(`variant_image_${color}_front`) as File | null;
-      const vSide = formData.get(`variant_image_${color}_side`) as File | null;
-      const vBack = formData.get(`variant_image_${color}_back`) as File | null;
+      const vMainUrl = formData.get(`variant_image_${color}_main`) as string | null;
+      const vFrontUrl = formData.get(`variant_image_${color}_front`) as string | null;
+      const vSideUrl = formData.get(`variant_image_${color}_side`) as string | null;
+      const vBackUrl = formData.get(`variant_image_${color}_back`) as string | null;
 
-      // Only add to JSONB if at least one variant image is provided
-      if ((vMain && vMain.size > 0) || (vFront && vFront.size > 0) || (vSide && vSide.size > 0) || (vBack && vBack.size > 0)) {
+      if (vMainUrl || vFrontUrl || vSideUrl || vBackUrl) {
         color_images[color] = {
-          main: await uploadProductImage(vMain),
-          front: await uploadProductImage(vFront),
-          side: await uploadProductImage(vSide),
-          back: await uploadProductImage(vBack),
+          main: vMainUrl,
+          front: vFrontUrl,
+          side: vSideUrl,
+          back: vBackUrl,
         };
       }
     }
@@ -229,12 +223,6 @@ export async function editProduct(formData: FormData) {
     const fabric_and_care = formData.get('fabric_and_care') as string || null;
     const marketing_message = formData.get('marketing_message') as string || null;
     
-    // Parse the multipart binary blobs
-    const mainFile = formData.get('image_main') as File | null;
-    const frontFile = formData.get('image_front') as File | null;
-    const sideFile = formData.get('image_side') as File | null;
-    const backFile = formData.get('image_back') as File | null;
-
     const sizes = sizesStr.split(',').map(s => s.trim()).filter(Boolean);
     const colors: string[] = [];
     const color_codes: string[] = [];
@@ -249,17 +237,17 @@ export async function editProduct(formData: FormData) {
     // 4. Variant Image Processing (JSONB)
     const color_images: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
     for (const color of colors) {
-      const vMain = formData.get(`variant_image_${color}_main`) as File | null;
-      const vFront = formData.get(`variant_image_${color}_front`) as File | null;
-      const vSide = formData.get(`variant_image_${color}_side`) as File | null;
-      const vBack = formData.get(`variant_image_${color}_back`) as File | null;
+      const vMainUrl = formData.get(`variant_image_${color}_main`) as string | null;
+      const vFrontUrl = formData.get(`variant_image_${color}_front`) as string | null;
+      const vSideUrl = formData.get(`variant_image_${color}_side`) as string | null;
+      const vBackUrl = formData.get(`variant_image_${color}_back`) as string | null;
 
-      if ((vMain && vMain.size > 0) || (vFront && vFront.size > 0) || (vSide && vSide.size > 0) || (vBack && vBack.size > 0)) {
+      if (vMainUrl || vFrontUrl || vSideUrl || vBackUrl) {
         color_images[color] = {
-          main: await uploadProductImage(vMain),
-          front: await uploadProductImage(vFront),
-          side: await uploadProductImage(vSide),
-          back: await uploadProductImage(vBack),
+          main: vMainUrl,
+          front: vFrontUrl,
+          side: vSideUrl,
+          back: vBackUrl,
         };
       }
     }
@@ -272,10 +260,17 @@ export async function editProduct(formData: FormData) {
       color_images
     };
 
-    if (mainFile && mainFile.size > 0) updatePayload.image_url = await uploadProductImage(mainFile);
-    if (frontFile && frontFile.size > 0) updatePayload.image_front = await uploadProductImage(frontFile);
-    if (sideFile && sideFile.size > 0) updatePayload.image_side = await uploadProductImage(sideFile);
-    if (backFile && backFile.size > 0) updatePayload.image_back = await uploadProductImage(backFile);
+    const mainUrl = formData.get('image_main') as string | null;
+    if (mainUrl) updatePayload.image_url = mainUrl;
+
+    const frontUrl = formData.get('image_front') as string | null;
+    if (frontUrl) updatePayload.image_front = frontUrl;
+    
+    const sideUrl = formData.get('image_side') as string | null;
+    if (sideUrl) updatePayload.image_side = sideUrl;
+    
+    const backUrl = formData.get('image_back') as string | null;
+    if (backUrl) updatePayload.image_back = backUrl;
 
     const supabase = getAdminSupabase();
     const { error } = await supabase.from('products').update(updatePayload).eq('id', id);

@@ -12,6 +12,7 @@ import { useEffect, useState, useTransition } from "react";
 import { getAdminProducts, addProduct, deleteProduct, editProduct } from "@/app/actions/admin";
 import toast from "react-hot-toast";
 import imageCompression from "browser-image-compression";
+import { createClient } from "@/lib/supabase/client";
 
 interface Product {
   id: string;
@@ -81,36 +82,80 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleAddSubmit = (formData: FormData) => {
-    // Inject optimized files into the form data
-    Object.entries(compressedFiles).forEach(([name, file]) => {
-      formData.set(name, file);
-    });
+  const handleAddSubmit = async (formData: FormData) => {
+    const loader = toast.loading(selectedProduct ? "Updating product..." : "Creating product...");
+    const supabase = createClient();
+    
+    try {
+      // 1. Client-Side Asset Dispatch (Bypassing Vercel's 4.5MB Server Limit)
+      // We upload each compressed file individually and replace the FormData entry with the URL string.
+      const uploadPromises = Object.entries(compressedFiles).map(async ([fieldName, file]) => {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const filePath = `products/${fileName}`;
 
-    const loader = toast.loading(selectedProduct ? "Updating product and variants..." : "Creating product and variants...");
-    startTransition(async () => {
-      try {
-        let res;
-        if (selectedProduct) {
-          formData.append("id", selectedProduct.id);
-          res = await editProduct(formData);
-        } else {
-          res = await addProduct(formData);
+        const { error: uploadError } = await supabase.storage
+          .from('products')
+          .upload(fileName, file);
+
+        if (uploadError) throw new Error(`Upload failed for ${fieldName}: ${uploadError.message}`);
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('products')
+          .getPublicUrl(fileName);
+
+        return { fieldName, publicUrl };
+      });
+
+      const uploadedFiles = await Promise.all(uploadPromises);
+      
+      // Inject URLs into formData, stripping out any binary blobs
+      uploadedFiles.forEach(({ fieldName, publicUrl }) => {
+        formData.set(fieldName, publicUrl);
+      });
+
+      // Clear binary entries from formData that weren't in compressedFiles but might still be there from the browser native form
+      // (Next.js action will still try to parse them if we don't)
+      const keysToDelete: string[] = [];
+      formData.forEach((value, key) => {
+        if (value instanceof File && value.size > 0) {
+           // This means a file was selected but not compressed yet or optimized? 
+           // In our case, all selected files go to compressedFiles via handleFileChange.
+           // However, browser native form submission might include the original File objects.
+           // We MUST remove all binary data to ensure payload is tiny.
+           keysToDelete.push(key);
         }
-        
-        if ('error' in res) {
-          toast.error(res.error as string, { id: loader });
-        } else {
-          toast.success(selectedProduct ? "Product Updated Successfully!" : "Product Drop Successfully Added!", { id: loader });
-          getAdminProducts().then(setLiveProducts);
-          setIsSheetOpen(false);
-          setSelectedProduct(null);
-          setCompressedFiles({});
+      });
+      keysToDelete.forEach(k => formData.delete(k));
+
+      startTransition(async () => {
+        try {
+          let res;
+          if (selectedProduct) {
+            formData.append("id", selectedProduct.id);
+            res = await editProduct(formData);
+          } else {
+            res = await addProduct(formData);
+          }
+          
+          if ('error' in res) {
+            toast.error(res.error as string, { id: loader });
+          } else {
+            toast.success(selectedProduct ? "Product Updated Successfully!" : "Product Drop Successfully Added!", { id: loader });
+            getAdminProducts().then(setLiveProducts);
+            setIsSheetOpen(false);
+            setSelectedProduct(null);
+            setCompressedFiles({});
+          }
+        } catch (err) {
+          console.error("Server Action Error:", err);
+          toast.error("An unexpected error occurred during save", { id: loader });
         }
-      } catch {
-        toast.error("An unexpected error occurred", { id: loader });
-      }
-    });
+      });
+    } catch (err) {
+      console.error("Upload Loop Error:", err);
+      toast.error(err instanceof Error ? err.message : "Image upload failed", { id: loader });
+    }
   };
 
   const handleDelete = (id: string, name: string) => {
