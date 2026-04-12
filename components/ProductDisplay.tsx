@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Link from "next/link";
 import { ProductGallery } from "./ProductGallery";
+import { PriceDisplay } from "./PriceDisplay";
 
 interface Product {
   id: string;
@@ -103,7 +104,10 @@ export function ProductDisplay({ product }: { product: Product }) {
         </nav>
 
         <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4">{product.name}</h1>
-        <p className="text-2xl font-bold mb-8">${product.price}</p>
+        <PriceDisplay 
+          priceCAD={product.price} 
+          className="text-2xl font-bold mb-8" 
+        />
 
         {/* Description removed from here, moved into Accordion below */}
 

@@ -7,6 +7,7 @@ export type Region = {
   currency: string;
   symbol: string;
   flag: string;
+  exchangeRate: number; // Relative to CAD
   isRecommended?: boolean;
 };
 
@@ -17,6 +18,7 @@ export const regions: Region[] = [
     currency: 'CAD', 
     symbol: '$', 
     flag: '🇨🇦',
+    exchangeRate: 1,
     isRecommended: true 
   },
   { 
@@ -24,28 +26,32 @@ export const regions: Region[] = [
     country: 'United States', 
     currency: 'USD', 
     symbol: '$', 
-    flag: '🇺🇸' 
+    flag: '🇺🇸',
+    exchangeRate: 0.74
   },
   { 
     code: 'GBP', 
     country: 'United Kingdom', 
     currency: 'GBP', 
     symbol: '£', 
-    flag: '🇬🇧' 
+    flag: '🇬🇧',
+    exchangeRate: 0.58
   },
   { 
     code: 'NGN', 
     country: 'Nigeria', 
     currency: 'NGN', 
     symbol: '₦', 
-    flag: '🇳🇬' 
+    flag: '🇳🇬',
+    exchangeRate: 1100
   },
   { 
     code: 'GHS', 
     country: 'Ghana', 
     currency: 'GHS', 
     symbol: 'GH₵', 
-    flag: '🇬🇭' 
+    flag: '🇬🇭',
+    exchangeRate: 10
   },
 ];
 

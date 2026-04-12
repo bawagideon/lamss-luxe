@@ -65,7 +65,7 @@ export function ViewedGrid() {
         {/* Main Featured Item */}
         <Link 
           href={`/product/${products[0].id}`}
-          className="flex-[1.5] bg-gray-100 rounded-lg overflow-hidden relative group"
+          className="flex-[1.5] bg-slate-50 rounded-lg overflow-hidden relative group"
         >
           <Image 
             src={products[0].images?.[0] || "/placeholder.jpg"} 
@@ -82,7 +82,7 @@ export function ViewedGrid() {
             <Link 
               key={product.id}
               href={`/product/${product.id}`}
-              className="flex-1 bg-gray-50 rounded-lg overflow-hidden relative group border border-border/50"
+              className="flex-1 bg-slate-50 rounded-lg overflow-hidden relative group border border-border/50"
             >
               <Image 
                 src={product.images?.[0] || "/placeholder.jpg"} 

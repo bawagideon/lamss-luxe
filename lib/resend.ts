@@ -92,3 +92,32 @@ export async function sendShippingConfirmationEmail(email: string) {
     console.error("[Resend] Failed to send shipping confirmation:", error);
   }
 }
+export async function sendContactFormEmail(data: { name: string; email: string; subject: string; message: string }) {
+  try {
+    const { name, email, subject, message } = data;
+    
+    await resend.emails.send({
+      from: 'Lamssé Luxe Contact <contact@lamsseluxe.com>',
+      to: ['lamsseluxe@gmail.com'],
+      replyTo: email,
+      subject: `[Contact Form] ${subject}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px;">
+          <h2 style="border-bottom: 2px solid #000; padding-bottom: 10px; text-transform: uppercase;">New Contact Message</h2>
+          <p><strong>From:</strong> ${name} (${email})</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <div style="background: f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px;">
+            <p style="white-space: pre-wrap;">${message}</p>
+          </div>
+          <p style="font-size: 12px; color: #666; margin-top: 30px; border-top: 1px solid #eee; pt: 10px;">
+            This message was sent from the Lamssé Luxe contact form.
+          </p>
+        </div>
+      `,
+    });
+    console.log(`[Resend] Contact form message from ${email} sent successfully.`);
+  } catch (error) {
+    console.error("[Resend] Failed to send contact form email:", error);
+    throw error;
+  }
+}

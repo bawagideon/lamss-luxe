@@ -145,7 +145,7 @@ export function Navbar() {
                  <div className="container mx-auto px-6 border-t border-border/50 h-14 flex items-center justify-center gap-10">
                     {/* Dept Pills */}
                     <div className="flex items-center gap-4">
-                       {["Women", "Plus+Curve", "Beauty"].map(dept => (
+                        {["Women"].map(dept => (
                          <Link 
                            key={dept} 
                            href={`/shop?dept=${dept.toLowerCase()}`}
@@ -166,9 +166,6 @@ export function Navbar() {
                          { name: "Dresses", slug: "dresses" },
                          { name: "Matching Sets", slug: "two-piece" },
                          { name: "Tops", slug: "tops" },
-                         { name: "Swim", slug: "swim" },
-                         { name: "Outerwear", slug: "outerwear" },
-                         { name: "Accessories", slug: "accessories" },
                          { name: "Restocks", slug: "restocks" }
                        ].map(cat => (
                          <Link 

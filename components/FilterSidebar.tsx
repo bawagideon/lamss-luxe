@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 
-const CATEGORIES = ["Dresses", "Two-Piece", "Tops", "Swim", "Outerwear", "Accessories"];
+const CATEGORIES = ["Dresses", "Two-Piece", "Tops", "Bottoms", "Shoes", "BodyCTRL"];
 const SIZES = ["XXS", "XS", "S", "M", "L", "XL", "XXL"];
 const COLORS = [
   { name: "Black", hex: "#000000" },

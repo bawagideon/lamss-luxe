@@ -10,6 +10,7 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { useUIStore } from "@/store/useUIStore";
 import { useCart } from "@/store/useCart";
 import { toast } from "react-hot-toast";
+import { PriceDisplay } from "@/components/PriceDisplay";
 
 interface RawProduct {
   id: string;
@@ -48,7 +49,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
       imageDefault: p.image_url,
       imageLifestyle: p.image_url,
       sizes: p.sizes && p.sizes.length > 0 ? p.sizes : ['XS', 'S', 'M', 'L', 'XL'],
-      colors: p.colors && p.colors.length > 0 ? p.colors : ['#000000', '#E5CEB6', '#808080'],
+      colors: p.colors && p.colors.length > 0 ? p.colors : [], // No fallback here so we show actual backend data
       marketingMessage: p.marketing_message
     });
 
@@ -90,10 +91,8 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
 
   // Dynamic Grid Classes
   const getGridColsClass = () => {
-    if (gridColumns === 2) return "grid-cols-2";
-    if (gridColumns === 3) return "grid-cols-2 lg:grid-cols-3";
-    if (gridColumns === 5) return "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5";
-    return "grid-cols-2 lg:grid-cols-3";
+    // Force 4 columns on desktop as requested
+    return "grid-cols-2 lg:grid-cols-4";
   };
 
   return (
@@ -129,7 +128,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                   className="group relative flex flex-col"
                 >
                   {/* Visual Stage (Massive & Taller) */}
-                  <div className="relative aspect-[3/5] md:aspect-[0.65] overflow-hidden bg-zinc-50 dark:bg-zinc-900 shadow-sm border border-border/10">
+                  <div className="relative aspect-[3/5] md:aspect-[0.65] overflow-hidden bg-slate-50 dark:bg-zinc-900/40 shadow-sm border border-border/10">
                     <Link href={`/product/${product.id}`} className="absolute inset-0 z-10">
                       <span className="sr-only">View Details</span>
                     </Link>
@@ -210,7 +209,10 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                     <Link href={`/product/${product.id}`} className="group/link block">
                       <div className="flex justify-between items-start mb-0.5">
                         <h3 className="text-[13px] md:text-[15px] font-black tracking-tight uppercase line-clamp-1 text-black dark:text-white group-hover/link:underline underline-offset-8">{product.name}</h3>
-                        <span className="text-[15px] md:text-[17px] font-black tracking-tighter tabular-nums text-black dark:text-zinc-50">{product.price}</span>
+                        <PriceDisplay 
+                          priceCAD={product.rawPrice} 
+                          className="text-[15px] md:text-[17px] font-black tracking-tighter text-black dark:text-zinc-50" 
+                        />
                       </div>
                       
                       {/* Dynamic Product Sub-Message (Marketing Layer) */}
@@ -223,18 +225,18 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                       {/* Swatch & Status Interaction */}
                       <div className="relative h-6 w-full flex items-center justify-between mt-2 overflow-hidden group/swatches">
                          {/* Swatch Presence */}
-                         <div className="flex gap-1.5 items-center">
-                           {product.colors.slice(0, 3).map((color, cIdx) => (
-                             <div 
-                               key={cIdx}
-                               className="w-3.5 h-3.5 rounded-full ring-[1px] ring-offset-1 ring-border/50 border border-black/5"
-                               style={{ backgroundColor: color }}
-                             />
-                           ))}
-                           {product.colors.length > 3 && (
-                             <span className="text-[9px] font-bold text-muted-foreground">+{product.colors.length - 3}</span>
-                           )}
-                         </div>
+                          <div className="flex gap-1.5 items-center">
+                            {(product.colors.length > 0 ? product.colors : ['#000000']).slice(0, 3).map((color, cIdx) => (
+                              <div 
+                                key={cIdx}
+                                className="w-3.5 h-3.5 rounded-full ring-[1px] ring-offset-1 ring-border/50 border border-black/5"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                            {product.colors.length > 3 && (
+                              <span className="text-[9px] font-bold text-muted-foreground">+{product.colors.length - 3}</span>
+                            )}
+                          </div>
 
                          {/* Status Reveal (Animated on desktop) */}
                          <span className="text-[10px] font-black text-black dark:text-zinc-50 uppercase tracking-[0.2em] hidden md:block transition-all duration-300 group-hover/swatches:translate-x-0 translate-x-4 opacity-0 group-hover/swatches:opacity-100">

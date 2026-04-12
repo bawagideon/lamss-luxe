@@ -19,7 +19,6 @@ export function CategoryShop() {
     { name: "Matching Sets", slug: "two-piece", label: "OUR SETS", image: "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?auto=format&fit=crop&q=80" },
     { name: "Tops", slug: "tops", label: "OUR TOPS", image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80" },
     { name: "Bottoms", slug: "bottoms", label: "OUR BOTTOMS", image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&q=80" },
-    { name: "Accessories", slug: "accessories", label: "OUR ACCS", image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80" },
     { name: "Shoes", slug: "shoes", label: "OUR SHOES", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80" },
     { name: "BodyCTRL", slug: "body-ctrl", label: "OUR BODY", image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80" },
   ]);
@@ -30,13 +29,15 @@ export function CategoryShop() {
 
       setCategories((prev) =>
         prev.map((cat) => {
-          const match = products.find((p) =>
+          const matchingProducts = products.filter((p) =>
             p.category?.toLowerCase() === cat.slug.toLowerCase() ||
             p.category?.toLowerCase() === cat.name.toLowerCase()
           );
+          
+          // Use the latest product for this category, or fall back to the generic unslpash if it looks better
           return {
             ...cat,
-            image: match?.image_url || products[0].image_url
+            image: matchingProducts.length > 0 ? matchingProducts[0].image_url : cat.image
           };
         })
       );
@@ -86,8 +87,8 @@ export function CategoryShop() {
              </div>
           </div>
 
-          {/* BOTTOM ROW: 4 Columns Matrix (Consistent with image) */}
-          <div className="grid grid-cols-4 gap-1 md:gap-2">
+          {/* BOTTOM ROW: Matrix (Adjusted for remaining categories) */}
+          <div className={`grid ${footer.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4'} gap-1 md:gap-2`}>
              {footer.map((cat, idx) => (
                 <motion.div
                   key={cat.slug}
