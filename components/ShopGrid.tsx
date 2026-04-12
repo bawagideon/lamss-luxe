@@ -38,7 +38,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
   const [liveProducts, setLiveProducts] = useState<ShopProduct[]>([]);
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
   const { addItem } = useCart();
-  const { gridColumns } = useUIStore();
+  const { } = useUIStore();
 
   useEffect(() => {
     const mapProduct = (p: RawProduct) => ({
