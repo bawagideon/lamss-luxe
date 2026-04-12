@@ -12,7 +12,7 @@ import { useEffect, useState, useTransition } from "react";
 import { getAdminProducts, addProduct, deleteProduct, editProduct, uploadSingleImage } from "@/app/actions/admin";
 import toast from "react-hot-toast";
 import imageCompression from "browser-image-compression";
-import { createClient } from "@/lib/supabase/client";
+
 
 interface Product {
   id: string;
@@ -84,7 +84,6 @@ export default function AdminProductsPage() {
 
   const handleAddSubmit = async (formData: FormData) => {
     const loader = toast.loading(selectedProduct ? "Updating product..." : "Creating product...");
-    const supabase = createClient();
     
     try {
       // 1. Client-Side Asset Dispatch (Bypassing Vercel's 4.5MB Server Limit)
