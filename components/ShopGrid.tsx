@@ -19,6 +19,7 @@ interface RawProduct {
   image_url: string;
   sizes?: string[];
   colors?: string[];
+  color_codes?: string[];
   marketing_message?: string;
 }
 
@@ -49,7 +50,8 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
       imageDefault: p.image_url,
       imageLifestyle: p.image_url,
       sizes: p.sizes && p.sizes.length > 0 ? p.sizes : ['XS', 'S', 'M', 'L', 'XL'],
-      colors: p.colors && p.colors.length > 0 ? p.colors : [], // No fallback here so we show actual backend data
+      // Prioritize color_codes for the visual swatches per user request
+      colors: p.color_codes && p.color_codes.length > 0 ? p.color_codes : (p.colors && p.colors.length > 0 ? p.colors : []),
       marketingMessage: p.marketing_message
     });
 
