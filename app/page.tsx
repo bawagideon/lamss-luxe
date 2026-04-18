@@ -1,7 +1,6 @@
 import { Hero } from "@/components/Hero";
 import { ShopGrid } from "@/components/ShopGrid";
 import { CommunityWaitlist } from "@/components/CommunityWaitlist";
-import { Gallery } from "@/components/Gallery";
 import { CategoryShop } from "@/components/CategoryShop";
 import { Footer } from "@/components/Footer";
 
@@ -12,7 +11,6 @@ export default function Home() {
       <CategoryShop />
       <ShopGrid />
       <CommunityWaitlist />
-      <Gallery />
       <Footer />
     </main>
   );

@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 interface UIState {
   isMobileMenuOpen: boolean;
   isSearchOpen: boolean;
-  gridColumns: number; // 2, 3, 5
+  gridColumns: number; // 2, 3, 4
   setMobileMenuOpen: (open: boolean) => void;
   setSearchOpen: (open: boolean) => void;
   toggleMobileMenu: () => void;

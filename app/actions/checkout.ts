@@ -3,6 +3,7 @@
 import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { applyLaunchPromo } from '@/lib/promo';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy', { apiVersion: '2026-02-25.clover' });
 
@@ -23,17 +24,25 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
 
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const userEmail = user?.email || "";
 
-  const line_items = cartItems.map((item) => ({
-    price_data: {
-      currency: 'cad',
-      product_data: { 
-        name: `${item.name} - Size: ${item.selectedSize} | Color: ${item.selectedColor}`, 
-        images: item.image ? [item.image] : undefined 
+  let promoApplied = false;
+
+  const line_items = await Promise.all(cartItems.map(async (item) => {
+    const { finalPrice, applied } = await applyLaunchPromo(userEmail, item.rawPrice);
+    if (applied) promoApplied = true;
+    
+    return {
+      price_data: {
+        currency: 'cad',
+        product_data: { 
+          name: `${item.name} - Size: ${item.selectedSize} | Color: ${item.selectedColor}`, 
+          images: item.image ? [item.image] : undefined 
+        },
+        unit_amount: Math.round(finalPrice * 100),
       },
-      unit_amount: Math.round(item.rawPrice * 100),
-    },
-    quantity: item.quantity,
+      quantity: item.quantity,
+    };
   }));
 
   // Stringify concise parameters mapping strict limits of Stripe's 500-char metadata boundary
@@ -52,7 +61,10 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
     shipping_address_collection: { 
       allowed_countries: ['US', 'CA', 'GB', 'NG', 'GH'] 
     },
-    metadata: { cart_payload: orderMetadata },
+    metadata: { 
+        cart_payload: orderMetadata,
+        is_launch_promo: promoApplied ? "true" : "false" 
+    },
   });
 
   return session.url!;

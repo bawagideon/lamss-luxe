@@ -12,6 +12,9 @@ import { useEffect, useState, useTransition } from "react";
 import { getAdminProducts, addProduct, deleteProduct, editProduct, uploadSingleImage } from "@/app/actions/admin";
 import toast from "react-hot-toast";
 import imageCompression from "browser-image-compression";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 
 interface Product {
@@ -32,12 +35,21 @@ interface Product {
   size_and_fit?: string;
   fabric_and_care?: string;
   marketing_message?: string;
+  is_new?: boolean;
+  promo_banner?: string | null;
+  color_badges?: Record<string, string>;
+  related_product_ids?: string[];
+  is_set_available?: boolean;
 }
 
 export default function AdminProductsPage() {
   const [liveProducts, setLiveProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeColors, setActiveColors] = useState<string[]>(['', '', '', '']);
+  const [colorBadges, setColorBadges] = useState<Record<string, string>>({});
+  const [relatedProductIds, setRelatedProductIds] = useState<string[]>([]);
+  const [isNewDrop, setIsNewDrop] = useState(false);
+  const [isSetAvailable, setIsSetAvailable] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [compressedFiles, setCompressedFiles] = useState<Record<string, File>>({});
@@ -49,8 +61,16 @@ export default function AdminProductsPage() {
   useEffect(() => {
     if (selectedProduct) {
       setActiveColors(selectedProduct.colors || ['', '', '', '']);
+      setColorBadges(selectedProduct.color_badges || {});
+      setRelatedProductIds(selectedProduct.related_product_ids || []);
+      setIsNewDrop(!!selectedProduct.is_new);
+      setIsSetAvailable(!!selectedProduct.is_set_available);
     } else {
       setActiveColors(['', '', '', '']);
+      setColorBadges({});
+      setRelatedProductIds([]);
+      setIsNewDrop(false);
+      setIsSetAvailable(false);
     }
     setCompressedFiles({});
   }, [selectedProduct]);
@@ -108,6 +128,10 @@ export default function AdminProductsPage() {
       uploadedFiles.forEach(({ fieldName, publicUrl }) => {
         formData.set(fieldName, publicUrl);
       });
+
+      // Inject programmatic state fields
+      formData.append('related_product_ids', relatedProductIds.join(','));
+      formData.append('color_badges_json', JSON.stringify(colorBadges));
 
       // Clear binary entries from formData that weren't in compressedFiles but might still be there from the browser native form
       // (Next.js action will still try to parse them if we don't)
@@ -190,6 +214,23 @@ export default function AdminProductsPage() {
                 <Label htmlFor="name" className="text-xs uppercase font-bold text-gray-500">Product Name</Label>
                 <Input id="name" name="name" defaultValue={selectedProduct?.name || ''} required placeholder="e.g. The Velvet Evening Gown" className="border-gray-200 focus-visible:ring-black" />
               </div>
+
+              <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-lg border border-zinc-100">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-black uppercase tracking-tight">New Drop Status</Label>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Mark as &quot;NEW&quot; in storefront</p>
+                </div>
+                <Switch 
+                  checked={isNewDrop}
+                  onCheckedChange={(val) => setIsNewDrop(val)}
+                />
+                <input type="hidden" name="is_new" value={isNewDrop ? 'true' : 'false'} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="promo_banner" className="text-xs uppercase font-bold text-blue-500">Promo Banner Text (Top of Product Info)</Label>
+                <Input id="promo_banner" name="promo_banner" defaultValue={selectedProduct?.promo_banner || ''} placeholder="e.g. FREE SHIPPING ON ORDERS OVER $75" className="border-blue-100 focus-visible:ring-blue-500" />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="desc" className="text-xs uppercase font-bold text-gray-500">Description</Label>
                 <textarea id="desc" name="description" defaultValue={selectedProduct?.description || ''} rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="A stunning piece for queens..."></textarea>
@@ -233,6 +274,17 @@ export default function AdminProductsPage() {
                   <Label htmlFor="sizes" className="text-xs uppercase font-bold text-gray-500">Sizes (Comma-Separated)</Label>
                   <Input id="sizes" name="sizes" defaultValue={selectedProduct?.sizes?.join(', ') || ''} placeholder="XS, S, M, L, XL" className="border-gray-200 focus-visible:ring-black" />
                 </div>
+                <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-lg border border-zinc-100 mt-6">
+                  <div className="space-y-0.5">
+                    <Label className="text-[10px] font-black uppercase tracking-tight">Outfit Set Available</Label>
+                    <p className="text-[8px] text-muted-foreground uppercase">Enable &quot;Buy the Set&quot; toggle</p>
+                  </div>
+                  <Switch 
+                    checked={isSetAvailable}
+                    onCheckedChange={(val) => setIsSetAvailable(val)}
+                  />
+                  <input type="hidden" name="is_set_available" value={isSetAvailable ? 'true' : 'false'} />
+                </div>
               </div>
               <div className="space-y-2 border-t border-gray-100 pt-4">
                 <Label className="text-xs uppercase font-bold text-gray-500">Colors (Name & Exact Hex Picker)</Label>
@@ -243,14 +295,21 @@ export default function AdminProductsPage() {
                       value={color} 
                       onChange={(e) => {
                         const val = e.target.value;
-                        startTransition(() => {
-                          const newColors = [...activeColors];
-                          newColors[i] = val;
-                          setActiveColors(newColors);
-                        });
+                        const newColors = [...activeColors];
+                        newColors[i] = val;
+                        setActiveColors(newColors);
                       }}
-                      placeholder={`Color ${i + 1} Name (e.g. Midnight)`} 
+                      placeholder={`Color ${i + 1} Name`} 
                       className="border-gray-200 focus-visible:ring-black flex-1" 
+                    />
+                    <Input 
+                      placeholder="Sub-Badge (e.g. Selling Fast)" 
+                      value={colorBadges[color] || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setColorBadges(prev => ({ ...prev, [color]: val }));
+                      }}
+                      className="border-gray-100 text-[10px] w-28 h-10"
                     />
                     <div className="h-10 w-12 rounded-lg overflow-hidden border border-gray-200 shrink-0">
                       <input type="color" name="color_codes" className="w-[150%] h-[150%] -ml-1 -mt-1 cursor-pointer" defaultValue={selectedProduct?.color_codes?.[i] || ["#000000", "#DC143C", "#F5F5DC", "#4682B4"][i]} />
@@ -385,6 +444,35 @@ export default function AdminProductsPage() {
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="space-y-4 border-t border-gray-100 pt-6">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-black uppercase tracking-tight">Complete The Look</h4>
+                  <Badge variant="outline" className="text-[9px] uppercase">{relatedProductIds.length} Linked</Badge>
+                </div>
+                <p className="text-[10px] text-muted-foreground -mt-2 italic">Select complementary products to upsell in the storefront carousel.</p>
+                <div className="max-h-48 overflow-y-auto border border-border rounded-lg p-3 space-y-2 bg-zinc-50/50">
+                  {liveProducts.filter(p => p.id !== selectedProduct?.id).map(p => (
+                    <div key={p.id} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`rel-${p.id}`} 
+                        checked={relatedProductIds.includes(p.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) setRelatedProductIds(prev => [...prev, p.id]);
+                          else setRelatedProductIds(prev => prev.filter(id => id !== p.id));
+                        }}
+                      />
+                      <Label htmlFor={`rel-${p.id}`} className="text-[11px] font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                        {p.name} <span className="text-[9px] text-muted-foreground ml-1">(${p.price})</span>
+                      </Label>
+                    </div>
+                  ))}
+                  {liveProducts.length <= 1 && (
+                    <p className="text-center py-4 text-[10px] text-muted-foreground uppercase">No other products found to link.</p>
+                  )}
+                </div>
+              </div>
+
               <Button type="submit" disabled={isPending} className="w-full bg-black hover:bg-black/80 font-bold uppercase tracking-wide h-12">
                 {selectedProduct ? "Save Changes" : "Submit Product"}
               </Button>

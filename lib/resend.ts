@@ -4,15 +4,15 @@ import * as React from 'react';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
 
-export async function sendNewsletterEmail(email: string, subject: string, content: string) {
+export async function sendNewsletterEmail(email: string, subject: string, content: string, isPromo: boolean = false, discountCode?: string) {
   try {
     await resend.emails.send({
       from: 'Lamssé Luxe <newsletter@lamsseluxe.com>',
       to: [email],
       subject: subject,
-      react: BrandNewsletter({ subject, content }) as React.ReactElement,
+      react: BrandNewsletter({ subject, content, isPromo, discountCode }) as React.ReactElement,
     });
-    console.log(`[Resend] Newsletter successfully sent to ${email}`);
+    console.log(`[Resend] Newsletter successfully sent to ${email}${isPromo ? ' (Promo Mode)' : ''}`);
   } catch (error) {
     console.error(`[Resend] Failed to send newsletter to ${email}:`, error);
   }

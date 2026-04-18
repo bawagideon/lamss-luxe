@@ -39,7 +39,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
   const [liveProducts, setLiveProducts] = useState<ShopProduct[]>([]);
   const { wishlistIds, toggleWishlist, mounted } = useWishlist();
   const { addItem } = useCart();
-  const { } = useUIStore();
+  const { gridColumns } = useUIStore();
 
   useEffect(() => {
     const mapProduct = (p: RawProduct) => ({
@@ -93,8 +93,9 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
 
   // Dynamic Grid Classes
   const getGridColsClass = () => {
-    // Force 4 columns on desktop as requested
-    return "grid-cols-2 lg:grid-cols-4";
+    // Dynamic mobile columns (2, 3, 4) based on state, fixed for desktop
+    const mobileCols = gridColumns === 3 ? "grid-cols-3" : gridColumns === 4 ? "grid-cols-4" : "grid-cols-2";
+    return `${mobileCols} lg:grid-cols-4 2xl:grid-cols-6`;
   };
 
   return (
@@ -116,7 +117,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
         ) : (
           <motion.div 
             layout
-            className={`grid ${getGridColsClass()} gap-x-1 gap-y-12 transition-all duration-500 ease-in-out`}
+            className={`grid ${getGridColsClass()} gap-x-1 gap-y-12 transition-all duration-700 ease-[0.23,1,0.32,1]`}
           >
             <AnimatePresence mode="popLayout">
               {liveProducts.map((product, index) => (

@@ -29,7 +29,7 @@ export function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       if (currentScrollY > 70) {
         setIsScrolled(true);
       } else if (currentScrollY < 30) {
@@ -53,22 +53,22 @@ export function Navbar() {
 
   if (pathname.startsWith("/admin")) return null;
 
-  const navBgColor = isScrolled 
-    ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 shadow-2xl" 
+  const navBgColor = isScrolled
+    ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 shadow-2xl"
     : "bg-white/95 dark:bg-background/95 backdrop-blur-md border-b border-border shadow-sm";
 
   return (
     <>
       <motion.nav
         initial={{ y: -100 }}
-        animate={{ 
+        animate={{
           y: isVisible ? 0 : "-100%",
         }}
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
         className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none"
       >
         <motion.div
-          animate={{ 
+          animate={{
             width: isScrolled ? "95%" : "100%",
             maxWidth: isScrolled ? "1400px" : "100%",
             marginTop: isScrolled ? "14px" : "0px",
@@ -78,107 +78,103 @@ export function Navbar() {
           className={`relative pointer-events-auto transition-all duration-500 overflow-visible`}
         >
           {/* Background Layer */}
-          <motion.div 
-             animate={{ 
-               borderRadius: isScrolled ? "24px" : "0px",
-             }}
-             className={`absolute inset-0 z-0 overflow-hidden ${navBgColor}`}
+          <motion.div
+            animate={{
+              borderRadius: isScrolled ? "24px" : "0px",
+            }}
+            className={`absolute inset-0 z-0 overflow-hidden ${navBgColor}`}
           >
-             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] dark:opacity-[0.1]" />
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] dark:opacity-[0.1]" />
           </motion.div>
 
           {/* Content Layer */}
           <div className="relative z-10 w-full flex flex-col">
-            
+
             {/* DESKTOP VIEW (Visible on lg+) */}
             <div className="hidden lg:flex flex-col w-full">
-               {/* TIER 1: Main Desktop Header (Image Layout 1) */}
-               <div className="container mx-auto px-6 h-20 flex items-center justify-between gap-8">
-                  
-                  {/* Left: Logo & Core Nav */}
-                  <div className="flex items-center gap-10">
-                    <Link href="/" className="flex-shrink-0">
-                      <div className="relative w-40 h-8">
-                        <Image src="/Logo-light.png" alt="Logo" fill className="object-contain object-left dark:hidden" priority />
-                        <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain object-left hidden dark:block" priority />
-                      </div>
-                    </Link>
-                    <div className="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900 dark:text-white">
-                      {[
-                        { name: "New In", href: "/shop/new-in" },
-                        { name: "Clothing", href: "/shop" },
-                        { name: "Community", href: "/community" },
-                        { name: "About", href: "/about" },
-                        { name: "Contact", href: "/contact" }
-                      ].map(link => (
-                        <Link key={link.name} href={link.href} className="hover:text-[#FF2B8B] transition-colors whitespace-nowrap">
-                          {link.name}
-                        </Link>
-                      ))}
+              {/* TIER 1: Main Desktop Header (Image Layout 1) */}
+              <div className="container mx-auto px-6 h-20 flex items-center justify-between gap-8">
+
+                {/* Left: Logo & Core Nav */}
+                <div className="flex items-center gap-10">
+                  <Link href="/" className="flex-shrink-0 group">
+                    <div className="relative w-64 h-12 transition-transform duration-500 group-hover:scale-105">
+                      <Image src="/Logo-light.png" alt="Logo" fill className="object-contain object-left dark:hidden" priority />
+                      <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain object-left hidden dark:block" priority />
                     </div>
+                  </Link>
+                  <div className="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900 dark:text-white">
+                    {[
+                      { name: "New In", href: "/shop/new-in" },
+                      { name: "Clothing", href: "/shop" },
+                      { name: "Luxe Network", href: "/community" },
+                      { name: "About", href: "/about" },
+                      { name: "Contact", href: "/contact" }
+                    ].map(link => (
+                      <Link key={link.name} href={link.href} className="hover:text-[#FF2B8B] transition-colors whitespace-nowrap">
+                        {link.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Center: Search Bar (Integrated component with dropsheet) */}
+                <div className="flex-1 max-w-md">
+                  <SearchBar isTransparent={false} />
+                </div>
+
+                {/* Right: Actions (Image Alignment) */}
+                <div className="flex items-center gap-6">
+                  <RegionSelector />
+                  <ThemeToggle />
+                  <Link href="/wishlist" className="relative group">
+                    <Heart className="w-6 h-6 stroke-[1.5px] group-hover:text-black transition-colors" />
+                  </Link>
+
+
+                  <UserProfileDropdown />
+                  <CartSheet />
+                </div>
+              </div>
+
+              {/* TIER 2: Desktop Categories Header (Centered Symmetry) */}
+              {!isScrolled && (
+                <div className="container mx-auto px-6 border-t border-border/50 h-14 flex items-center justify-center gap-10">
+                  {/* Dept Pills */}
+                  <div className="flex items-center gap-4">
+                    {["Women"].map(dept => (
+                      <Link
+                        key={dept}
+                        href={`/shop?dept=${dept.toLowerCase()}`}
+                        className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${dept === "Women"
+                          ? "bg-pink-50 text-pink-500 border border-pink-100 shadow-sm"
+                          : "bg-transparent text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                          }`}
+                      >
+                        {dept}
+                      </Link>
+                    ))}
                   </div>
 
-                  {/* Center: Search Bar (Integrated component with dropsheet) */}
-                  <div className="flex-1 max-w-md">
-                    <SearchBar isTransparent={false} />
+                  {/* Category Links with Explicit Slug Mapping */}
+                  <div className="flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400">
+                    {[
+                      { name: "Dresses", slug: "dresses" },
+                      { name: "Matching Sets", slug: "two-piece" },
+                      { name: "Tops", slug: "tops" },
+                      { name: "Restocks", slug: "restocks" }
+                    ].map(cat => (
+                      <Link
+                        key={cat.slug}
+                        href={`/shop/${cat.slug}`}
+                        className="hover:text-pink-500 transition-colors whitespace-nowrap"
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
                   </div>
-
-                  {/* Right: Actions (Image Alignment) */}
-                  <div className="flex items-center gap-6">
-                    <RegionSelector />
-                    <ThemeToggle />
-                    <Link href="/wishlist">
-                      <Heart className="w-6 h-6 stroke-[1.5px] hover:text-[#FF2B8B] transition-colors" />
-                    </Link>
-                    
-                    <button className="px-5 py-2.5 border-2 border-[#FF2B8B] text-[#FF2B8B] text-[10px] font-black uppercase tracking-[0.2em] rounded-sm hover:bg-[#FF2B8B] hover:text-white transition-all">
-                       Shop The Drop
-                    </button>
-
-                    <UserProfileDropdown />
-                    <CartSheet />
-                  </div>
-               </div>
-
-               {/* TIER 2: Desktop Categories Header (Centered Symmetry) */}
-               {!isScrolled && (
-                 <div className="container mx-auto px-6 border-t border-border/50 h-14 flex items-center justify-center gap-10">
-                    {/* Dept Pills */}
-                    <div className="flex items-center gap-4">
-                        {["Women"].map(dept => (
-                         <Link 
-                           key={dept} 
-                           href={`/shop?dept=${dept.toLowerCase()}`}
-                           className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
-                              dept === "Women" 
-                                ? "bg-pink-50 text-pink-500 border border-pink-100 shadow-sm" 
-                                : "bg-transparent text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                           }`}
-                        >
-                           {dept}
-                         </Link>
-                       ))}
-                    </div>
-
-                    {/* Category Links with Explicit Slug Mapping */}
-                    <div className="flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400">
-                       {[
-                         { name: "Dresses", slug: "dresses" },
-                         { name: "Matching Sets", slug: "two-piece" },
-                         { name: "Tops", slug: "tops" },
-                         { name: "Restocks", slug: "restocks" }
-                       ].map(cat => (
-                         <Link 
-                           key={cat.slug} 
-                           href={`/shop/${cat.slug}`}
-                           className="hover:text-pink-500 transition-colors whitespace-nowrap"
-                         >
-                           {cat.name}
-                         </Link>
-                       ))}
-                    </div>
-                 </div>
-               )}
+                </div>
+              )}
             </div>
 
             {/* MOBILE VIEW (Visible on <lg) */}
@@ -188,7 +184,7 @@ export function Navbar() {
                 {/* Left: Logo */}
                 <div className="flex justify-start">
                   <Link href="/" className="flex-shrink-0 group">
-                    <div className={`relative ${isScrolled ? "w-24 h-5" : "w-28 h-6"} transition-all duration-500`}>
+                    <div className={`relative ${isScrolled ? "w-36 h-8" : "w-44 h-10"} transition-all duration-500`}>
                       <Image src="/Logo-light.png" alt="Logo" fill className="object-contain object-left dark:hidden" priority />
                       <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain object-left hidden dark:block" priority />
                     </div>
@@ -197,7 +193,7 @@ export function Navbar() {
 
                 {/* Center: Grid Switcher (Prominent & Centered) */}
                 <div className="flex justify-center">
-                   <GridSwitcher />
+                  <GridSwitcher />
                 </div>
 
                 {/* Right: Actions */}
@@ -219,11 +215,11 @@ export function Navbar() {
                   {[
                     { name: "New In", href: "/shop/new-in" },
                     { name: "Clothing", href: "/shop" },
-                    { name: "Community", href: "/community" },
+                    { name: "Luxe Network", href: "/community" },
                     { name: "About", href: "/about" },
                     { name: "Contact", href: "/contact" }
                   ].map((item) => (
-                    <Link 
+                    <Link
                       key={item.name}
                       href={item.href}
                       className="text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400 hover:text-[#FF2B8B] transition-colors active:text-[#FF2B8B]"

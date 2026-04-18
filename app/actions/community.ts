@@ -2,6 +2,7 @@
 
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
+import { sendNewsletterEmail } from '@/lib/resend';
 
 const getAdminSupabase = () => createSupabaseAdmin(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -152,6 +153,16 @@ export async function subscribeToNewsletter(formData: FormData) {
     }, { onConflict: 'email' });
 
     if (error) throw new Error(error.message);
+
+    // 2. Automated Welcome Engine: Deliver the 30% PromoCode instantly
+    // Using a background-style promise to avoid blocking the user's primary UI feedback
+    const welcomeSubject = "WELCOME TO THE SOFT LIFE: YOUR LUXE GIFT INSIDE";
+    const welcomeContent = `Hi ${name || 'there'},\n\nWelcome to the Luxe Network. You're now officially part of our inner circle.\n\nTo celebrate our launch, we've prepared an exclusive gift for you. Use the code below at checkout to claim your 30% discount on any piece from our inaugural collection.\n\nKeep dreaming, keep glowing.`;
+    
+    // Non-awaited to ensure instant UI success message for the user
+    sendNewsletterEmail(email, welcomeSubject, welcomeContent, true, "LUXELAUNCH30").catch(e => {
+       console.error("Welcome Email background dispatch failed:", e);
+    });
 
     revalidatePath('/admin/newsletter');
     return { success: true };

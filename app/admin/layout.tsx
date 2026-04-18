@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, Truck, Users, Settings, Menu, X, LogOut, Camera } from "lucide-react";
-import { useState } from "react";
+import { LayoutDashboard, ShoppingBag, Truck, Users, Settings, Menu, X, LogOut, Camera, MessageSquare } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { getPendingReviewsCount } from "@/app/actions/reviews";
 
 const sidebarNavItems = [
   { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { title: "Products", href: "/admin/products", icon: ShoppingBag },
   { title: "Orders", href: "/admin/orders", icon: Truck },
   { title: "Customers", href: "/admin/customers", icon: Users },
+  { title: "Reviews", href: "/admin/reviews", icon: MessageSquare, showBadge: true },
   { title: "Community", href: "/admin/community", icon: Camera },
   { title: "Settings", href: "/admin/settings", icon: Settings },
 ];
@@ -19,6 +21,18 @@ const sidebarNavItems = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      const count = await getPendingReviewsCount();
+      setPendingCount(count);
+    };
+    fetchCount();
+    // Refresh every 2 minutes or on mount
+    const timer = setInterval(fetchCount, 120000);
+    return () => clearInterval(timer);
+  }, []);
 
   // If we are on the login page, don't show the sidebar navigation layout
   if (pathname === "/admin/login") {
@@ -64,7 +78,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <item.icon className={cn("w-5 h-5", isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground")} />
-                  <span>{item.title}</span>
+                  <span className="flex-1">{item.title}</span>
+                  {item.showBadge && pendingCount > 0 && (
+                    <span className={cn(
+                        "ml-auto w-5 h-5 flex items-center justify-center text-[10px] font-black rounded-full",
+                        isActive ? "bg-white text-primary" : "bg-primary text-primary-foreground"
+                    )}>
+                        {pendingCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}

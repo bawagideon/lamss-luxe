@@ -3,9 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, ShoppingBag, Package, Users } from "lucide-react";
+import { DollarSign, ShoppingBag, Package, Users, Percent, Gift, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getAdminMetrics, getAdminRecentOrders } from "@/app/actions/admin";
+import { getAdminMetrics, getAdminRecentOrders, getAdminPromoMetrics } from "@/app/actions/admin";
 
 interface Order {
   id: string;
@@ -18,10 +18,12 @@ interface Order {
 export default function AdminOverviewPage() {
   const [metrics, setMetrics] = useState({ totalRevenue: "0.00", ordersCount: 0, activeProducts: 0, waitlistCount: 0 });
   const [orders, setOrders] = useState<Order[]>([]);
+  const [promoMetrics, setPromoMetrics] = useState({ discountedOrders: 0, totalSavings: 0, revenueImpact: 0 });
 
   useEffect(() => {
     getAdminMetrics().then(setMetrics);
     getAdminRecentOrders().then(setOrders);
+    getAdminPromoMetrics().then(setPromoMetrics);
   }, []);
 
   return (
@@ -72,6 +74,42 @@ export default function AdminOverviewPage() {
             <p className="text-xs text-green-600 mt-1 font-medium">Database Extractions</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* LAUNCH PROMOTION TRACKING SECTION */}
+      <div className="bg-black text-white p-8 rounded-3xl relative overflow-hidden">
+         <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+            <Percent className="w-40 h-40" />
+         </div>
+         <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-8">
+               <div className="w-10 h-10 bg-[#FF2B8B] rounded-full flex items-center justify-center">
+                  <Gift className="w-5 h-5" />
+               </div>
+               <h2 className="text-xl font-black uppercase tracking-tighter">Launch Promotion (30% OFF)</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+               <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Discounted Orders</p>
+                  <p className="text-3xl font-black">{promoMetrics.discountedOrders}</p>
+                  <p className="text-[10px] font-bold text-zinc-600 uppercase mt-2">Active during first week</p>
+               </div>
+               <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Savings Distributed</p>
+                  <p className="text-3xl font-black text-[#FF2B8B]">${promoMetrics.totalSavings.toFixed(2)}</p>
+                  <p className="text-[10px] font-bold text-zinc-600 uppercase mt-2">Cumulative shopper savings</p>
+               </div>
+               <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Promo Revenue</p>
+                  <p className="text-3xl font-black">${promoMetrics.revenueImpact.toFixed(2)}</p>
+                  <div className="flex items-center gap-1.5 text-green-500 mt-2">
+                     <TrendingUp className="w-3 h-3" />
+                     <span className="text-[10px] font-black uppercase tracking-widest">Early traction surge</span>
+                  </div>
+               </div>
+            </div>
+         </div>
       </div>
 
       <div className="grid gap-6">

@@ -8,25 +8,24 @@ export function GridSwitcher() {
 
   const options = [
     { cols: 2, icon: (
-      <div className="flex gap-[2px]">
-        <div className="w-[4px] h-[8px] bg-current rounded-[0.5px]" />
-        <div className="w-[4px] h-[8px] bg-current rounded-[0.5px]" />
+      <div className="flex gap-[2.5px]">
+        <div className="w-[5px] h-[9px] bg-current rounded-[0.5px]" />
+        <div className="w-[5px] h-[9px] bg-current rounded-[0.5px]" />
       </div>
     )},
     { cols: 3, icon: (
       <div className="flex gap-[2px]">
-        <div className="w-[3px] h-[8px] bg-current rounded-[0.5px]" />
-        <div className="w-[3px] h-[8px] bg-current rounded-[0.5px]" />
-        <div className="w-[3px] h-[8px] bg-current rounded-[0.5px]" />
+        <div className="w-[3px] h-[9px] bg-current rounded-[0.5px]" />
+        <div className="w-[3px] h-[9px] bg-current rounded-[0.5px]" />
+        <div className="w-[3px] h-[9px] bg-current rounded-[0.5px]" />
       </div>
     )},
-    { cols: 5, icon: (
+    { cols: 4, icon: (
       <div className="flex gap-[1.5px]">
-        <div className="w-[2px] h-[8px] bg-current rounded-[0.5px]" />
-        <div className="w-[2px] h-[8px] bg-current rounded-[0.5px]" />
-        <div className="w-[2px] h-[8px] bg-current rounded-[0.5px]" />
-        <div className="w-[2px] h-[8px] bg-current rounded-[0.5px]" />
-        <div className="w-[2px] h-[8px] bg-current rounded-[0.5px]" />
+        <div className="w-[2px] h-[9px] bg-current rounded-[0.5px]" />
+        <div className="w-[2px] h-[9px] bg-current rounded-[0.5px]" />
+        <div className="w-[2px] h-[9px] bg-current rounded-[0.5px]" />
+        <div className="w-[2px] h-[9px] bg-current rounded-[0.5px]" />
       </div>
     )},
   ];

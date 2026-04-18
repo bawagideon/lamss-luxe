@@ -41,6 +41,40 @@ export async function getNewsletterStats() {
   }
 }
 
+export async function getSubscribers() {
+  noStore();
+  try {
+    const supabase = getAdminSupabase();
+    const { data, error } = await supabase
+      .from('newsletter_subscribers')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw new Error(error.message);
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching subscribers:", error);
+    return [];
+  }
+}
+
+export async function removeSubscriber(id: string) {
+  noStore();
+  try {
+    const supabase = getAdminSupabase();
+    const { error } = await supabase
+      .from('newsletter_subscribers')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+    return { success: true };
+  } catch (error: unknown) {
+    const err = error as Error;
+    return { error: err.message || "Failed to remove subscriber." };
+  }
+}
+
 export async function sendTestEmail(testAddress: string, subject: string, content: string) {
   noStore();
   if (!testAddress || !subject || !content) {

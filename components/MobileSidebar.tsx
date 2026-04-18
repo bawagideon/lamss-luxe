@@ -15,7 +15,7 @@ export function MobileSidebar() {
   const categories = [
     { name: "New In", href: "/shop/new-in" },
     { name: "Clothing", href: "/shop" },
-    { name: "Community", href: "/community" },
+    { name: "Luxe Network", href: "/community" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
@@ -29,7 +29,7 @@ export function MobileSidebar() {
 
   const companyLinks = [
     { label: "About & Founder Story", href: "/about" },
-    { label: "Luxe Network Experience", href: "/community" },
+    { label: "Luxe Network", href: "/community" },
     { label: "Contact", href: "/contact" },
     { label: "Shipping & Returns", href: "/shipping-returns" }
   ];
@@ -58,7 +58,7 @@ export function MobileSidebar() {
                 {/* Left: Logo (Position locked to far left) */}
                 <div className="flex justify-start">
                   <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex-shrink-0 group">
-                    <div className="relative w-28 h-6">
+                    <div className="relative w-44 h-10">
                       <Image src="/Logo-light.png" alt="Logo" fill className="object-contain object-left dark:hidden" priority />
                       <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain object-left hidden dark:block" priority />
                     </div>

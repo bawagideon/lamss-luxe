@@ -6,40 +6,22 @@ import { Navbar } from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthModal } from "@/components/AuthModal";
 import { Toaster } from "react-hot-toast";
+import { PageTransition } from "@/components/PageTransition";
+import { JsonLd } from "@/components/JsonLd";
 
 const outfit = Outfit({ 
   subsets: ["latin"],
   variable: '--font-outfit'
 });
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ClothingStore",
-  "name": "Lamssé Luxe",
-  "description": "Leading fashion clothes, affordable women's clothing, and community for queens.",
-  "url": "https://www.lamsseluxe.ca",
-  "telephone": "+18000000000",
-  "email": "lamsseluxe@gmail.com",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "7, Exmouth street",
-    "addressLocality": "St. John’s",
-    "addressRegion": "NL",
-    "postalCode": "A1B 2E1",
-    "addressCountry": "CA"
-  },
-  "sameAs": [
-    "https://instagram.com/lamsseluxe.ca"
-  ]
-};
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.lamsseluxe.ca"),
+  metadataBase: new URL("https://www.luxenetwork.ca"),
   title: {
-    default: "Lamssé Luxe | Leading Fashion Clothes & Affordable Women's Clothing",
-    template: "%s | Lamssé Luxe - Best Fashion Store"
+    default: "Luxe Network | House of Luxury Drops & Streetwear",
+    template: "%s | Luxe Network - Premium Fashion"
   },
-  description: "Shop the best fashion store online at Lamssé Luxe. Leading fashion clothes, affordable women's clothing, two-piece sets, and elegant dresses for the unabashed Soft Life Queen. Join the premier women's community.",
+  description: "Shop the best fashion store online at Luxe Network. Leading fashion clothes, affordable women's clothing, two-piece sets, and elegant dresses for the unabashed Soft Life Queen. Join the premier women's community.",
   keywords: [
     "fashion online", 
     "fashion store", 
@@ -51,19 +33,19 @@ export const metadata: Metadata = {
     "best store", 
     "best fashion store",
     "women's clothing online",
-    "Lamssé Luxe"
+    "Luxe Network"
   ],
   openGraph: {
-    title: "Lamssé Luxe - The Best Ecommerce Fashion Store",
+    title: "Luxe Network - The Best Ecommerce Fashion Store",
     description: "Discover affordable women's clothing and leading fashion clothes. Join a women's community of queens.",
-    url: "https://www.lamsseluxe.ca",
-    siteName: "Lamssé Luxe",
+    url: "https://www.luxenetwork.ca",
+    siteName: "Luxe Network",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lamssé Luxe | Leading Fashion Clothes",
+    title: "Luxe Network | Leading Fashion Clothes",
     description: "Affordable women's clothing and luxury two-pieces for the ultimate Soft Life experience.",
   },
   alternates: {
@@ -79,7 +61,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <JsonLd />
       </head>
       <body className={outfit.className}>
         <ThemeProvider
@@ -91,9 +73,11 @@ export default function RootLayout({
           <Suspense fallback={<div className="h-28 md:h-40 bg-background/95 animate-pulse" />}>
             <Navbar />
           </Suspense>
-          <main className="min-h-screen pt-20 md:pt-32">
-            {children}
-          </main>
+          <PageTransition>
+            <main className="min-h-screen pt-20 md:pt-32">
+              {children}
+            </main>
+          </PageTransition>
           <AuthModal />
           <Toaster position="top-right" />
         </ThemeProvider>

@@ -55,7 +55,9 @@ export async function POST(req: Request) {
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
     
-    // Create the master Order Row with explicit Shipping injection
+    const isPromo = session.metadata?.is_launch_promo === 'true';
+
+    // Create the master Order Row with explicit Shipping and Promo injection
     const { data: order, error } = await supabase
       .from('orders')
       .insert({
@@ -63,7 +65,8 @@ export async function POST(req: Request) {
         status: 'paid',
         customer_email: customerEmail,
         user_id: userId || null,
-        shipping_address: shippingAddress
+        shipping_address: shippingAddress,
+        is_promo: isPromo
       }).select().single();
 
     if (error) {
@@ -71,14 +74,21 @@ export async function POST(req: Request) {
     } else if (order && session.metadata?.cart_payload) {
       try {
         const cartItems = JSON.parse(session.metadata.cart_payload);
-        const orderItemsBatch = cartItems.map((item: { id: string; qty: number; price: number; size: string; color: string; }) => ({
-          order_id: order.id,
-          product_id: item.id,
-          quantity: item.qty,
-          price: item.price,
-          selected_size: item.size,
-          selected_color: item.color
-        }));
+        const orderItemsBatch = cartItems.map((item: { id: string; qty: number; price: number; size: string; color: string; }) => {
+          // If it's a promo order, the price paid is 70% of the original metadata price
+          const originalPrice = item.price;
+          const paidPrice = isPromo ? Math.round(originalPrice * 0.70) : originalPrice;
+          
+          return {
+            order_id: order.id,
+            product_id: item.id,
+            quantity: item.qty,
+            price: paidPrice,
+            original_price: originalPrice,
+            selected_size: item.size,
+            selected_color: item.color
+          };
+        });
 
         await supabase.from('order_items').insert(orderItemsBatch);
         console.log(`Checkout ${session.id} organically processed into database. User Bound: ${userId}`);

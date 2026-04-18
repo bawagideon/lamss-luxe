@@ -16,11 +16,15 @@ import * as React from "react";
 interface BrandNewsletterProps {
   subject: string;
   content: string;
+  isPromo?: boolean;
+  discountCode?: string;
 }
 
 export const BrandNewsletter = ({
   subject = "The Latest from Lamssé Luxe",
   content = "Welcome to the Soft Life.",
+  isPromo = false,
+  discountCode = "LUXELAUNCH30",
 }: BrandNewsletterProps) => (
   <Html>
     <Head />
@@ -38,6 +42,15 @@ export const BrandNewsletter = ({
         </Section>
         <Section style={contentSection}>
           <Heading style={h1}>{subject}</Heading>
+          
+          {isPromo && (
+            <Section style={promoBox}>
+               <Text style={promoTop}>YOUR EXCLUSIVE GIFT</Text>
+               <Heading style={promoCode}>{discountCode}</Heading>
+               <Text style={promoBottom}>30% OFF YOUR FIRST DROP</Text>
+            </Section>
+          )}
+
           <Text style={text}>
             {content.split('\n').map((line, i) => (
               <React.Fragment key={i}>
@@ -92,6 +105,40 @@ const logo = {
 
 const contentSection = {
   padding: "0 48px",
+};
+
+const promoBox = {
+  backgroundColor: "#000",
+  padding: "32px",
+  borderRadius: "0",
+  textAlign: "center" as const,
+  marginBottom: "32px",
+};
+
+const promoTop = {
+  color: "#999",
+  fontSize: "10px",
+  fontWeight: "900",
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.3em",
+  margin: "0 0 8px",
+};
+
+const promoCode = {
+  color: "#fff",
+  fontSize: "42px",
+  fontWeight: "900",
+  margin: "0 0 8px",
+  letterSpacing: "-0.01em",
+};
+
+const promoBottom = {
+  color: "#fff",
+  fontSize: "12px",
+  fontWeight: "900",
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.15em",
+  margin: "0",
 };
 
 const h1 = {

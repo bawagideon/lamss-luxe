@@ -18,9 +18,6 @@ export function CategoryShop() {
     { name: "Dresses", slug: "dresses", label: "OUR DRESSES", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80" },
     { name: "Matching Sets", slug: "two-piece", label: "OUR SETS", image: "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?auto=format&fit=crop&q=80" },
     { name: "Tops", slug: "tops", label: "OUR TOPS", image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80" },
-    { name: "Bottoms", slug: "bottoms", label: "OUR BOTTOMS", image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&q=80" },
-    { name: "Shoes", slug: "shoes", label: "OUR SHOES", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80" },
-    { name: "BodyCTRL", slug: "body-ctrl", label: "OUR BODY", image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80" },
   ]);
 
   useEffect(() => {
@@ -33,7 +30,7 @@ export function CategoryShop() {
             p.category?.toLowerCase() === cat.slug.toLowerCase() ||
             p.category?.toLowerCase() === cat.name.toLowerCase()
           );
-          
+
           // Use the latest product for this category, or fall back to the generic unslpash if it looks better
           return {
             ...cat,
@@ -60,45 +57,45 @@ export function CategoryShop() {
         <div className="flex flex-col gap-1 md:gap-2">
           {/* TOP SECTION: 1 Large + 2 Stacked */}
           <div className="grid grid-cols-2 gap-1 md:gap-2">
-             {/* Large Left: Dresses (row-span-2) */}
-             {main[0] && (
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="row-span-2"
-                >
-                  <CategoryCard item={main[0]} isLarge />
-                </motion.div>
-             )}
+            {/* Large Left: Dresses (row-span-2) */}
+            {main[0] && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                className="row-span-2"
+              >
+                <CategoryCard item={main[0]} isLarge />
+              </motion.div>
+            )}
 
-             {/* Stacked Right: Matching Sets & Tops */}
-             <div className="grid grid-rows-2 gap-1 md:gap-2">
-                {main.slice(1).map((cat, idx) => (
-                   <motion.div
-                      key={cat.slug}
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 + idx * 0.1 }}
-                   >
-                     <CategoryCard item={cat} />
-                   </motion.div>
-                ))}
-             </div>
+            {/* Stacked Right: Matching Sets & Tops */}
+            <div className="grid grid-rows-2 gap-1 md:gap-2">
+              {main.slice(1).map((cat, idx) => (
+                <motion.div
+                  key={cat.slug}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 + idx * 0.1 }}
+                >
+                  <CategoryCard item={cat} />
+                </motion.div>
+              ))}
+            </div>
           </div>
 
           {/* BOTTOM ROW: Matrix (Adjusted for remaining categories) */}
           <div className={`grid ${footer.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4'} gap-1 md:gap-2`}>
-             {footer.map((cat, idx) => (
-                <motion.div
-                  key={cat.slug}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
-                >
-                  <CategoryCard item={cat} />
-                </motion.div>
-             ))}
+            {footer.map((cat, idx) => (
+              <motion.div
+                key={cat.slug}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+              >
+                <CategoryCard item={cat} />
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
@@ -119,12 +116,12 @@ function CategoryCard({ item, isLarge = false }: { item: CategoryItem; isLarge?:
         fill
         className="object-cover transition-transform duration-1000 group-hover:scale-105"
       />
-      
+
       {/* Centered-Bottom Branded Text Overlay (Image Style) */}
       <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col items-center justify-end h-1/2 bg-gradient-to-t from-black/50 to-transparent">
-         <span className="text-[14px] md:text-2xl font-black text-white uppercase tracking-tight drop-shadow-lg text-center transform transition-transform duration-500 group-hover:-translate-y-1">
-           {item.name}
-         </span>
+        <span className="text-[14px] md:text-2xl font-black text-white uppercase tracking-tight drop-shadow-lg text-center transform transition-transform duration-500 group-hover:-translate-y-1">
+          {item.name}
+        </span>
       </div>
     </Link>
   );

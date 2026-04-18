@@ -35,6 +35,11 @@ export interface Product {
   fabric_and_care?: string | null;
   marketing_message?: string | null;
   color_images?: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }>;
+  is_new?: boolean;
+  promo_banner?: string | null;
+  color_badges?: Record<string, string>;
+  related_product_ids?: string[];
+  is_set_available?: boolean;
 }
 
 const getAdminSupabase = () => createSupabaseAdmin(
@@ -68,8 +73,54 @@ export async function getAdminMetrics() {
     totalRevenue: totalRevenue.toFixed(2),
     ordersCount: ordersCount || 0,
     activeProducts: activeProducts || 0,
-    waitlistCount: customersCount || 0
+    waitlistCount: customersCount || 0,
+    promoStats: {
+        discountedOrders: 0,
+        totalSavings: 0,
+        subscriberGrowth: 0
+    }
   };
+}
+
+export async function getAdminPromoMetrics() {
+    noStore();
+    const supabase = getAdminSupabase();
+    
+    // 1. Get Promo Orders summary
+    const { data: promoOrders, error: ordersError } = await supabase
+        .from('orders')
+        .select('id, total_amount')
+        .eq('status', 'paid')
+        .eq('is_promo', true);
+
+    if (ordersError || !promoOrders) {
+        return { discountedOrders: 0, totalSavings: 0, revenueImpact: 0 };
+    }
+
+    const discountedOrders = promoOrders.length;
+    const revenueImpact = promoOrders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
+
+    // 2. Calculate savings from all order items in those orders
+    const promoOrderIds = promoOrders.map(o => o.id);
+    const { data: items, error: itemsError } = await supabase
+        .from('order_items')
+        .select('price, original_price, quantity')
+        .in('order_id', promoOrderIds);
+
+    let totalSavings = 0;
+    if (items && !itemsError) {
+        totalSavings = items.reduce((sum, item) => {
+            const original = Number(item.original_price || item.price || 0);
+            const paid = Number(item.price || 0);
+            return sum + ((original - paid) * (item.quantity || 1));
+        }, 0);
+    }
+    
+    return {
+        discountedOrders,
+        totalSavings,
+        revenueImpact
+    };
 }
 
 export async function getAdminRecentOrders() {
@@ -152,6 +203,10 @@ export async function addProduct(formData: FormData) {
     const size_and_fit = formData.get('size_and_fit') as string || null;
     const fabric_and_care = formData.get('fabric_and_care') as string || null;
     const marketing_message = formData.get('marketing_message') as string || null;
+    const is_new = formData.get('is_new') === 'true';
+    const promo_banner = formData.get('promo_banner') as string || null;
+    const is_set_available = formData.get('is_set_available') === 'true';
+    const related_product_ids = formData.get('related_product_ids') ? (formData.get('related_product_ids') as string).split(',') : [];
     
     // Parse the multipart binary blobs
     // Receive as URLs (already uploaded by the client to bypass the 4.5MB Vercel limit)
@@ -198,7 +253,12 @@ export async function addProduct(formData: FormData) {
       sizes, colors, color_codes,
       material, occasion, size_and_fit, fabric_and_care,
       marketing_message,
-      color_images
+      color_images,
+      is_new,
+      promo_banner,
+      is_set_available,
+      related_product_ids,
+      color_badges: JSON.parse(formData.get('color_badges_json') as string || '{}')
     });
 
     if (error) throw new Error(error.message);
@@ -229,6 +289,10 @@ export async function editProduct(formData: FormData) {
     const size_and_fit = formData.get('size_and_fit') as string || null;
     const fabric_and_care = formData.get('fabric_and_care') as string || null;
     const marketing_message = formData.get('marketing_message') as string || null;
+    const is_new = formData.get('is_new') === 'true';
+    const promo_banner = formData.get('promo_banner') as string || null;
+    const is_set_available = formData.get('is_set_available') === 'true';
+    const related_product_ids = formData.get('related_product_ids') ? (formData.get('related_product_ids') as string).split(',') : [];
     
     const sizes = sizesStr.split(',').map(s => s.trim()).filter(Boolean);
     const colors: string[] = [];
@@ -264,7 +328,12 @@ export async function editProduct(formData: FormData) {
       sizes, colors, color_codes,
       material, occasion, size_and_fit, fabric_and_care,
       marketing_message,
-      color_images
+      color_images,
+      is_new,
+      promo_banner,
+      is_set_available,
+      related_product_ids,
+      color_badges: JSON.parse(formData.get('color_badges_json') as string || '{}')
     };
 
     const mainUrl = formData.get('image_main') as string | null;
