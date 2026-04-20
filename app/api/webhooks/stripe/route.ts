@@ -35,6 +35,8 @@ export async function POST(req: Request) {
     // Core Transaction Data
     const customerEmail = session.customer_details?.email || session.customer_email || 'guest@anonymous.com';
     const amountTotal = (session.amount_total || 0) / 100;
+    const amountSubtotal = (session.amount_subtotal || 0) / 100;
+    const amountShipping = (session.total_details?.amount_shipping || 0) / 100;
     const userId = session.client_reference_id;
 
     // Capture Shipping and Contact Details for Fulfillment
@@ -62,6 +64,8 @@ export async function POST(req: Request) {
       .from('orders')
       .insert({
         total_amount: amountTotal,
+        subtotal: amountSubtotal,
+        shipping_cost: amountShipping,
         status: 'paid',
         customer_email: customerEmail,
         user_id: userId || null,

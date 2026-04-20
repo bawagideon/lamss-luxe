@@ -61,6 +61,14 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
     shipping_address_collection: { 
       allowed_countries: ['US', 'CA', 'GB', 'NG', 'GH'] 
     },
+    shipping_options: [
+      { shipping_rate: 'shr_1TOJXeQULXOBgYBBlffTbzNb' }, // US Standard
+      { shipping_rate: 'shr_1TOJYjQULXOBgYBBM5XGQpVD' }, // US Express
+      { shipping_rate: 'shr_1TOJHUQULXOBgYBB6UgxDC26' }, // Local Delivery (St. John's)
+      { shipping_rate: 'shr_1TOJSjQULXOBgYBBNQuSHjkJ' }, // NL Outside St. John's
+      { shipping_rate: 'shr_1TOJWUQULXOBgYBB6Pyl7u44' }, // Canada Standard
+      { shipping_rate: 'shr_1TOJXHQULXOBgYBB170Egmnp' }, // Canada Express
+    ],
     metadata: { 
         cart_payload: orderMetadata,
         is_launch_promo: promoApplied ? "true" : "false" 

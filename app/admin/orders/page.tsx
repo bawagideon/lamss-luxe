@@ -26,6 +26,8 @@ interface Order {
   id: string;
   customer_email: string;
   total_amount: number;
+  subtotal?: number;
+  shipping_cost?: number;
   status: string;
   created_at: string;
   shipping_address?: Address | null;
@@ -187,16 +189,27 @@ export default function AdminOrdersPage() {
                           </div>
                         </div>
 
-                        {/* Revenue Summary */}
-                        <div className="pt-6 border-t border-gray-100 flex justify-between items-center">
-                           <div>
-                              <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Total Revenue</p>
-                              <p className="text-4xl font-black italic tracking-tighter">${o.total_amount}</p>
+                        {/* Financial Summary Card */}
+                        <div className="pt-6 border-t border-gray-100 space-y-3">
+                           <div className="flex justify-between items-center text-sm">
+                              <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Subtotal</p>
+                              <p className="font-bold">${(o.subtotal || 0).toFixed(2)}</p>
                            </div>
-                           <Badge className="bg-green-100 text-green-800 border-green-200 px-4 py-2 rounded-none uppercase text-[10px] tracking-widest font-black flex items-center gap-2">
-                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                             Secured via Stripe
-                           </Badge>
+                           <div className="flex justify-between items-center text-sm">
+                              <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Shipping</p>
+                              <p className="font-bold">${(o.shipping_cost || 0).toFixed(2)}</p>
+                           </div>
+                           <div className="h-px bg-gray-100 w-full" />
+                           <div className="flex justify-between items-end">
+                              <div>
+                                 <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Grand Total</p>
+                                 <p className="text-4xl font-black italic tracking-tighter">${o.total_amount}</p>
+                              </div>
+                              <Badge className="bg-green-100 text-green-800 border-green-200 px-4 py-2 rounded-none uppercase text-[10px] tracking-widest font-black flex items-center gap-2 mb-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                Secured via Stripe
+                              </Badge>
+                           </div>
                         </div>
                       </div>
                     </DialogContent>
