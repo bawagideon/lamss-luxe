@@ -3,11 +3,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import { RotateCcw, CloudSync } from "lucide-react";
 
 const formSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -33,6 +34,31 @@ export function InfoForm({ initialData }: { initialData: ProfileData }) {
     },
   });
 
+  // PRESERVATION: Load drafts on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('profile_draft');
+    if (saved) {
+      try {
+        const draft = JSON.parse(saved);
+        form.reset({ ...form.getValues(), ...draft });
+        toast.success("Recovered unsaved edits", { id: 'profile-recovery', duration: 2000 });
+      } catch (e) {
+        console.error("Draft recovery failed", e);
+      }
+    }
+  }, [form]);
+
+  // PERSISTENCE: Save drafts on every change
+  const watchedValues = form.watch();
+  useEffect(() => {
+    const isDifferent = Object.entries(watchedValues).some(([key, val]) => val !== initialData?.[key as keyof ProfileData]);
+    if (isDifferent) {
+      localStorage.setItem('profile_draft', JSON.stringify(watchedValues));
+    } else {
+      localStorage.removeItem('profile_draft');
+    }
+  }, [watchedValues, initialData]);
+
   const onSubmit = async (values: FormValues) => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
@@ -57,13 +83,28 @@ export function InfoForm({ initialData }: { initialData: ProfileData }) {
       toast.error(error.message);
     } else {
       toast.success("Profile updated successfully!");
+      localStorage.removeItem('profile_draft');
     }
     setLoading(false);
   };
 
+  const [hasDraft, setHasDraft] = useState(false);
+
+  useEffect(() => {
+    setHasDraft(!!localStorage.getItem('profile_draft'));
+  }, [watchedValues]);
+
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-black tracking-tight uppercase">CONTACT DETAILS</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-black tracking-tight uppercase">CONTACT DETAILS</h2>
+        {form.formState.isDirty && (
+          <div className="flex items-center gap-2 text-[10px] font-bold text-amber-500 uppercase tracking-widest animate-pulse">
+            <CloudSync className="w-3 h-3" />
+            Auto-saving to browser...
+          </div>
+        )}
+      </div>
       
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-xl">
         <div className="grid grid-cols-2 gap-4">

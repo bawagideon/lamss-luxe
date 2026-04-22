@@ -8,13 +8,15 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, useOptimistic } from "react";
 import { getAdminProducts, addProduct, deleteProduct, editProduct, uploadSingleImage } from "@/app/actions/admin";
 import toast from "react-hot-toast";
 import imageCompression from "browser-image-compression";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { useAdminDraft } from "@/hooks/useAdminDraft";
+import { CheckCircle2, RotateCcw } from "lucide-react";
 
 
 interface Product {
@@ -40,11 +42,29 @@ interface Product {
   color_badges?: Record<string, string>;
   related_product_ids?: string[];
   is_set_available?: boolean;
+  color_images?: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }>;
 }
 
 export default function AdminProductsPage() {
   const [liveProducts, setLiveProducts] = useState<Product[]>([]);
+  const [optimisticProducts, addOptimisticProduct] = useOptimistic(
+    liveProducts,
+    (state, action: { type: 'update' | 'delete' | 'add', product: any }) => {
+      if (action.type === 'delete') return state.filter(p => p.id !== action.product.id);
+      if (action.type === 'add') return [action.product, ...state];
+      if (action.type === 'update') return state.map(p => p.id === action.product.id ? { ...p, ...action.product } : p);
+      return state;
+    }
+  );
+
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  
+  // Persistence hook for drafts
+  const { draft, updateDraft, clearDraft, isLoaded } = useAdminDraft<Partial<Product>>(
+    selectedProduct ? `edit_${selectedProduct.id}` : 'new_product',
+    {}
+  );
+
   const [activeColors, setActiveColors] = useState<string[]>(['', '', '', '']);
   const [colorBadges, setColorBadges] = useState<Record<string, string>>({});
   const [relatedProductIds, setRelatedProductIds] = useState<string[]>([]);
@@ -55,7 +75,12 @@ export default function AdminProductsPage() {
   const [compressedFiles, setCompressedFiles] = useState<Record<string, File>>({});
 
   useEffect(() => {
-    getAdminProducts().then(setLiveProducts);
+    getAdminProducts()
+      .then(setLiveProducts)
+      .catch(err => {
+        console.error("AdminProductsPage: Critical synchronization fault.", err);
+        toast.error("Network or synchronization error. Please refresh.");
+      });
   }, []);
 
   useEffect(() => {
@@ -103,51 +128,56 @@ export default function AdminProductsPage() {
   };
 
   const handleAddSubmit = async (formData: FormData) => {
-    const loader = toast.loading(selectedProduct ? "Updating product..." : "Creating product...");
+    const loader = toast.loading(selectedProduct ? "Pushing updates..." : "Launching product...");
     
+    // Optimistic Update Data
+    const optimisticData = {
+      id: selectedProduct?.id || 'temp-' + Date.now(),
+      name: formData.get('name') as string,
+      price: Number(formData.get('price')),
+      category: formData.get('category') as string,
+      stock: Number(formData.get('stock')),
+      image_url: selectedProduct?.image_url || ""
+    };
+
     try {
-      // 1. Client-Side Asset Dispatch (Bypassing Vercel's 4.5MB Server Limit)
-      // We upload each compressed file individually and replace the FormData entry with the URL string.
+      // 1. Client-Side Asset Dispatch
       const uploadPromises = Object.entries(compressedFiles).map(async ([fieldName, file]) => {
-        // Create a dedicated FormData for this single image upload proxy
         const uploadFormData = new FormData();
         uploadFormData.append('file', file);
-        
         const res = await uploadSingleImage(uploadFormData);
-        
-        if (res.error || !res.url) {
-          throw new Error(`Upload failed for ${fieldName}: ${res.error || 'Unknown Error'}`);
-        }
-
+        if (res.error || !res.url) throw new Error(`Upload failed for ${fieldName}`);
         return { fieldName, publicUrl: res.url };
       });
 
       const uploadedFiles = await Promise.all(uploadPromises);
-      
-      // Inject URLs into formData, stripping out any binary blobs
       uploadedFiles.forEach(({ fieldName, publicUrl }) => {
         formData.set(fieldName, publicUrl);
       });
 
-      // Inject programmatic state fields
+      // Inject programmatic state
       formData.append('related_product_ids', relatedProductIds.join(','));
       formData.append('color_badges_json', JSON.stringify(colorBadges));
+      
+      // PRESERVATION: Pass existing variant data to avoid data loss
+      if (selectedProduct?.color_images) {
+        formData.append('existing_color_images', JSON.stringify(selectedProduct.color_images));
+      }
 
-      // Clear binary entries from formData that weren't in compressedFiles but might still be there from the browser native form
-      // (Next.js action will still try to parse them if we don't)
+      // Cleanup blobs
       const keysToDelete: string[] = [];
       formData.forEach((value, key) => {
-        if (value instanceof File && value.size > 0) {
-           // This means a file was selected but not compressed yet or optimized? 
-           // In our case, all selected files go to compressedFiles via handleFileChange.
-           // However, browser native form submission might include the original File objects.
-           // We MUST remove all binary data to ensure payload is tiny.
-           keysToDelete.push(key);
-        }
+        if (value instanceof File && value.size > 0) keysToDelete.push(key);
       });
       keysToDelete.forEach(k => formData.delete(k));
 
       startTransition(async () => {
+        // Trigger Optimistic UI
+        addOptimisticProduct({ 
+          type: selectedProduct ? 'update' : 'add', 
+          product: optimisticData 
+        });
+
         try {
           let res;
           if (selectedProduct) {
@@ -160,26 +190,32 @@ export default function AdminProductsPage() {
           if ('error' in res) {
             toast.error(res.error as string, { id: loader });
           } else {
-            toast.success(selectedProduct ? "Product Updated Successfully!" : "Product Drop Successfully Added!", { id: loader });
-            getAdminProducts().then(setLiveProducts);
-            setIsSheetOpen(false);
-            setSelectedProduct(null);
+            toast.success(selectedProduct ? "Sync Successful!" : "Launch Successful!", { id: loader });
+            const freshData = await getAdminProducts();
+            setLiveProducts(freshData);
+            
+            // FLAWLESS FLOW: Keep sheet open but clear transient state
             setCompressedFiles({});
+            clearDraft(); 
+            
+            // If it was a new product, we might want to close or transition to edit mode
+            if (!selectedProduct) {
+               setIsSheetOpen(false);
+            }
           }
         } catch (err) {
-          console.error("Server Action Error:", err);
-          toast.error("An unexpected error occurred during save", { id: loader });
+          toast.error("Database connection lost", { id: loader });
         }
       });
     } catch (err) {
-      console.error("Upload Loop Error:", err);
-      toast.error(err instanceof Error ? err.message : "Image upload failed", { id: loader });
+      toast.error(err instanceof Error ? err.message : "Asset upload failed", { id: loader });
     }
   };
 
   const handleDelete = (id: string, name: string) => {
     if (confirm(`Permanently delete ${name}? This action is immediate and irrevocable.`)) {
       startTransition(async () => {
+        addOptimisticProduct({ type: 'delete', product: { id } });
         const res = await deleteProduct(id);
         if (res?.error) toast.error(res.error);
         else {
@@ -209,10 +245,31 @@ export default function AdminProductsPage() {
               <SheetTitle className="text-2xl font-black uppercase tracking-tight">{selectedProduct ? "Edit Drop" : "New Drop"}</SheetTitle>
               <SheetDescription>Configure a product entry for the catalog.</SheetDescription>
             </SheetHeader>
-            <form key={selectedProduct?.id || 'new'} action={handleAddSubmit} className="space-y-6">
+            <form key={selectedProduct?.id || 'new'} action={handleAddSubmit} className="space-y-6" onChange={(e) => {
+              const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+              if (target.name) {
+                updateDraft({ [target.name]: target.value });
+              }
+            }}>
+              {isLoaded && Object.keys(draft).length > 0 && (
+                <div className="bg-amber-50 border border-amber-100 p-2 rounded-md flex items-center gap-2 mb-4">
+                  <RotateCcw className="w-3 h-3 text-amber-500" />
+                  <span className="text-[10px] font-bold text-amber-700 uppercase tracking-tight">Draft recovered from browser</span>
+                  <button type="button" onClick={clearDraft} className="ml-auto text-[9px] underline font-bold text-amber-600">Clear</button>
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-xs uppercase font-bold text-gray-500">Product Name</Label>
-                <Input id="name" name="name" defaultValue={selectedProduct?.name || ''} required placeholder="e.g. The Velvet Evening Gown" className="border-gray-200 focus-visible:ring-black" />
+                <Input 
+                  id="name" 
+                  name="name" 
+                  value={isLoaded ? (draft.name ?? selectedProduct?.name ?? '') : (selectedProduct?.name ?? '')} 
+                  onChange={(e) => updateDraft({ name: e.target.value })}
+                  required 
+                  placeholder="e.g. The Velvet Evening Gown" 
+                  className="border-gray-200 focus-visible:ring-black" 
+                />
               </div>
 
               <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-lg border border-zinc-100">
@@ -221,23 +278,48 @@ export default function AdminProductsPage() {
                   <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Mark as &quot;NEW&quot; in storefront</p>
                 </div>
                 <Switch 
-                  checked={isNewDrop}
-                  onCheckedChange={(val) => setIsNewDrop(val)}
+                  checked={isLoaded ? (draft.is_new !== undefined ? !!draft.is_new : isNewDrop) : isNewDrop}
+                  onCheckedChange={(val) => {
+                    setIsNewDrop(val);
+                    updateDraft({ is_new: val });
+                  }}
                 />
                 <input type="hidden" name="is_new" value={isNewDrop ? 'true' : 'false'} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="promo_banner" className="text-xs uppercase font-bold text-blue-500">Promo Banner Text (Top of Product Info)</Label>
-                <Input id="promo_banner" name="promo_banner" defaultValue={selectedProduct?.promo_banner || ''} placeholder="e.g. FREE SHIPPING ON ORDERS OVER $75" className="border-blue-100 focus-visible:ring-blue-500" />
+                <Input 
+                  id="promo_banner" 
+                  name="promo_banner" 
+                  value={isLoaded ? (draft.promo_banner ?? selectedProduct?.promo_banner ?? '') : (selectedProduct?.promo_banner ?? '')} 
+                  onChange={(e) => updateDraft({ promo_banner: e.target.value })}
+                  placeholder="e.g. FREE SHIPPING ON ORDERS OVER $75" 
+                  className="border-blue-100 focus-visible:ring-blue-500" 
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="desc" className="text-xs uppercase font-bold text-gray-500">Description</Label>
-                <textarea id="desc" name="description" defaultValue={selectedProduct?.description || ''} rows={2} className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" placeholder="A stunning piece for queens..."></textarea>
+                <textarea 
+                  id="desc" 
+                  name="description" 
+                  value={isLoaded ? (draft.description ?? selectedProduct?.description ?? '') : (selectedProduct?.description ?? '')} 
+                  onChange={(e) => updateDraft({ description: e.target.value })}
+                  rows={2} 
+                  className="flex w-full rounded-md border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black" 
+                  placeholder="A stunning piece for queens..."
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="marketing_message" className="text-xs uppercase font-bold text-red-500">Marketing Message (E.g. UP TO 90% OFF)</Label>
-                <Input id="marketing_message" name="marketing_message" defaultValue={selectedProduct?.marketing_message || ''} placeholder="FLASH SALE! 50% OFF" className="border-red-100 focus-visible:ring-red-500" />
+                <Input 
+                  id="marketing_message" 
+                  name="marketing_message" 
+                  value={isLoaded ? (draft.marketing_message ?? selectedProduct?.marketing_message ?? '') : (selectedProduct?.marketing_message ?? '')} 
+                  onChange={(e) => updateDraft({ marketing_message: e.target.value })}
+                  placeholder="FLASH SALE! 50% OFF" 
+                  className="border-red-100 focus-visible:ring-red-500" 
+                />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -262,11 +344,27 @@ export default function AdminProductsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="price" className="text-xs uppercase font-bold text-gray-500">Price (CAD)</Label>
-                  <Input id="price" name="price" defaultValue={selectedProduct?.price || ''} required type="number" step="0.01" placeholder="100.00" className="border-gray-200 focus-visible:ring-black" />
+                  <Input 
+                    id="price" 
+                    name="price" 
+                    value={isLoaded ? (draft.price ?? selectedProduct?.price ?? '') : (selectedProduct?.price ?? '')} 
+                    onChange={(e) => updateDraft({ price: Number(e.target.value) })}
+                    required type="number" step="0.01" 
+                    placeholder="100.00" 
+                    className="border-gray-200 focus-visible:ring-black" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="stock" className="text-xs uppercase font-bold text-gray-500">Initial Stock</Label>
-                  <Input id="stock" name="stock" defaultValue={selectedProduct?.stock || ''} required type="number" placeholder="50" className="border-gray-200 focus-visible:ring-black" />
+                  <Input 
+                    id="stock" 
+                    name="stock" 
+                    value={isLoaded ? (draft.stock ?? selectedProduct?.stock ?? '') : (selectedProduct?.stock ?? '')} 
+                    onChange={(e) => updateDraft({ stock: Number(e.target.value) })}
+                    required type="number" 
+                    placeholder="50" 
+                    className="border-gray-200 focus-visible:ring-black" 
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -500,7 +598,7 @@ export default function AdminProductsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {liveProducts.map((p: Product) => (
+            {optimisticProducts.map((p: Product) => (
               <TableRow 
                 key={p.id} 
                 className="border-border group hover:bg-muted/50 transition-colors cursor-pointer"
@@ -508,7 +606,11 @@ export default function AdminProductsPage() {
               >
                 <TableCell>
                   <div className="w-12 h-14 relative bg-muted rounded-md overflow-hidden border border-border">
-                    <Image src={p.image_url || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200"} alt={p.name} fill sizes="48px" className="object-cover" />
+                    {typeof p.image_url === 'string' && p.image_url.startsWith('http') ? (
+                      <Image src={p.image_url} alt={p.name} fill sizes="48px" className="object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-zinc-100 text-[10px] text-zinc-400 font-bold uppercase text-center p-1">No Image</div>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell className="font-medium text-foreground">{p.name}</TableCell>

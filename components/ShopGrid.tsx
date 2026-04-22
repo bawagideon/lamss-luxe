@@ -137,21 +137,27 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                     </Link>
 
                     {/* Smooth Image Switcher */}
-                    <Image 
-                      src={product.imageDefault} 
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 640px) 50vw, 25vw"
-                      className="object-cover transition-opacity duration-700 group-hover:opacity-0"
-                      priority={index < 8}
-                    />
-                    <Image 
-                      src={product.imageLifestyle} 
-                      alt={`${product.name} Hover`}
-                      fill
-                      sizes="(max-width: 640px) 50vw, 25vw"
-                      className="object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 scale-105 group-hover:scale-100"
-                    />
+                    {typeof product.imageDefault === 'string' && product.imageDefault.startsWith('http') ? (
+                      <>
+                        <Image 
+                          src={product.imageDefault} 
+                          alt={product.name}
+                          fill
+                          sizes="(max-width: 640px) 50vw, 25vw"
+                          className="object-cover transition-opacity duration-700 group-hover:opacity-0"
+                          priority={index < 8}
+                        />
+                        <Image 
+                          src={product.imageLifestyle} 
+                          alt={`${product.name} Hover`}
+                          fill
+                          sizes="(max-width: 640px) 50vw, 25vw"
+                          className="object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 scale-105 group-hover:scale-100"
+                        />
+                      </>
+                    ) : (
+                      <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-black uppercase text-zinc-400">Preview Unavailable</div>
+                    )}
 
                     {/* DESKTOP QUICK ADD (Fashion Nova Overlay) */}
                     <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out bg-white dark:bg-zinc-950 p-4 hidden md:block border-t border-border shadow-2xl">

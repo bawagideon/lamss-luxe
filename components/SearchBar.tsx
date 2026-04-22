@@ -48,6 +48,8 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
     if (isFocused && trending.length === 0) {
       getActiveProducts().then(data => {
         setTrending(data.slice(0, 4)); 
+      }).catch(err => {
+        console.warn("SearchBar: Trending items fetch fail.", err);
       });
     }
   }, [isFocused, trending.length]);
@@ -58,6 +60,9 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
       setIsLoading(true);
       searchProducts(debouncedQuery).then(data => {
         setResults(data);
+        setIsLoading(false);
+      }).catch(err => {
+        console.error("SearchBar: Dynamic search failed.", err);
         setIsLoading(false);
       });
     } else {
@@ -145,7 +150,11 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
                       <Link key={p.id} href={`/product/${p.id}`} onClick={() => setIsFocused(false)} className="group flex items-start space-x-3 hover:opacity-80 transition-opacity mb-4">
                         <div className="text-[10px] font-black mt-1 w-2">{idx + 1}</div>
                         <div className="relative w-14 h-20 rounded shadow-sm overflow-hidden bg-gray-50 flex-shrink-0">
-                          <Image src={p.image_url} alt={p.name} fill className="object-cover" />
+                          {typeof p.image_url === 'string' && p.image_url.startsWith('http') ? (
+                            <Image src={p.image_url} alt={p.name} fill sizes="56px" className="object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-zinc-100 flex items-center justify-center text-[10px] text-zinc-300">NR</div>
+                          )}
                         </div>
                         <div className="flex flex-col pt-1">
                           <p className="text-xs font-medium leading-tight">{p.name}</p>
@@ -191,7 +200,11 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
                       {results.map((p) => (
                         <Link key={p.id} href={`/product/${p.id}`} onClick={() => setIsFocused(false)} className="group block">
                           <div className="relative aspect-[3/4] rounded shadow-sm overflow-hidden bg-gray-50 mb-2 border border-gray-200">
-                            <Image src={p.image_url} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                            {typeof p.image_url === 'string' && p.image_url.startsWith('http') ? (
+                               <Image src={p.image_url} alt={p.name} fill sizes="(max-width: 768px) 50vw, 150px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                            ) : (
+                               <div className="w-full h-full bg-zinc-100 flex items-center justify-center text-[10px] text-zinc-300">NO IMAGE</div>
+                            )}
                           </div>
                           <p className="text-[11px] font-bold line-clamp-2 leading-tight pr-2">{p.name}</p>
                           <p className="text-xs text-gray-500 font-medium mt-0.5">${p.price}</p>

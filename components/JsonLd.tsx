@@ -4,11 +4,11 @@ export function JsonLd() {
   const jsonLdData = {
     "@context": "https://schema.org",
     "@type": "ClothingStore",
-    "name": "Luxe Network",
+    "name": "Lamssé Luxe",
     "description": "Leading fashion clothes, affordable women's clothing, and community for queens.",
-    "url": "https://www.luxenetwork.ca",
+    "url": "https://www.lamsseluxe.ca",
     "telephone": "+18000000000",
-    "email": "luxenetwork@gmail.com",
+    "email": "info@lamsseluxe.ca",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "7, Exmouth street",
@@ -19,7 +19,12 @@ export function JsonLd() {
     },
     "sameAs": [
       "https://instagram.com/lamsseluxe.ca"
-    ]
+    ],
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.lamsseluxe.ca/shop?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
   };
 
   return (

@@ -27,7 +27,7 @@ export function Footer() {
           {/* Brand Column */}
           <div className="flex flex-col gap-10">
             <Link href="/" className="relative w-24 h-6">
-              <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain object-left" priority />
+              <Image src="/Logo-dark.png" alt="Logo" fill sizes="96px" className="object-contain object-left" priority />
             </Link>
             <div className="flex flex-col gap-10 text-[13px] font-medium leading-relaxed text-zinc-400 max-w-[280px]">
               <p>Ready-to-Slay Fashion for women who move with confidence and intention.</p>
@@ -88,7 +88,7 @@ export function Footer() {
            {/* Mobile Brand */}
            <div className="flex flex-col items-center text-center gap-8 mb-16 px-4">
               <Link href="/" className="relative w-24 h-6">
-                <Image src="/Logo-dark.png" alt="Logo" fill className="object-contain" priority />
+                <Image src="/Logo-dark.png" alt="Logo" fill sizes="96px" className="object-contain" priority />
               </Link>
               <div className="flex flex-col gap-6 text-[12px] font-medium text-zinc-400 leading-relaxed">
                 <p>Ready-to-Slay Fashion for women who move with confidence and intention.</p>

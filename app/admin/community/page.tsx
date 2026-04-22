@@ -126,13 +126,17 @@ export default function AdminCommunityPage() {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
                   />
                 ) : (
-                  <Image 
-                    src={moment.image_url} 
-                    alt="Community Moment" 
-                    fill 
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105" 
-                  />
+                  typeof moment.image_url === 'string' && moment.image_url.startsWith('http') ? (
+                    <Image 
+                      src={moment.image_url} 
+                      alt="Community Moment" 
+                      fill 
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-zinc-100 text-[10px] text-zinc-400 font-bold uppercase text-center p-4">Invalid Media</div>
+                  )
                 )}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                   {moment.instagram_link && (

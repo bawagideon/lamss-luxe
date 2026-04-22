@@ -38,6 +38,8 @@ export function CategoryShop() {
           };
         })
       );
+    }).catch(err => {
+      console.warn("CategoryShop: Network or Server Error during initial product fetch.", err);
     });
   }, []);
 
@@ -110,12 +112,20 @@ function CategoryCard({ item, isLarge = false }: { item: CategoryItem; isLarge?:
       href={`/shop/${item.slug}`}
       className={`group relative block overflow-hidden bg-zinc-100 ${isLarge ? 'h-full aspect-[4/7] md:aspect-auto' : 'aspect-[4/3] md:aspect-[16/10]'}`}
     >
-      <Image
-        src={item.image}
-        alt={item.name}
-        fill
-        className="object-cover transition-transform duration-1000 group-hover:scale-105"
-      />
+      {typeof item.image === 'string' && item.image.startsWith('http') ? (
+        <Image
+          src={item.image}
+          alt={item.name}
+          fill
+          sizes={isLarge ? "(max-width: 768px) 50vw, 33vw" : "(max-width: 768px) 50vw, 25vw"}
+          className="object-cover transition-transform duration-1000 group-hover:scale-105"
+          priority={isLarge}
+        />
+      ) : (
+        <div className="w-full h-full bg-zinc-200 animate-pulse flex items-center justify-center">
+          <span className="text-[10px] font-black uppercase text-zinc-400">Loading...</span>
+        </div>
+      )}
 
       {/* Centered-Bottom Branded Text Overlay (Image Style) */}
       <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col items-center justify-end h-1/2 bg-gradient-to-t from-black/50 to-transparent">

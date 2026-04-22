@@ -306,19 +306,31 @@ export async function editProduct(formData: FormData) {
     });
 
     // 4. Variant Image Processing (JSONB)
-    const color_images: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
+    // We parse the existing color_images first to ensure we don't lose data
+    let color_images: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
+    try {
+      const existingJson = formData.get('existing_color_images') as string;
+      if (existingJson) color_images = JSON.parse(existingJson);
+    } catch (e) {
+      console.warn("Failed to parse existing color images, starting fresh.");
+    }
+
+    // Merge new uploads/links into the color_images structure
     for (const color of colors) {
       const vMainUrl = formData.get(`variant_image_${color}_main`) as string | null;
       const vFrontUrl = formData.get(`variant_image_${color}_front`) as string | null;
       const vSideUrl = formData.get(`variant_image_${color}_side`) as string | null;
       const vBackUrl = formData.get(`variant_image_${color}_back`) as string | null;
 
-      if (vMainUrl || vFrontUrl || vSideUrl || vBackUrl) {
+      // Only update if at least one URL is provided and it's a valid string (not a [object File])
+      const isString = (v: any) => typeof v === 'string' && v.startsWith('http');
+
+      if (isString(vMainUrl) || isString(vFrontUrl) || isString(vSideUrl) || isString(vBackUrl)) {
         color_images[color] = {
-          main: vMainUrl,
-          front: vFrontUrl,
-          side: vSideUrl,
-          back: vBackUrl,
+          main: isString(vMainUrl) ? vMainUrl : (color_images[color]?.main || null),
+          front: isString(vFrontUrl) ? vFrontUrl : (color_images[color]?.front || null),
+          side: isString(vSideUrl) ? vSideUrl : (color_images[color]?.side || null),
+          back: isString(vBackUrl) ? vBackUrl : (color_images[color]?.back || null),
         };
       }
     }
@@ -337,16 +349,16 @@ export async function editProduct(formData: FormData) {
     };
 
     const mainUrl = formData.get('image_main') as string | null;
-    if (mainUrl) updatePayload.image_url = mainUrl;
+    if (typeof mainUrl === 'string' && mainUrl.startsWith('http')) updatePayload.image_url = mainUrl;
 
     const frontUrl = formData.get('image_front') as string | null;
-    if (frontUrl) updatePayload.image_front = frontUrl;
+    if (typeof frontUrl === 'string' && frontUrl.startsWith('http')) updatePayload.image_front = frontUrl;
     
     const sideUrl = formData.get('image_side') as string | null;
-    if (sideUrl) updatePayload.image_side = sideUrl;
+    if (typeof sideUrl === 'string' && sideUrl.startsWith('http')) updatePayload.image_side = sideUrl;
     
     const backUrl = formData.get('image_back') as string | null;
-    if (backUrl) updatePayload.image_back = backUrl;
+    if (typeof backUrl === 'string' && backUrl.startsWith('http')) updatePayload.image_back = backUrl;
 
     const supabase = getAdminSupabase();
     const { error } = await supabase.from('products').update(updatePayload).eq('id', id);
