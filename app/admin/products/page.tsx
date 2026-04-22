@@ -203,7 +203,7 @@ export default function AdminProductsPage() {
                setIsSheetOpen(false);
             }
           }
-        } catch (err) {
+        } catch {
           toast.error("Database connection lost", { id: loader });
         }
       });

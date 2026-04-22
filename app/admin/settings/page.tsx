@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAdminDraft } from "@/hooks/useAdminDraft";
 import { CloudSync, CheckCircle2, RotateCcw } from "lucide-react";
 import toast from "react-hot-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 interface SettingsState {
   storeName: string;
@@ -19,14 +19,14 @@ interface SettingsState {
 }
 
 export default function AdminSettingsPage() {
-  const defaultValues: SettingsState = {
+  const defaultValues: SettingsState = useMemo(() => ({
     storeName: "Lamssé Luxe",
     contactEmail: "founder@lamsseluxe.com",
     industryTag: "Luxury Fashion & Community Network",
     stripePublic: "pk_live_00000000000000000",
     stripeSecret: "sk_live_00000000000000000",
     supabaseUrl: "https://your-project.supabase.co"
-  };
+  }), []);
 
   const { draft, updateDraft, clearDraft, isLoaded } = useAdminDraft<SettingsState>(
     'admin_settings',
