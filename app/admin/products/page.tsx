@@ -49,10 +49,10 @@ export default function AdminProductsPage() {
   const [liveProducts, setLiveProducts] = useState<Product[]>([]);
   const [optimisticProducts, addOptimisticProduct] = useOptimistic(
     liveProducts,
-    (state, action: { type: 'update' | 'delete' | 'add', product: Product }) => {
+    (state, action: { type: 'update' | 'delete' | 'add', product: Product | { id: string } }) => {
       if (action.type === 'delete') return state.filter(p => p.id !== action.product.id);
-      if (action.type === 'add') return [action.product, ...state];
-      if (action.type === 'update') return state.map(p => p.id === action.product.id ? { ...p, ...action.product } : p);
+      if (action.type === 'add') return [action.product as Product, ...state];
+      if (action.type === 'update') return state.map(p => p.id === action.product.id ? { ...p, ...(action.product as Product) } : p);
       return state;
     }
   );
