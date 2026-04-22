@@ -40,7 +40,7 @@ export default function AdminSettingsPage() {
     if (!isLoaded) return;
     const isDifferent = Object.entries(draft).some(([key, val]) => val !== defaultValues[key as keyof SettingsState]);
     setHasChanges(isDifferent);
-  }, [draft, isLoaded]);
+  }, [draft, isLoaded, defaultValues]);
 
   const handleSave = async () => {
     setIsSaving(true);

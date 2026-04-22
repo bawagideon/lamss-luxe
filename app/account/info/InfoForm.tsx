@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-import { RotateCcw, CloudSync } from "lucide-react";
+import { CloudSync } from "lucide-react";
 
 const formSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -98,10 +98,10 @@ export function InfoForm({ initialData }: { initialData: ProfileData }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-black tracking-tight uppercase">CONTACT DETAILS</h2>
-        {form.formState.isDirty && (
+        {(form.formState.isDirty || hasDraft) && (
           <div className="flex items-center gap-2 text-[10px] font-bold text-amber-500 uppercase tracking-widest animate-pulse">
             <CloudSync className="w-3 h-3" />
-            Auto-saving to browser...
+            {hasDraft ? "Recovered Draft" : "Auto-saving to browser..."}
           </div>
         )}
       </div>

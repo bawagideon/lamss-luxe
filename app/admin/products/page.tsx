@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { useAdminDraft } from "@/hooks/useAdminDraft";
-import { CheckCircle2, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 
 
 interface Product {
@@ -49,7 +49,7 @@ export default function AdminProductsPage() {
   const [liveProducts, setLiveProducts] = useState<Product[]>([]);
   const [optimisticProducts, addOptimisticProduct] = useOptimistic(
     liveProducts,
-    (state, action: { type: 'update' | 'delete' | 'add', product: any }) => {
+    (state, action: { type: 'update' | 'delete' | 'add', product: Product }) => {
       if (action.type === 'delete') return state.filter(p => p.id !== action.product.id);
       if (action.type === 'add') return [action.product, ...state];
       if (action.type === 'update') return state.map(p => p.id === action.product.id ? { ...p, ...action.product } : p);
@@ -77,8 +77,8 @@ export default function AdminProductsPage() {
   useEffect(() => {
     getAdminProducts()
       .then(setLiveProducts)
-      .catch(err => {
-        console.error("AdminProductsPage: Critical synchronization fault.", err);
+      .catch(() => {
+        console.error("AdminProductsPage: Critical synchronization fault.");
         toast.error("Network or synchronization error. Please refresh.");
       });
   }, []);

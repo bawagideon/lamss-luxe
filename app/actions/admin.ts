@@ -311,7 +311,7 @@ export async function editProduct(formData: FormData) {
     try {
       const existingJson = formData.get('existing_color_images') as string;
       if (existingJson) color_images = JSON.parse(existingJson);
-    } catch (e) {
+    } catch {
       console.warn("Failed to parse existing color images, starting fresh.");
     }
 
@@ -323,7 +323,7 @@ export async function editProduct(formData: FormData) {
       const vBackUrl = formData.get(`variant_image_${color}_back`) as string | null;
 
       // Only update if at least one URL is provided and it's a valid string (not a [object File])
-      const isString = (v: any) => typeof v === 'string' && v.startsWith('http');
+      const isString = (v: unknown): v is string => typeof v === 'string' && v.startsWith('http');
 
       if (isString(vMainUrl) || isString(vFrontUrl) || isString(vSideUrl) || isString(vBackUrl)) {
         color_images[color] = {
