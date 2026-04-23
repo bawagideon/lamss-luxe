@@ -77,9 +77,10 @@ export async function subscribeToNewsletter(email: string) {
     }
 
     return { success: true };
-  } catch (error: any) {
-    console.error("Newsletter Subscription CRITICAL Error:", error.message || error);
-    return { error: `Failed to join the network: ${error.message || "Unknown Error"}` };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown Error";
+    console.error("Newsletter Subscription CRITICAL Error:", message);
+    return { error: `Failed to join the network: ${message}` };
   }
 }
 
