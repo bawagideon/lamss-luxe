@@ -10,7 +10,8 @@ interface CategoryRecommendationsProps {
 }
 
 export function CategoryRecommendations({ category, currentProductId }: CategoryRecommendationsProps) {
-  const [products, setProducts] = useState<Record<string, unknown>[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
     if (category) {

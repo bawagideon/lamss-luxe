@@ -78,7 +78,15 @@ export async function getActiveSessions() {
     .order('last_active', { ascending: false });
     
   if (error) return [];
-  return (data as Record<string, unknown>[]).map(s => ({
+  interface SessionResponse {
+    id: string;
+    staff_id: string;
+    device_id: string;
+    last_active: string;
+    admin_staff: { name: string } | null;
+  }
+
+  return (data as unknown as SessionResponse[]).map(s => ({
     id: s.id,
     staff_id: s.staff_id,
     device_id: s.device_id,
