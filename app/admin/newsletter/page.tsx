@@ -51,7 +51,13 @@ interface Subscriber {
 }
 
 export default function NewsletterStudioPage() {
-  const [stats, setStats] = useState({ totalSubscribers: 0, newThisWeek: 0 });
+  const [stats, setStats] = useState({ 
+    totalSubscribers: 0, 
+    newThisWeek: 0,
+    openRate: "0%",
+    clickRate: "0%",
+    lastSent: "Never"
+  });
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [subject, setSubject] = useState("");
@@ -116,7 +122,7 @@ export default function NewsletterStudioPage() {
       const result = await sendLiveNewsletter(subject, content);
       if (result.success) {
         toast.success(`Newsletter dispatched to ${result.count} subscribers!`);
-        if (result.failures > 0) {
+        if ((result.failures ?? 0) > 0) {
            toast.error(`${result.failures} dispatches failed. Check system logs.`);
         }
         setSubject("");

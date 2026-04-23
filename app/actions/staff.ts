@@ -78,20 +78,13 @@ export async function getActiveSessions() {
     .order('last_active', { ascending: false });
     
   if (error) return [];
-  interface SessionResponse {
-    id: string;
-    staff_id: string;
-    device_id: string;
-    last_active: string;
-    admin_staff: { name: string } | null;
-  }
-
-  return (data as unknown as SessionResponse[]).map(s => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data as any[]).map(s => ({
     id: s.id,
     staff_id: s.staff_id,
     device_id: s.device_id,
     last_active: s.last_active,
-    staff_name: s.admin_staff?.name
+    staff_name: s.admin_staff ? s.admin_staff.name : 'Unknown'
   })) as AdminSession[];
 }
 
