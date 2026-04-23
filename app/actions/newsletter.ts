@@ -101,7 +101,7 @@ export async function removeSubscriber(id: string) {
   return { success: true };
 }
 
-export async function sendTestEmail(_email: string) {
+export async function sendTestEmail() {
   noStore();
   await validateAdminSession();
   // Logic for sending test email...

@@ -10,7 +10,7 @@ interface CategoryRecommendationsProps {
 }
 
 export function CategoryRecommendations({ category, currentProductId }: CategoryRecommendationsProps) {
-  const [products, setProducts] = useState<Record<string, any>[]>([]);
+  const [products, setProducts] = useState<Record<string, unknown>[]>([]);
 
   useEffect(() => {
     if (category) {
