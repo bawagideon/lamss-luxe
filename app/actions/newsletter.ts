@@ -25,11 +25,16 @@ export async function subscribeToNewsletter(email: string) {
     const supabase = getServiceSupabase();
     
     // 1. Check if email already exists
-    const { data: existing } = await supabase
+    const { data: existing, error: fetchError } = await supabase
       .from('newsletter_subscribers')
       .select('id')
       .eq('email', email.toLowerCase())
       .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error("Supabase Newsletter Fetch Error:", fetchError);
+      throw new Error(`Database check failed: ${fetchError.message}`);
+    }
 
     if (existing) {
       return { error: "This email is already part of The Luxe Network.", alreadySubscribed: true };
@@ -46,24 +51,35 @@ export async function subscribeToNewsletter(email: string) {
         discount_value: 30
       });
 
-    if (insertError) throw insertError;
+    if (insertError) {
+      console.error("Supabase Newsletter Insert Error:", insertError);
+      throw new Error(`Database insert failed: ${insertError.message}`);
+    }
 
     // 3. Send the "10/10" Welcome Email
     try {
-      await resend.emails.send({
-        from: 'The Luxe Network <network@lamsseluxe.ca>',
-        to: email.toLowerCase(),
-        subject: "YOU'RE IN, QUEEN — Your 30% Discount is Here",
-        react: WelcomeEmail({ discountCode }),
-      });
+      if (!process.env.RESEND_API_KEY) {
+        console.warn("RESEND_API_KEY is missing. Skipping welcome email.");
+      } else {
+        const emailResult = await resend.emails.send({
+          from: 'The Luxe Network <network@lamsseluxe.ca>',
+          to: email.toLowerCase(),
+          subject: "YOU'RE IN, QUEEN — Your 30% Discount is Here",
+          react: WelcomeEmail({ discountCode }),
+        });
+        
+        if (emailResult.error) {
+          console.error("Resend Email API Error:", emailResult.error);
+        }
+      }
     } catch (emailErr) {
-      console.warn("Newsletter Email Dispatch Failed:", emailErr);
+      console.error("Newsletter Email Dispatch Exception:", emailErr);
     }
 
     return { success: true };
-  } catch (error) {
-    console.error("Newsletter Subscription Error:", error);
-    return { error: "Failed to join the network. Please try again later." };
+  } catch (error: any) {
+    console.error("Newsletter Subscription CRITICAL Error:", error.message || error);
+    return { error: `Failed to join the network: ${error.message || "Unknown Error"}` };
   }
 }
 
