@@ -38,7 +38,6 @@ export function Hero() {
           className="mb-8"
         >
           <span className="text-[10px] md:text-xs font-black tracking-[0.6em] uppercase text-primary">
-            The Collection for the Poise Woman
           </span>
         </motion.div>
 
