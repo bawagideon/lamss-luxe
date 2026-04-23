@@ -287,7 +287,7 @@ export async function editProduct(formData: FormData) {
     const id = formData.get('id') as string;
     
     // Create a dynamic payload containing only non-null values from form
-    const updatePayload: any = {};
+    const updatePayload: Record<string, unknown> = {};
     
     const name = formData.get('name');
     if (name) updatePayload.name = name;
@@ -367,20 +367,20 @@ export async function editProduct(formData: FormData) {
     }
 
     // Merge color images
-    let color_images: any = {};
+    let color_images: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
     try {
       const existingJson = formData.get('existing_color_images') as string;
       if (existingJson) color_images = JSON.parse(existingJson);
     } catch {}
 
-    const activeColors = updatePayload.colors || [];
+    const activeColors = (updatePayload.colors as string[]) || [];
     for (const color of activeColors) {
       const vMain = formData.get(`variant_image_${color}_main`);
       const vFront = formData.get(`variant_image_${color}_front`);
       const vSide = formData.get(`variant_image_${color}_side`);
       const vBack = formData.get(`variant_image_${color}_back`);
       
-      const isUrl = (v: any) => typeof v === 'string' && v.startsWith('http');
+      const isUrl = (v: unknown): v is string => typeof v === 'string' && v.startsWith('http');
       
       if (isUrl(vMain) || isUrl(vFront) || isUrl(vSide) || isUrl(vBack)) {
         color_images[color] = {

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CloudSync, CheckCircle2, RotateCcw, ShieldCheck, Key } from "lucide-react";
+import { CheckCircle2, RotateCcw, Key, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 import { getAdminSettings, updateAdminSettings, Settings } from "@/app/actions/settings";

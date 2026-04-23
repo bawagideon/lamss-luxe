@@ -4,9 +4,8 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, Shield, Monitor, Trash2, Plus, Loader2, UserPlus, Smartphone, Laptop } from "lucide-react";
+import { Users, Monitor, Trash2, Loader2, UserPlus, Smartphone, Laptop } from "lucide-react";
 import { getStaffMembers, addStaffMember, removeStaffMember, getActiveSessions, revokeSession, StaffMember, AdminSession } from "@/app/actions/staff";
 import toast from "react-hot-toast";
 
@@ -42,7 +41,7 @@ export function StaffSecuritySettings() {
       toast.success(`${newStaff.name} added to the logistics team.`);
       setNewStaff({ name: "", email: "", password: "", role: "editor" });
       fetchData();
-    } catch (err) {
+    } catch {
       toast.error("Failed to add staff member.");
     } finally {
       setAdding(false);
@@ -55,7 +54,7 @@ export function StaffSecuritySettings() {
       await removeStaffMember(id);
       toast.success(`${name} has been removed from the system.`);
       fetchData();
-    } catch (err) {
+    } catch {
       toast.error("Failed to remove staff.");
     }
   };
@@ -66,7 +65,7 @@ export function StaffSecuritySettings() {
       await revokeSession(id);
       toast.success("Device session terminated.");
       fetchData();
-    } catch (err) {
+    } catch {
       toast.error("Failed to revoke session.");
     } finally {
       setRevokingId(null);

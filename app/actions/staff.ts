@@ -15,6 +15,7 @@ const getServiceSupabase = () => createClient(
 export interface StaffMember {
   id: string;
   name: string;
+  email: string;
   role: string;
   created_at: string;
 }
@@ -73,12 +74,15 @@ export async function getActiveSessions() {
   const supabase = getServiceSupabase();
   const { data, error } = await supabase
     .from('admin_sessions')
-    .select('*, admin_staff(name)')
+    .select('id, staff_id, device_id, last_active, admin_staff(name)')
     .order('last_active', { ascending: false });
     
   if (error) return [];
   return (data as any[]).map(s => ({
-    ...s,
+    id: s.id,
+    staff_id: s.staff_id,
+    device_id: s.device_id,
+    last_active: s.last_active,
     staff_name: s.admin_staff?.name
   })) as AdminSession[];
 }

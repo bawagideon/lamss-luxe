@@ -5,11 +5,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.lamsseluxe.ca';
 
   // Fetch all products to include in sitemap
-  let products: any[] = [];
+  let products: { id: string }[] = [];
   try {
     products = await getActiveProducts();
-  } catch (err) {
-    console.error("Sitemap generation error:", err);
+  } catch {
+    console.error("Sitemap generation error: Fetching products failed.");
   }
 
   const productUrls = products.map((product) => ({

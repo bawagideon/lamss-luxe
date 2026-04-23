@@ -36,7 +36,7 @@ export function SizeGuideModal() {
               </TabsList>
               <div className="flex items-center gap-2 text-primary">
                  <Info className="w-3.5 h-3.5" />
-                 <span className="text-[10px] font-bold uppercase tracking-widest">Model is 5'8" wearing size S</span>
+                 <span className="text-[10px] font-bold uppercase tracking-widest">Model is 5&apos;8&quot; wearing size S</span>
               </div>
             </div>
 

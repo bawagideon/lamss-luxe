@@ -43,12 +43,12 @@ export async function getAdminSettings() {
   try {
     const user = await validateAdminSession();
     const supabase = getServiceSupabase();
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('site_settings')
       .select('*')
       .single();
 
-    let settingsData = data || defaultSettings;
+    const settingsData = data || defaultSettings;
 
     // MASK SENSITIVE KEYS ALWAYS
     const maskedSettings = {

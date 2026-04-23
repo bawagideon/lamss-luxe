@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { getProductsByCategory } from "@/app/actions/products";
 import { ShopGrid } from "./ShopGrid";
-import { motion } from "framer-motion";
 
 interface CategoryRecommendationsProps {
   category: string;
