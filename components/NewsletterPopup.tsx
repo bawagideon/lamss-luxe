@@ -135,28 +135,29 @@ export function NewsletterPopup() {
                           {loading ? "Joining the Network..." : "Send My 30% Discount"}
                         </Button>
                       </form>
-                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest opacity-60">One Code Per Identity • Limited Time Invite</p>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="success"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center text-center space-y-6"
-                  >
-                    <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white shadow-2xl shadow-green-500/30 mb-4 animate-bounce">
-                       <CheckCircle2 className="w-12 h-12" />
-                    </div>
-                    <div className="space-y-2">
-                       <h2 className="text-4xl font-black uppercase tracking-tighter">You&apos;re In!</h2>
-                       <p className="text-lg text-zinc-800 dark:text-zinc-200 font-black uppercase tracking-widest">Code: LUXE30</p>
-                       <p className="text-sm text-zinc-500 font-medium italic">Your 30% discount has been dispatched to your inbox.</p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </motion.div>
+                      <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest opacity-60">One Code Per Identity • Limited Time Invite</p>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="flex flex-col items-center text-center space-y-6"
+                    >
+                      <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white shadow-2xl shadow-green-500/30 mb-4 animate-bounce">
+                         <CheckCircle2 className="w-12 h-12" />
+                      </div>
+                      <div className="space-y-2">
+                         <h2 className="text-4xl font-black uppercase tracking-tighter">You&apos;re In!</h2>
+                         <p className="text-lg text-zinc-800 dark:text-zinc-200 font-black uppercase tracking-widest">Code: LUXE30</p>
+                         <p className="text-sm text-zinc-500 font-medium italic">Your 30% discount has been dispatched to your inbox.</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </div>
         </div>
       )}
     </AnimatePresence>

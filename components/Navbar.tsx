@@ -98,9 +98,9 @@ export function Navbar() {
                 {/* Left: Logo & Core Nav */}
                 <div className="flex items-center gap-10">
                   <Link href="/" className="flex-shrink-0 group">
-                    <div className="relative w-64 h-12 transition-transform duration-500 group-hover:scale-105">
-                      <Image src="/Logo-light.png" alt="Logo" fill sizes="(max-width: 1024px) 176px, 256px" className="object-contain object-left dark:hidden" priority />
-                      <Image src="/Logo-dark.png" alt="Logo" fill sizes="(max-width: 1024px) 176px, 256px" className="object-contain object-left hidden dark:block" priority />
+                    <div className="relative w-80 h-16 transition-transform duration-500 group-hover:scale-105">
+                      <Image src="/Logo-light.png" alt="Logo" fill sizes="(max-width: 1024px) 176px, 320px" className="object-contain object-left dark:hidden" priority />
+                      <Image src="/Logo-dark.png" alt="Logo" fill sizes="(max-width: 1024px) 176px, 320px" className="object-contain object-left hidden dark:block" priority />
                     </div>
                   </Link>
                   <div className="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900 dark:text-white">
@@ -184,9 +184,9 @@ export function Navbar() {
                 {/* Left: Logo */}
                 <div className="flex justify-start">
                   <Link href="/" className="flex-shrink-0 group">
-                    <div className={`relative ${isScrolled ? "w-36 h-8" : "w-44 h-10"} transition-all duration-500`}>
-                      <Image src="/Logo-light.png" alt="Logo" fill sizes="(max-width: 768px) 176px, 176px" className="object-contain object-left dark:hidden" priority />
-                      <Image src="/Logo-dark.png" alt="Logo" fill sizes="(max-width: 768px) 176px, 176px" className="object-contain object-left hidden dark:block" priority />
+                    <div className={`relative ${isScrolled ? "w-44 h-10" : "w-52 h-12"} transition-all duration-500`}>
+                      <Image src="/Logo-light.png" alt="Logo" fill sizes="(max-width: 768px) 208px, 208px" className="object-contain object-left dark:hidden" priority />
+                      <Image src="/Logo-dark.png" alt="Logo" fill sizes="(max-width: 768px) 208px, 208px" className="object-contain object-left hidden dark:block" priority />
                     </div>
                   </Link>
                 </div>
