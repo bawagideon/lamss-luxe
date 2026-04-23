@@ -105,14 +105,14 @@ export async function removeSubscriber(id: string): Promise<{ success: boolean; 
 export async function sendTestEmail(email: string, subject: string, content: string): Promise<{ success: boolean; error?: string }> {
   noStore();
   await validateAdminSession();
-  console.log(`[Newsletter] Sending test to ${email}: ${subject}`);
+  console.log(`[Newsletter] Sending test to ${email}: ${subject} | Payload size: ${content.length} chars`);
   return { success: true };
 }
 
 export async function sendLiveNewsletter(subject: string, content: string): Promise<{ success: boolean; count?: number; failures?: number; error?: string }> {
   noStore();
   await validateAdminSession();
-  console.log(`[Newsletter] BROADCASTING LIVE: ${subject}`);
+  console.log(`[Newsletter] BROADCASTING LIVE: ${subject} | Payload size: ${content.length} chars`);
   
   const supabase = getServiceSupabase();
   const { data: subs } = await supabase.from('newsletter_subscribers').select('email');
