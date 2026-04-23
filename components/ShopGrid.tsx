@@ -21,6 +21,7 @@ interface RawProduct {
   colors?: string[];
   color_codes?: string[];
   marketing_message?: string;
+  created_at?: string;
 }
 
 interface ShopProduct {
@@ -33,6 +34,7 @@ interface ShopProduct {
   sizes: string[];
   colors: string[];
   marketingMessage?: string;
+  isNew?: boolean;
 }
 
 export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }) {
@@ -52,7 +54,8 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
       sizes: p.sizes && p.sizes.length > 0 ? p.sizes : ['XS', 'S', 'M', 'L', 'XL'],
       // Prioritize color_codes for the visual swatches per user request
       colors: p.color_codes && p.color_codes.length > 0 ? p.color_codes : (p.colors && p.colors.length > 0 ? p.colors : []),
-      marketingMessage: p.marketing_message
+      marketingMessage: p.marketing_message,
+      isNew: p.created_at ? (new Date().getTime() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false
     });
 
     if (initialProducts) {
@@ -131,7 +134,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                   className="group relative flex flex-col"
                 >
                   {/* Visual Stage (Massive & Taller) */}
-                  <div className="relative aspect-[3/5] md:aspect-[0.65] overflow-hidden bg-slate-50 dark:bg-zinc-900/40 shadow-sm border border-border/10">
+                  <div className="relative aspect-[4/5] md:aspect-[0.8] overflow-hidden bg-slate-50 dark:bg-zinc-900/40 shadow-sm border border-border/10">
                     <Link href={`/product/${product.id}`} className="absolute inset-0 z-10">
                       <span className="sr-only">View Details</span>
                     </Link>
@@ -139,12 +142,13 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                     {/* Smooth Image Switcher */}
                     {typeof product.imageDefault === 'string' && product.imageDefault.startsWith('http') ? (
                       <>
+                        <div className="absolute inset-0 z-20 pointer-events-none bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60 mix-blend-multiply" />
                         <Image 
                           src={product.imageDefault} 
                           alt={product.name}
                           fill
                           sizes="(max-width: 640px) 50vw, 25vw"
-                          className="object-cover transition-opacity duration-700 group-hover:opacity-0"
+                          className="object-cover transition-opacity duration-700 group-hover:opacity-0 filter contrast-[1.02] brightness-[0.98]"
                           priority={index < 8}
                         />
                         <Image 
@@ -152,8 +156,24 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                           alt={`${product.name} Hover`}
                           fill
                           sizes="(max-width: 640px) 50vw, 25vw"
-                          className="object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 scale-105 group-hover:scale-100"
+                          className="object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 scale-105 group-hover:scale-100 filter contrast-[1.05] saturate-[0.95]"
                         />
+                        {/* Urgency Badge */}
+                        <div className="absolute top-3 left-3 z-30 flex flex-col gap-2">
+                           {product.isNew && (
+                             <motion.div 
+                              initial={{ x: -20, opacity: 0 }}
+                              animate={{ x: 0, opacity: 1 }}
+                              className="bg-black text-white text-[8px] font-black px-2 py-1 uppercase tracking-widest shadow-xl rounded-sm flex items-center gap-1"
+                             >
+                               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                               New Drop
+                             </motion.div>
+                           )}
+                           <div className="bg-primary text-white text-[8px] font-black px-2 py-1 uppercase tracking-widest shadow-xl rounded-sm italic">
+                             Limited Drop
+                           </div>
+                        </div>
                       </>
                     ) : (
                       <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-black uppercase text-zinc-400">Preview Unavailable</div>
@@ -161,7 +181,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
 
                     {/* DESKTOP QUICK ADD (Fashion Nova Overlay) */}
                     <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out bg-white dark:bg-zinc-950 p-4 hidden md:block border-t border-border shadow-2xl">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 text-center text-black dark:text-zinc-50">Add to Bag</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 text-center text-black dark:text-zinc-50 italic">Secure Your Look</p>
                       <div className="grid grid-cols-5 gap-1">
                         {product.sizes.slice(0, 5).map((size) => (
                           <button
@@ -238,7 +258,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                             {(product.colors.length > 0 ? product.colors : ['#000000']).slice(0, 3).map((color, cIdx) => (
                               <div 
                                 key={cIdx}
-                                className="w-3.5 h-3.5 rounded-full ring-[1px] ring-offset-1 ring-border/50 border border-black/5"
+                                className="w-3.5 h-3.5 rounded-full ring-[1px] ring-offset-1 ring-border/50 border border-black/5 dark:border-white/20"
                                 style={{ backgroundColor: color }}
                               />
                             ))}
@@ -248,7 +268,7 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                           </div>
 
                          {/* Status Reveal (Animated on desktop) */}
-                         <span className="text-[10px] font-black text-black dark:text-zinc-50 uppercase tracking-[0.2em] hidden md:block transition-all duration-300 group-hover/swatches:translate-x-0 translate-x-4 opacity-0 group-hover/swatches:opacity-100">
+                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] hidden md:block transition-all duration-300 group-hover/swatches:translate-x-0 translate-x-4 opacity-0 group-hover/swatches:opacity-100">
                            View Look
                          </span>
                       </div>

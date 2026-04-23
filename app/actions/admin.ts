@@ -3,6 +3,7 @@
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { sendShippingConfirmationEmail } from '@/lib/resend';
+import { validateAdminSession } from '@/lib/admin-auth';
 
 export interface Order {
   id: string;
@@ -55,6 +56,7 @@ const getAdminSupabase = () => createSupabaseAdmin(
 // 1. Dashboard Metrics
 export async function getAdminMetrics() {
   noStore();
+  await validateAdminSession();
   const supabase = getAdminSupabase();
   
   let totalRevenue = 0;
@@ -84,6 +86,7 @@ export async function getAdminMetrics() {
 
 export async function getAdminPromoMetrics() {
     noStore();
+    await validateAdminSession();
     const supabase = getAdminSupabase();
     
     // 1. Get Promo Orders summary
@@ -125,6 +128,7 @@ export async function getAdminPromoMetrics() {
 
 export async function getAdminRecentOrders() {
   noStore();
+  await validateAdminSession();
   const supabase = getAdminSupabase();
   const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(6);
   return data || [];
@@ -133,6 +137,7 @@ export async function getAdminRecentOrders() {
 // 2. General Orders Engine
 export async function updateOrderStatus(orderId: string, status: string) {
   noStore();
+  await validateAdminSession();
   const supabase = getAdminSupabase();
   await supabase.from('orders').update({ status }).eq('id', orderId);
 
@@ -150,6 +155,7 @@ export async function updateOrderStatus(orderId: string, status: string) {
 
 export async function getAdminAllOrders() {
   noStore();
+  await validateAdminSession();
   const supabase = getAdminSupabase();
   const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
   return data || [];
@@ -158,6 +164,7 @@ export async function getAdminAllOrders() {
 // 3. Secure Asset Pivot (Proxies client uploads to bypass RLS and 4.5MB limits)
 export async function uploadSingleImage(formData: FormData) {
   noStore();
+  await validateAdminSession();
   try {
     const file = formData.get('file') as File;
     if (!file || file.size === 0) return { error: "No file provided" };
@@ -189,6 +196,7 @@ export async function uploadSingleImage(formData: FormData) {
 }
 export async function addProduct(formData: FormData) {
   noStore();
+  await validateAdminSession();
   try {
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
@@ -274,91 +282,116 @@ export async function addProduct(formData: FormData) {
 
 export async function editProduct(formData: FormData) {
   noStore();
+  await validateAdminSession();
   try {
     const id = formData.get('id') as string;
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const price = Number(formData.get('price'));
-    const stock = Number(formData.get('stock'));
-    const category = formData.get('category') as string;
-    const sizesStr = formData.get('sizes') as string || "";
+    
+    // Create a dynamic payload containing only non-null values from form
+    const updatePayload: any = {};
+    
+    const name = formData.get('name');
+    if (name) updatePayload.name = name;
+    
+    const description = formData.get('description');
+    if (description !== null) updatePayload.description = description;
+    
+    const price = formData.get('price');
+    if (price && !isNaN(Number(price))) updatePayload.price = Number(price);
+    
+    const stock = formData.get('stock');
+    if (stock !== null && !isNaN(Number(stock))) updatePayload.stock = Number(stock);
+    
+    const category = formData.get('category');
+    if (category) updatePayload.category = category;
+    
+    const sizes = formData.get('sizes');
+    if (sizes !== null) updatePayload.sizes = (sizes as string).split(',').map(s => s.trim()).filter(Boolean);
+
+    const material = formData.get('material');
+    if (material !== null) updatePayload.material = material;
+    
+    const occasion = formData.get('occasion');
+    if (occasion !== null) updatePayload.occasion = occasion;
+    
+    const size_and_fit = formData.get('size_and_fit');
+    if (size_and_fit !== null) updatePayload.size_and_fit = size_and_fit;
+    
+    const fabric_and_care = formData.get('fabric_and_care');
+    if (fabric_and_care !== null) updatePayload.fabric_and_care = fabric_and_care;
+    
+    const marketing_message = formData.get('marketing_message');
+    if (marketing_message !== null) updatePayload.marketing_message = marketing_message;
+    
+    const promo_banner = formData.get('promo_banner');
+    if (promo_banner !== null) updatePayload.promo_banner = promo_banner;
+
+    const is_new = formData.get('is_new');
+    if (is_new !== null) updatePayload.is_new = is_new === 'true';
+
+    const is_set_available = formData.get('is_set_available');
+    if (is_set_available !== null) updatePayload.is_set_available = is_set_available === 'true';
+
+    const relIds = formData.get('related_product_ids');
+    if (relIds !== null) updatePayload.related_product_ids = (relIds as string).split(',').filter(Boolean);
+
+    const colorBadges = formData.get('color_badges_json');
+    if (colorBadges) updatePayload.color_badges = JSON.parse(colorBadges as string);
+
+    // Asset Handling
+    const image_main = formData.get('image_main');
+    if (typeof image_main === 'string' && image_main.startsWith('http')) updatePayload.image_url = image_main;
+    
+    const image_front = formData.get('image_front');
+    if (typeof image_front === 'string' && image_front.startsWith('http')) updatePayload.image_front = image_front;
+    
+    const image_side = formData.get('image_side');
+    if (typeof image_side === 'string' && image_side.startsWith('http')) updatePayload.image_side = image_side;
+    
+    const image_back = formData.get('image_back');
+    if (typeof image_back === 'string' && image_back.startsWith('http')) updatePayload.image_back = image_back;
+
+    // Color & Variant Logic
     const rawColorNames = formData.getAll('color_names') as string[];
     const rawColorCodes = formData.getAll('color_codes') as string[];
-    const material = formData.get('material') as string || null;
-    const occasion = formData.get('occasion') as string || null;
-    const size_and_fit = formData.get('size_and_fit') as string || null;
-    const fabric_and_care = formData.get('fabric_and_care') as string || null;
-    const marketing_message = formData.get('marketing_message') as string || null;
-    const is_new = formData.get('is_new') === 'true';
-    const promo_banner = formData.get('promo_banner') as string || null;
-    const is_set_available = formData.get('is_set_available') === 'true';
-    const related_product_ids = formData.get('related_product_ids') ? (formData.get('related_product_ids') as string).split(',') : [];
-    
-    const sizes = sizesStr.split(',').map(s => s.trim()).filter(Boolean);
-    const colors: string[] = [];
-    const color_codes: string[] = [];
+    if (rawColorNames.length > 0 && rawColorNames.some(n => n.trim() !== '')) {
+      const colors: string[] = [];
+      const color_codes: string[] = [];
+      rawColorNames.forEach((name, idx) => {
+        if (name.trim() !== '') {
+          colors.push(name.trim());
+          color_codes.push(rawColorCodes[idx] || "#000000");
+        }
+      });
+      updatePayload.colors = colors;
+      updatePayload.color_codes = color_codes;
+    }
 
-    rawColorNames.forEach((name, idx) => {
-      if (name.trim() !== '') {
-        colors.push(name.trim());
-        color_codes.push(rawColorCodes[idx] || "#000000");
-      }
-    });
-
-    // 4. Variant Image Processing (JSONB)
-    // We parse the existing color_images first to ensure we don't lose data
-    let color_images: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
+    // Merge color images
+    let color_images: any = {};
     try {
       const existingJson = formData.get('existing_color_images') as string;
       if (existingJson) color_images = JSON.parse(existingJson);
-    } catch {
-      console.warn("Failed to parse existing color images, starting fresh.");
-    }
+    } catch {}
 
-    // Merge new uploads/links into the color_images structure
-    for (const color of colors) {
-      const vMainUrl = formData.get(`variant_image_${color}_main`) as string | null;
-      const vFrontUrl = formData.get(`variant_image_${color}_front`) as string | null;
-      const vSideUrl = formData.get(`variant_image_${color}_side`) as string | null;
-      const vBackUrl = formData.get(`variant_image_${color}_back`) as string | null;
-
-      // Only update if at least one URL is provided and it's a valid string (not a [object File])
-      const isString = (v: unknown): v is string => typeof v === 'string' && v.startsWith('http');
-
-      if (isString(vMainUrl) || isString(vFrontUrl) || isString(vSideUrl) || isString(vBackUrl)) {
+    const activeColors = updatePayload.colors || [];
+    for (const color of activeColors) {
+      const vMain = formData.get(`variant_image_${color}_main`);
+      const vFront = formData.get(`variant_image_${color}_front`);
+      const vSide = formData.get(`variant_image_${color}_side`);
+      const vBack = formData.get(`variant_image_${color}_back`);
+      
+      const isUrl = (v: any) => typeof v === 'string' && v.startsWith('http');
+      
+      if (isUrl(vMain) || isUrl(vFront) || isUrl(vSide) || isUrl(vBack)) {
         color_images[color] = {
-          main: isString(vMainUrl) ? vMainUrl : (color_images[color]?.main || null),
-          front: isString(vFrontUrl) ? vFrontUrl : (color_images[color]?.front || null),
-          side: isString(vSideUrl) ? vSideUrl : (color_images[color]?.side || null),
-          back: isString(vBackUrl) ? vBackUrl : (color_images[color]?.back || null),
+          main: isUrl(vMain) ? vMain : (color_images[color]?.main || null),
+          front: isUrl(vFront) ? vFront : (color_images[color]?.front || null),
+          side: isUrl(vSide) ? vSide : (color_images[color]?.side || null),
+          back: isUrl(vBack) ? vBack : (color_images[color]?.back || null),
         };
       }
     }
-
-    const updatePayload: Partial<Product> = {
-      name, description, price, stock, category, 
-      sizes, colors, color_codes,
-      material, occasion, size_and_fit, fabric_and_care,
-      marketing_message,
-      color_images,
-      is_new,
-      promo_banner,
-      is_set_available,
-      related_product_ids,
-      color_badges: JSON.parse(formData.get('color_badges_json') as string || '{}')
-    };
-
-    const mainUrl = formData.get('image_main') as string | null;
-    if (typeof mainUrl === 'string' && mainUrl.startsWith('http')) updatePayload.image_url = mainUrl;
-
-    const frontUrl = formData.get('image_front') as string | null;
-    if (typeof frontUrl === 'string' && frontUrl.startsWith('http')) updatePayload.image_front = frontUrl;
-    
-    const sideUrl = formData.get('image_side') as string | null;
-    if (typeof sideUrl === 'string' && sideUrl.startsWith('http')) updatePayload.image_side = sideUrl;
-    
-    const backUrl = formData.get('image_back') as string | null;
-    if (typeof backUrl === 'string' && backUrl.startsWith('http')) updatePayload.image_back = backUrl;
+    if (Object.keys(color_images).length > 0) updatePayload.color_images = color_images;
 
     const supabase = getAdminSupabase();
     const { error } = await supabase.from('products').update(updatePayload).eq('id', id);
@@ -376,6 +409,7 @@ export async function editProduct(formData: FormData) {
 
 export async function deleteProduct(id: string) {
   noStore();
+  await validateAdminSession();
   try {
     const supabase = getAdminSupabase();
     const { error } = await supabase.from('products').delete().eq('id', id);
@@ -392,6 +426,7 @@ export async function deleteProduct(id: string) {
 
 export async function getAdminProducts() {
   noStore();
+  await validateAdminSession();
   const supabase = getAdminSupabase();
   const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
   return data || [];
@@ -400,6 +435,7 @@ export async function getAdminProducts() {
 // 4. Customers CRM & Tracking
 export async function fetchCustomers() {
   noStore();
+  await validateAdminSession();
   const supabase = getAdminSupabase();
   
   // 1. Fetch all profiles
@@ -438,6 +474,7 @@ export async function fetchCustomers() {
 
 export async function fetchNewsletterSubscribers() {
   noStore();
+  await validateAdminSession();
   const supabase = getAdminSupabase();
   const { data, error } = await supabase
     .from('newsletter_subscribers')
@@ -453,6 +490,7 @@ export async function fetchNewsletterSubscribers() {
 
 export async function fetchCustomerWishlist(wishlistIds: string[]) {
   noStore();
+  await validateAdminSession();
   if (!wishlistIds || wishlistIds.length === 0) return [];
   
   const supabase = getAdminSupabase();
@@ -470,6 +508,7 @@ export async function fetchCustomerWishlist(wishlistIds: string[]) {
 
 export async function fetchCustomerViewed(viewedIds: string[]) {
   noStore();
+  await validateAdminSession();
   if (!viewedIds || viewedIds.length === 0) return [];
   
   const supabase = getAdminSupabase();
@@ -490,6 +529,7 @@ export async function fetchCustomerViewed(viewedIds: string[]) {
 
 export async function fetchCustomerOrders(userId: string) {
   noStore();
+  await validateAdminSession();
   const supabase = getAdminSupabase();
   const { data, error } = await supabase
     .from('orders')
@@ -507,6 +547,7 @@ export async function fetchCustomerOrders(userId: string) {
 // Legacy Aggregated Tracking (Keeping for Metrics compatibility if needed)
 export async function getCustomers() {
   noStore();
+  await validateAdminSession();
   const supabase = getAdminSupabase();
   const { data } = await supabase.from('orders').select('customer_email, total_amount, created_at');
   

@@ -111,7 +111,7 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
           {/* Fashion Nova transparent curtain drop-down background */}
           <div className="fixed inset-0 bg-black/40 z-40 transition-opacity animate-in fade-in" />
           
-          <div className="absolute top-14 left-1/2 -translate-x-1/2 w-[95vw] md:w-[650px] lg:w-[800px] bg-white text-black rounded-b-2xl shadow-2xl p-6 md:p-8 z-50 animate-in fade-in slide-in-from-top-2 border-t-0 max-h-[85vh] overflow-y-auto overflow-x-hidden">
+          <div className="absolute top-14 left-1/2 -translate-x-1/2 w-[95vw] md:w-[650px] lg:w-[800px] bg-white text-black rounded-2xl shadow-2xl p-6 md:p-8 z-50 animate-in fade-in slide-in-from-top-2 border-t-0 max-h-[85vh] overflow-y-auto overflow-x-hidden">
             
             {/* Main Categories Header Tab Row */}
             <div className="flex items-center space-x-6 border-b border-gray-200 pb-3 mb-6">

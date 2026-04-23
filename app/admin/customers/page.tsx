@@ -12,6 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { AdminEmailDialog } from "@/components/AdminEmailDialog";
 
 interface Customer {
   id: string;
@@ -67,6 +69,7 @@ export default function AdminCustomersPage() {
   const [viewedLoading, setViewedLoading] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
 
   useEffect(() => {
     async function init() {
@@ -128,6 +131,17 @@ export default function AdminCustomersPage() {
         </div>
         
         <div className="flex items-center space-x-2 w-full sm:w-auto">
+          {selectedEmails.length > 0 && (
+            <AdminEmailDialog 
+              emails={selectedEmails} 
+              onSuccess={() => setSelectedEmails([])}
+              trigger={
+                <Button className="bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 hover:scale-105 transition-all">
+                  <Mail className="w-4 h-4 mr-2" /> Email {selectedEmails.length} Queens
+                </Button>
+              }
+            />
+          )}
           <Button variant="outline" className="font-bold uppercase text-xs tracking-wider border-black hover:bg-black hover:text-white transition-all">
             <Download className="w-4 h-4 mr-2" /> Export CSV
           </Button>
@@ -176,6 +190,15 @@ export default function AdminCustomersPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50/50 hover:bg-gray-50/50">
+                  <TableHead className="w-[50px] py-4">
+                    <Checkbox 
+                      checked={selectedEmails.length === filteredCustomers.length && filteredCustomers.length > 0}
+                      onCheckedChange={(checked) => {
+                        if (checked) setSelectedEmails(filteredCustomers.map(c => c.email));
+                        else setSelectedEmails([]);
+                      }}
+                    />
+                  </TableHead>
                   <TableHead className="font-black uppercase text-[10px] tracking-widest py-4">Queen Detail</TableHead>
                   <TableHead className="font-black uppercase text-[10px] tracking-widest py-4">Phone</TableHead>
                   <TableHead className="font-black uppercase text-[10px] tracking-widest py-4">Joined</TableHead>
@@ -190,6 +213,15 @@ export default function AdminCustomersPage() {
                 ) : (
                   filteredCustomers.map((c) => (
                     <TableRow key={c.id}>
+                      <TableCell>
+                        <Checkbox 
+                          checked={selectedEmails.includes(c.email)}
+                          onCheckedChange={(checked) => {
+                            if (checked) setSelectedEmails([...selectedEmails, c.email]);
+                            else setSelectedEmails(selectedEmails.filter(e => e !== c.email));
+                          }}
+                        />
+                      </TableCell>
                       <TableCell>
                         <div className="font-bold text-sm uppercase">{c.full_name || "New Member"}</div>
                         <div className="text-xs text-gray-400 font-medium">{c.email}</div>
@@ -213,6 +245,9 @@ export default function AdminCustomersPage() {
                               <Badge className="w-fit mb-2 uppercase tracking-widest font-black text-[10px] bg-black text-white hover:bg-black">Account Profile</Badge>
                               <SheetTitle className="text-3xl font-black uppercase tracking-tight">{c.full_name || c.email.split('@')[0]}</SheetTitle>
                               <SheetDescription className="text-sm">Comprehensive breakdown of customer data and lifecycle.</SheetDescription>
+                              <div className="pt-4">
+                                <AdminEmailDialog emails={[c.email]} />
+                              </div>
                             </SheetHeader>
 
                             <div className="space-y-8">
@@ -395,6 +430,15 @@ export default function AdminCustomersPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50/50 hover:bg-gray-50/50">
+                  <TableHead className="w-[50px] py-4">
+                    <Checkbox 
+                      checked={selectedEmails.length === filteredSubscribers.length && filteredSubscribers.length > 0}
+                      onCheckedChange={(checked) => {
+                        if (checked) setSelectedEmails(filteredSubscribers.map(s => s.email));
+                        else setSelectedEmails([]);
+                      }}
+                    />
+                  </TableHead>
                   <TableHead className="font-black uppercase text-[10px] tracking-widest py-4">Waitlist Email</TableHead>
                   <TableHead className="font-black uppercase text-[10px] tracking-widest py-4">Full Name</TableHead>
                   <TableHead className="font-black uppercase text-[10px] tracking-widest py-4">Target City</TableHead>
@@ -409,6 +453,15 @@ export default function AdminCustomersPage() {
                 ) : (
                   filteredSubscribers.map((s) => (
                     <TableRow key={s.id}>
+                      <TableCell>
+                        <Checkbox 
+                          checked={selectedEmails.includes(s.email)}
+                          onCheckedChange={(checked) => {
+                            if (checked) setSelectedEmails([...selectedEmails, s.email]);
+                            else setSelectedEmails(selectedEmails.filter(e => e !== s.email));
+                          }}
+                        />
+                      </TableCell>
                       <TableCell className="font-bold text-sm">{s.email}</TableCell>
                       <TableCell className="text-sm font-medium uppercase">{s.name || "—"}</TableCell>
                       <TableCell className="text-xs font-bold uppercase tracking-widest text-primary">{s.city || "Global"}</TableCell>

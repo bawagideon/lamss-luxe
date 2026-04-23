@@ -12,10 +12,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import Link from "next/link";
 import { ProductGallery } from "./ProductGallery";
 import { PriceDisplay } from "./PriceDisplay";
+import { SizeGuideModal } from "./SizeGuideModal";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { CompleteTheLook } from "./CompleteTheLook";
 import { ProductReviews } from "./ProductReviews";
+import { ImmersiveVisuals } from "./ImmersiveVisuals";
+import { CategoryRecommendations } from "./CategoryRecommendations";
 
 interface Product {
   id: string;
@@ -82,6 +85,7 @@ export function ProductDisplay({ product }: { product: Product }) {
 
   // Sticky CTA Logic
   const [showSticky, setShowSticky] = useState(false);
+  const [isSelectingSize, setIsSelectingSize] = useState(false);
   const { scrollY } = useScroll();
 
   useEffect(() => {
@@ -121,7 +125,9 @@ export function ProductDisplay({ product }: { product: Product }) {
     : colors.map(() => "#000000");
 
   return (
-    <div className="container mx-auto px-8 sm:px-10 lg:px-16 flex flex-col lg:flex-row gap-12 lg:gap-24">
+    <div className="w-full">
+      {/* Primary Hero: Gallery + Details */}
+      <div className="container mx-auto px-8 sm:px-10 lg:px-16 flex flex-col lg:flex-row gap-12 lg:gap-24 mb-24">
       
       {/* Left Column: Image Gallery */}
       <ProductGallery images={imagesToRelyOn} />
@@ -140,17 +146,59 @@ export function ProductDisplay({ product }: { product: Product }) {
           </div>
         )}
 
-        <div className="flex items-center gap-4 mb-4">
-           <h1 className="text-3xl md:text-5xl font-black tracking-tight">{product.name}</h1>
-           {product.is_new && (
-             <Badge className="bg-black text-white rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border-none h-fit">New</Badge>
-           )}
+        <div className="flex flex-col gap-2 mb-6">
+           <div className="flex items-center gap-4">
+              <h1 className="text-3xl md:text-5xl font-black tracking-tight">{product.name}</h1>
+              {product.is_new && (
+                <Badge className="bg-black text-white rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border-none h-fit">New</Badge>
+              )}
+           </div>
+           <div className="bg-primary/10 border border-primary/20 p-3 rounded-sm">
+              <p className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                Slay this weekend: Order within 4 hours for Friday shipping.
+              </p>
+           </div>
         </div>
         
-        <PriceDisplay 
-          priceCAD={product.price} 
-          className="text-2xl font-bold mb-8" 
-        />
+        <div className="flex items-end gap-10 mb-8">
+          <PriceDisplay 
+            priceCAD={product.price} 
+            className="text-2xl font-bold" 
+          />
+          
+          <div className="flex flex-col gap-2 flex-1 max-w-[200px]">
+            <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.2em]">
+              <span className="text-muted-foreground">Availability</span>
+              <span className={product.stock <= 5 ? "text-red-600" : "text-foreground"}>
+                {product.stock <= 5 ? `${product.stock} Left` : "Limited"}
+              </span>
+            </div>
+            <div className="h-[2px] w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+               <motion.div 
+                 initial={{ width: 0 }}
+                 animate={{ width: `${Math.max(Math.min((product.stock / 20) * 100, 100), 10)}%` }}
+                 className={`h-full transition-colors duration-500 ${product.stock <= 5 ? "bg-red-600 animate-pulse" : "bg-black dark:bg-white"}`}
+               />
+            </div>
+          </div>
+        </div>
+
+        {product.occasion && (
+          <div className="mb-10 space-y-3">
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 block">The Vibe</span>
+            <div className="flex flex-wrap gap-2">
+              {product.occasion.split(/[,&]+/).map((tag, i) => (
+                <span key={i} className="text-[9px] font-black uppercase tracking-widest border border-zinc-100 dark:border-zinc-800 px-3 py-1.5 bg-zinc-50/50 dark:bg-zinc-900/50 text-zinc-600 dark:text-zinc-400">
+                  {tag.trim()}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Description removed from here, moved into Accordion below */}
 
@@ -171,21 +219,35 @@ export function ProductDisplay({ product }: { product: Product }) {
             </div>
             <div className="flex flex-wrap gap-4">
               {colors.map((c: string, idx: number) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setSelectedColor(c)}
-                  className={`relative w-12 h-12 rounded-full border-2 shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
-                    selectedColor === c 
-                      ? "border-foreground scale-110 shadow-md ring-2 ring-offset-2 ring-foreground" 
-                      : "border-border/50 hover:scale-105 hover:border-muted-foreground"
-                  }`}
-                  style={{ backgroundColor: colorCodes[idx] }}
-                  title={c}
-                  aria-label={`Select color ${c}`}
-                >
-                  <span className="sr-only">{c}</span>
-                </button>
+                <div key={c} className="group/color relative">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedColor(c)}
+                    className={`relative w-12 h-12 rounded-full border-2 shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
+                      selectedColor === c 
+                        ? "border-foreground scale-110 shadow-md ring-2 ring-offset-2 ring-foreground" 
+                        : "border-border/50 dark:border-white/20 hover:scale-105 hover:border-muted-foreground"
+                    }`}
+                    style={{ backgroundColor: colorCodes[idx] }}
+                    title={c}
+                    aria-label={`Select color ${c}`}
+                  >
+                    <span className="sr-only">{c}</span>
+                  </button>
+                  
+                  {/* Floating Tooltip Desktop Only */}
+                  <div className="hidden lg:block absolute bottom-full left-1/2 -translate-x-1/2 mb-4 opacity-0 group-hover/color:opacity-100 transition-opacity pointer-events-none z-50">
+                    <motion.div 
+                      initial={{ y: 10, scale: 0.9 }}
+                      whileInView={{ y: 0, scale: 1 }}
+                      className="bg-black text-white text-[9px] font-black uppercase tracking-widest px-4 py-2 whitespace-nowrap rounded-sm shadow-2xl flex items-center gap-2"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                      Available in {sizes.join(', ')}
+                    </motion.div>
+                    <div className="w-2 h-2 bg-black rotate-45 absolute -bottom-1 left-1/2 -translate-x-1/2" />
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -194,7 +256,7 @@ export function ProductDisplay({ product }: { product: Product }) {
           <div>
             <div className="flex justify-between items-center mb-3">
               <span className="font-bold uppercase tracking-wider text-sm">Size</span>
-              <button type="button" className="text-muted-foreground text-sm hover:text-foreground underline underline-offset-4">Size Guide</button>
+              <SizeGuideModal />
             </div>
             <div className="grid grid-cols-5 gap-2">
               {sizes.map((s: string) => (
@@ -202,13 +264,13 @@ export function ProductDisplay({ product }: { product: Product }) {
                   key={s}
                   type="button"
                   onClick={() => setSelectedSize(s)}
-                  className={`py-3 border rounded-sm font-bold text-sm transition-colors ${
+                  className={`py-3 border rounded-sm font-bold text-sm transition-all relative overflow-hidden ${
                     selectedSize === s 
-                      ? "border-primary bg-primary text-primary-foreground" 
-                      : "border-border bg-background hover:border-primary text-foreground"
+                      ? "border-primary bg-primary text-primary-foreground shadow-lg" 
+                      : "border-primary/40 bg-background hover:border-primary text-foreground"
                   }`}
                 >
-                  {s}
+                  <span className="relative z-10">{s}</span>
                 </button>
               ))}
             </div>
@@ -223,7 +285,7 @@ export function ProductDisplay({ product }: { product: Product }) {
               disabled={!selectedSize || !selectedColor || product.stock <= 0}
               className="flex-1 bg-foreground text-background py-5 px-6 font-black text-lg tracking-widest uppercase hover:opacity-90 transition-opacity rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {product.stock <= 0 ? "Out of Stock" : "Add to Bag"}
+              {product.stock <= 0 ? "Out of Stock" : "Snap It Up — Secure Yours"}
             </button>
             <button
               type="button"
@@ -309,8 +371,42 @@ export function ProductDisplay({ product }: { product: Product }) {
             </div>
             <p className="text-sm text-muted-foreground">Free international shipping on orders over $150.</p>
           </div>
+          </div>
         </div>
       </div>
+
+      {/* Visual Storytelling Section */}
+      <ImmersiveVisuals 
+        images={{ 
+          front: activeVariant.front || product.image_front, 
+          side: activeVariant.side || product.image_side, 
+          back: activeVariant.back || product.image_back,
+          main: activeVariant.main || product.image_url
+        }} 
+        productName={product.name} 
+      />
+
+      {/* Contextual Upsell Section */}
+      <div className="container mx-auto px-8 sm:px-10 lg:px-16 py-24">
+        <CompleteTheLook relatedIds={product.related_product_ids || []} />
+      </div>
+
+      {/* Category Discovery Section */}
+      <CategoryRecommendations 
+        category={product.category || "Dresses"} 
+        currentProductId={product.id} 
+      />
+
+      {/* Social Proof Section (Pushed to bottom per user request) */}
+      <section className="bg-white dark:bg-zinc-950/40 border-t border-border/40 pb-24">
+        <div className="container mx-auto px-8 sm:px-10 lg:px-16">
+          <ProductReviews 
+            productId={product.id} 
+            userId={user?.id} 
+            userName={user?.user_metadata?.full_name || user?.email?.split('@')[0]} 
+          />
+        </div>
+      </section>
 
       {/* Sticky Bottom Bar (Conversion Funnel) */}
       <AnimatePresence>
@@ -328,20 +424,59 @@ export function ProductDisplay({ product }: { product: Product }) {
               </div>
               <div className="flex flex-col">
                 <h4 className="text-[13px] font-black uppercase tracking-tight truncate max-w-[150px]">{product.name}</h4>
-                <div className="flex items-center gap-2 mt-0.5">
+                <div className="flex items-center gap-3 mt-0.5">
                    <PriceDisplay priceCAD={product.price} className="text-sm font-bold" />
-                   <span className="text-[10px] text-muted-foreground uppercase">{selectedColor} / {selectedSize || 'Select Size'}</span>
+                   <div className="flex items-center gap-2">
+                     <div 
+                      className="w-3 h-3 rounded-full border border-border/50 dark:border-white/40" 
+                      style={{ backgroundColor: colorCodes[colors.indexOf(selectedColor)] || '#000' }} 
+                     />
+                     <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">
+                       {selectedColor} / 
+                       <button 
+                        onClick={() => setIsSelectingSize(!isSelectingSize)}
+                        className={`ml-1 hover:text-foreground transition-colors ${!selectedSize ? 'text-primary animate-pulse' : ''}`}
+                       >
+                        {selectedSize || 'Select Size'}
+                       </button>
+                     </span>
+                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
+              {/* Inline Size Picker for Sticky Bar */}
+              {isSelectingSize && (
+                <motion.div 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-sm border border-border"
+                >
+                  {sizes.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => {
+                        setSelectedSize(s);
+                        setIsSelectingSize(false);
+                      }}
+                      className={`px-3 py-1.5 text-[10px] font-black uppercase transition-all rounded-[1px] ${
+                        selectedSize === s 
+                          ? "bg-black text-white dark:bg-white dark:text-black" 
+                          : "hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
               <button
                 onClick={handleAddToBag}
                 disabled={!selectedSize || !selectedColor || product.stock <= 0}
                 className="bg-black text-white px-8 py-3.5 font-black text-xs uppercase tracking-[0.2em] hover:bg-zinc-800 transition-colors disabled:opacity-50"
               >
-                Snap It Up
+                Secure Your Look
               </button>
               <button
                 onClick={() => toggleWishlist(product.id)}
@@ -353,14 +488,6 @@ export function ProductDisplay({ product }: { product: Product }) {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <CompleteTheLook relatedIds={product.related_product_ids || []} />
-      
-      <ProductReviews 
-        productId={product.id} 
-        userId={user?.id} 
-        userName={user?.user_metadata?.full_name || user?.email?.split('@')[0]} 
-      />
     </div>
   );
 }

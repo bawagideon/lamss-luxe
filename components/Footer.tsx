@@ -1,9 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith('/admin');
+
+  if (isAdmin) return null;
+
   const shopLinks = [
     { label: "Tops", href: "/shop/tops" },
     { label: "Two-Piece", href: "/shop/two-piece" },

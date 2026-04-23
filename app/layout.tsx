@@ -8,6 +8,8 @@ import { AuthModal } from "@/components/AuthModal";
 import { Toaster } from "react-hot-toast";
 import { PageTransition } from "@/components/PageTransition";
 import { JsonLd } from "@/components/JsonLd";
+import { NewsletterPopup } from "@/components/NewsletterPopup";
+import { Footer } from "@/components/Footer";
 
 const outfit = Outfit({ 
   subsets: ["latin"],
@@ -82,6 +84,8 @@ export default function RootLayout({
           </PageTransition>
           <AuthModal />
           <Toaster position="top-right" />
+          <Footer />
+          <NewsletterPopup />
         </ThemeProvider>
       </body>
     </html>

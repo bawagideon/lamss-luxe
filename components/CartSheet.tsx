@@ -10,6 +10,7 @@ import { ShoppingBag, Minus, Plus, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { createCheckoutSession } from "@/app/actions/checkout";
+import { PriceDisplay } from "@/components/PriceDisplay";
 
 export function CartSheet() {
   const [mounted, setMounted] = useState(false);
@@ -55,7 +56,6 @@ export function CartSheet() {
 
   const count = getItemCount();
   const rawTotal = getCartTotal();
-  const formatPrice = (price: number) => `$${price.toFixed(2)}`;
   
   const threshold = 150;
   const awayFromShipping = Math.max(0, threshold - rawTotal);
@@ -128,8 +128,9 @@ export function CartSheet() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Top Fixed Header */}
             <div className="p-6 border-b border-border shrink-0 bg-background z-10 space-y-4 shadow-sm">
-              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                Subtotal: <span className="font-black text-foreground text-xl tracking-tight">{formatPrice(rawTotal)}</span>
+              <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center justify-between w-full">
+                <span>Subtotal:</span>
+                <PriceDisplay priceCAD={rawTotal} className="font-black text-foreground text-2xl tracking-tighter italic" />
               </h2>
               <div className="flex gap-3">
                 <Button 
@@ -151,7 +152,9 @@ export function CartSheet() {
               <div className="pt-2">
                 <p className="text-[13px] font-medium text-center mb-3 text-muted-foreground">
                   {awayFromShipping > 0 
-                    ? <>You&apos;re just <span className="font-bold text-foreground">{formatPrice(awayFromShipping)}</span> away from Free Shipping!</>
+                    ? <>You&apos;re just <span className="font-bold text-foreground">
+                        <PriceDisplay priceCAD={awayFromShipping} className="inline-block" />
+                      </span> away from Free Shipping!</>
                     : <span className="font-bold text-green-600 tracking-wide uppercase">You qualify for Free Shipping!</span>
                   }
                 </p>
@@ -194,7 +197,7 @@ export function CartSheet() {
                   <div className="flex flex-col flex-1 py-1">
                     <h3 className="text-[13px] font-bold line-clamp-2 pr-4 leading-tight mb-1">{item.name}</h3>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="font-black text-red-600 text-sm">{item.price}</span>
+                      <PriceDisplay priceCAD={item.rawPrice} className="font-black text-primary text-sm" />
                     </div>
 
                     <div className="flex items-center text-[11px] text-muted-foreground dark:text-zinc-400 bg-gray-50 dark:bg-zinc-800 border border-border w-fit pl-2 max-w-full rounded-[4px] font-bold overflow-hidden mb-auto">

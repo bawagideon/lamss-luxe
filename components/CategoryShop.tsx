@@ -18,6 +18,9 @@ export function CategoryShop() {
     { name: "Dresses", slug: "dresses", label: "OUR DRESSES", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80" },
     { name: "Matching Sets", slug: "two-piece", label: "OUR SETS", image: "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?auto=format&fit=crop&q=80" },
     { name: "Tops", slug: "tops", label: "OUR TOPS", image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80" },
+    { name: "Accessories", slug: "accessories", label: "OUR ACCESSORIES", image: "https://images.unsplash.com/photo-1512163143273-bde0e3cc7407?auto=format&fit=crop&q=80" },
+    { name: "Shoes", slug: "shoes", label: "OUR SHOES", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80" },
+    { name: "BodyCTRL", slug: "bodyctrl", label: "BODY CONTROL", image: "https://images.unsplash.com/photo-1516062423079-7ca13cdc7f5a?auto=format&fit=crop&q=80" },
   ]);
 
   useEffect(() => {
@@ -110,28 +113,38 @@ function CategoryCard({ item, isLarge = false }: { item: CategoryItem; isLarge?:
   return (
     <Link
       href={`/shop/${item.slug}`}
-      className={`group relative block overflow-hidden bg-zinc-100 ${isLarge ? 'h-full aspect-[4/7] md:aspect-auto' : 'aspect-[4/3] md:aspect-[16/10]'}`}
+      className={`group relative block overflow-hidden bg-zinc-100 ${isLarge ? 'h-full aspect-[4/6] md:aspect-auto' : 'aspect-[4/5] md:aspect-[4/5]'}`}
     >
       {typeof item.image === 'string' && item.image.startsWith('http') ? (
-        <Image
-          src={item.image}
-          alt={item.name}
-          fill
-          sizes={isLarge ? "(max-width: 768px) 50vw, 33vw" : "(max-width: 768px) 50vw, 25vw"}
-          className="object-cover transition-transform duration-1000 group-hover:scale-105"
-          priority={isLarge}
-        />
+        <>
+          <div className="absolute inset-0 z-10 bg-black/10 mix-blend-overlay pointer-events-none" />
+          <Image
+            src={item.image}
+            alt={item.name}
+            fill
+            sizes={isLarge ? "(max-width: 768px) 50vw, 33vw" : "(max-width: 768px) 50vw, 25vw"}
+            className="object-cover object-top transition-transform duration-1000 group-hover:scale-105 filter contrast-[1.05] brightness-[0.95] saturate-[0.9]"
+            priority={isLarge}
+          />
+        </>
       ) : (
         <div className="w-full h-full bg-zinc-200 animate-pulse flex items-center justify-center">
           <span className="text-[10px] font-black uppercase text-zinc-400">Loading...</span>
         </div>
       )}
 
-      {/* Centered-Bottom Branded Text Overlay (Image Style) */}
-      <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col items-center justify-end h-1/2 bg-gradient-to-t from-black/50 to-transparent">
-        <span className="text-[14px] md:text-2xl font-black text-white uppercase tracking-tight drop-shadow-lg text-center transform transition-transform duration-500 group-hover:-translate-y-1">
-          {item.name}
-        </span>
+      {/* Bottom Branded Text Overlay */}
+      <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col items-center justify-end h-full bg-gradient-to-t from-black/80 via-black/20 to-transparent z-20">
+        <div className="overflow-hidden">
+          <motion.span 
+            initial={{ y: "100%" }}
+            whileInView={{ y: 0 }}
+            className="block text-sm md:text-xl font-black text-white uppercase tracking-widest drop-shadow-2xl text-center transform transition-transform duration-500 group-hover:-translate-y-2"
+          >
+            {item.name}
+          </motion.span>
+        </div>
+        <div className="h-0.5 w-0 group-hover:w-12 bg-primary transition-all duration-500 mt-2" />
       </div>
     </Link>
   );

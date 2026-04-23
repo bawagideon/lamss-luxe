@@ -2,6 +2,7 @@
 
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
 import { createClient } from '@supabase/supabase-js';
+import { validateAdminSession } from '@/lib/admin-auth';
 
 const getServiceSupabase = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -65,6 +66,7 @@ export async function getProductReviews(productId: string) {
 
 export async function getPendingReviewsCount() {
     noStore();
+    await validateAdminSession();
     try {
         const supabase = getServiceSupabase();
         const { count, error } = await supabase
@@ -82,6 +84,7 @@ export async function getPendingReviewsCount() {
 
 export async function updateReviewStatus(id: string, is_verified: boolean) {
     noStore();
+    await validateAdminSession();
     try {
         const supabase = getServiceSupabase();
         const { data: review } = await supabase.from('reviews').select('product_id').eq('id', id).single();
@@ -106,6 +109,7 @@ export async function updateReviewStatus(id: string, is_verified: boolean) {
 
 export async function deleteReview(id: string) {
     noStore();
+    await validateAdminSession();
     try {
         const supabase = getServiceSupabase();
         const { data: review } = await supabase.from('reviews').select('product_id').eq('id', id).single();
@@ -126,6 +130,7 @@ export async function deleteReview(id: string) {
 
 export async function getAdminReviews() {
   noStore();
+  await validateAdminSession();
   try {
     const supabase = getServiceSupabase();
     // Fetch user details from profiles and product details from products
@@ -139,5 +144,25 @@ export async function getAdminReviews() {
   } catch (error) {
     console.error("Fetch Admin Reviews Error:", error);
     return [];
+  }
+}
+export async function checkUserReviewStatus(productId: string, userId: string) {
+  noStore();
+  try {
+    const supabase = getServiceSupabase();
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('is_verified')
+      .eq('product_id', productId)
+      .eq('user_id', userId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 is 'no rows found'
+    
+    if (!data) return { hasReviewed: false };
+    return { hasReviewed: true, isVerified: data.is_verified };
+  } catch (error) {
+    console.error("Check Review Status Error:", error);
+    return { hasReviewed: false };
   }
 }

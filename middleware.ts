@@ -7,8 +7,7 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     const sessionCookie = request.cookies.get('admin_session')
     
-    // Strict interception block ensuring explicit authorization before any /admin layout payloads render
-    if (!sessionCookie || sessionCookie.value !== 'lamsseluxe_auth_token_494') {
+    if (!sessionCookie) {
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
   }

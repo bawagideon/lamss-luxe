@@ -349,7 +349,7 @@ export default function AdminProductsPage() {
                     name="price" 
                     value={isLoaded ? (draft.price ?? selectedProduct?.price ?? '') : (selectedProduct?.price ?? '')} 
                     onChange={(e) => updateDraft({ price: Number(e.target.value) })}
-                    required type="number" step="0.01" 
+                    type="number" step="0.01" 
                     placeholder="100.00" 
                     className="border-gray-200 focus-visible:ring-black" 
                   />
@@ -361,7 +361,7 @@ export default function AdminProductsPage() {
                     name="stock" 
                     value={isLoaded ? (draft.stock ?? selectedProduct?.stock ?? '') : (selectedProduct?.stock ?? '')} 
                     onChange={(e) => updateDraft({ stock: Number(e.target.value) })}
-                    required type="number" 
+                    type="number" 
                     placeholder="50" 
                     className="border-gray-200 focus-visible:ring-black" 
                   />
@@ -439,6 +439,11 @@ export default function AdminProductsPage() {
                             onChange={(e) => handleFileChange(e, `variant_image_${color}_main`)}
                             className="h-8 text-[11px] file:text-[10px] file:px-2" 
                           />
+                          {selectedProduct?.color_images?.[color]?.main && (
+                            <div className="relative w-10 h-12 border border-border rounded overflow-hidden mt-1">
+                              <Image src={selectedProduct.color_images[color].main!} alt="Existing Main" fill className="object-cover" sizes="40px" />
+                            </div>
+                          )}
                         </div>
                         <div className="grid grid-cols-3 gap-2">
                           <div className="space-y-1">
@@ -491,6 +496,11 @@ export default function AdminProductsPage() {
                     onChange={(e) => handleFileChange(e, 'image_main')}
                     className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-black file:text-white file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" 
                   />
+                  {selectedProduct?.image_url && (
+                    <div className="relative w-16 h-20 border border-border rounded overflow-hidden mt-1">
+                       <Image src={selectedProduct.image_url} alt="Current Main" fill className="object-cover" sizes="64px" />
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="image_front" className="text-xs text-gray-500">Front Angle</Label>
@@ -534,11 +544,13 @@ export default function AdminProductsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="dresses">Dresses</SelectItem>
-                    <SelectItem value="two-piece">Two-Piece</SelectItem>
-                    <SelectItem value="tops">Tops</SelectItem>
-                    <SelectItem value="swim">Swim</SelectItem>
+                    <SelectItem value="two-piece">Two-Piece Sets</SelectItem>
+                    <SelectItem value="tops">Tops & Bodysuits</SelectItem>
+                    <SelectItem value="swim">Swimwear</SelectItem>
                     <SelectItem value="outerwear">Outerwear</SelectItem>
                     <SelectItem value="accessories">Accessories</SelectItem>
+                    <SelectItem value="shoes">Shoes & Heels</SelectItem>
+                    <SelectItem value="bodyctrl">BodyCTRL (Shapewear)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

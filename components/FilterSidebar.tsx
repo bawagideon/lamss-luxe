@@ -60,7 +60,7 @@ export function FilterSidebar({ className }: { className?: string }) {
           placeholder="Search filters..." 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-9 h-10 text-[11px] font-bold uppercase tracking-widest border-zinc-100 bg-zinc-50 focus-visible:ring-black placeholder:text-zinc-400" 
+          className="pl-9 h-10 text-[11px] font-bold uppercase tracking-widest border-zinc-100 bg-zinc-50 focus-visible:ring-primary placeholder:text-zinc-400" 
         />
         {searchTerm && (
           <button 
@@ -109,8 +109,8 @@ export function FilterSidebar({ className }: { className?: string }) {
                   className={cn(
                     "h-9 border text-[10px] font-black uppercase transition-all",
                     isFilterActive("size", size) 
-                      ? "bg-black text-white border-black" 
-                      : "bg-white text-black border-border hover:border-black"
+                      ? "bg-primary text-white border-primary shadow-lg" 
+                      : "bg-white text-black border-border hover:border-primary hover:text-primary"
                   )}
                 >
                   {size}
@@ -136,8 +136,8 @@ export function FilterSidebar({ className }: { className?: string }) {
                   className={cn(
                     "w-8 h-8 rounded-full border shadow-sm transition-transform hover:scale-110",
                     isFilterActive("color", color.name) 
-                      ? "ring-2 ring-black ring-offset-2" 
-                      : "border-border"
+                      ? "ring-2 ring-primary ring-offset-2" 
+                      : "border-border dark:border-white/20"
                   )}
                   style={{ backgroundColor: color.hex }}
                 >

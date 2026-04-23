@@ -1,10 +1,9 @@
 'use server';
 
 import { unstable_noStore as noStore } from 'next/cache';
-import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
-import { sendNewsletterEmail } from '@/lib/resend';
+import { createClient } from '@supabase/supabase-js';
 
-const getAdminSupabase = () => createSupabaseAdmin(
+const getServiceSupabase = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   {
@@ -13,114 +12,56 @@ const getAdminSupabase = () => createSupabaseAdmin(
   }
 );
 
-export async function getNewsletterStats() {
+import { Resend } from 'resend';
+import { WelcomeEmail } from '@/emails/WelcomeEmail';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function subscribeToNewsletter(email: string) {
   noStore();
   try {
-    const supabase = getAdminSupabase();
+    const supabase = getServiceSupabase();
     
-    // 1. Total Subscribers
-    const { count: totalSubscribers } = await supabase
+    // 1. Check if email already exists
+    const { data: existing, error: checkError } = await supabase
       .from('newsletter_subscribers')
-      .select('*', { count: 'exact', head: true });
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .single();
 
-    // 2. New This Week
-    const lastWeek = new Date();
-    lastWeek.setDate(lastWeek.getDate() - 7);
-    const { count: newThisWeek } = await supabase
-      .from('newsletter_subscribers')
-      .select('*', { count: 'exact', head: true })
-      .gte('created_at', lastWeek.toISOString());
-
-    return {
-      totalSubscribers: totalSubscribers || 0,
-      newThisWeek: newThisWeek || 0,
-    };
-  } catch (error) {
-    console.error("Error fetching newsletter stats:", error);
-    return { totalSubscribers: 0, newThisWeek: 0 };
-  }
-}
-
-export async function getSubscribers() {
-  noStore();
-  try {
-    const supabase = getAdminSupabase();
-    const { data, error } = await supabase
-      .from('newsletter_subscribers')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) throw new Error(error.message);
-    return data || [];
-  } catch (error) {
-    console.error("Error fetching subscribers:", error);
-    return [];
-  }
-}
-
-export async function removeSubscriber(id: string) {
-  noStore();
-  try {
-    const supabase = getAdminSupabase();
-    const { error } = await supabase
-      .from('newsletter_subscribers')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw new Error(error.message);
-    return { success: true };
-  } catch (error: unknown) {
-    const err = error as Error;
-    return { error: err.message || "Failed to remove subscriber." };
-  }
-}
-
-export async function sendTestEmail(testAddress: string, subject: string, content: string) {
-  noStore();
-  if (!testAddress || !subject || !content) {
-    return { error: "Missing required fields for test send." };
-  }
-  
-  try {
-    await sendNewsletterEmail(testAddress, subject, content);
-    return { success: true };
-  } catch (error: unknown) {
-    const err = error as Error;
-    return { error: err.message || "Failed to send test email." };
-  }
-}
-
-export async function sendLiveNewsletter(subject: string, content: string) {
-  noStore();
-  if (!subject || !content) {
-    return { error: "Subject and Content are required for a live blast." };
-  }
-
-  try {
-    const supabase = getAdminSupabase();
-    const { data: subscribers, error } = await supabase
-      .from('newsletter_subscribers')
-      .select('email');
-
-    if (error) throw new Error(error.message);
-    if (!subscribers || subscribers.length === 0) {
-      return { error: "No subscribers found." };
+    if (existing) {
+      return { error: "This email is already part of The Luxe Network.", alreadySubscribed: true };
     }
 
-    // Promise.all for high-performance concurrent dispatch
-    const results = await Promise.allSettled(
-      subscribers.map(s => sendNewsletterEmail(s.email, subject, content))
-    );
+    const discountCode = 'LUXE30';
 
-    const failures = results.filter(r => r.status === 'rejected').length;
+    // 2. Insert new subscriber
+    const { error: insertError } = await supabase
+      .from('newsletter_subscribers')
+      .insert({
+        email: email.toLowerCase(),
+        discount_code: discountCode,
+        discount_value: 30
+      });
 
-    return { 
-      success: true, 
-      count: subscribers.length,
-      failures: failures
-    };
-  } catch (error: unknown) {
-    const err = error as Error;
-    return { error: err.message || "Failed to dispatch live newsletter." };
+    if (insertError) throw insertError;
+
+    // 3. Send the "10/10" Welcome Email
+    try {
+      await resend.emails.send({
+        from: 'The Luxe Network <network@lamsseluxe.ca>',
+        to: email.toLowerCase(),
+        subject: "YOU'RE IN, QUEEN — Your 30% Discount is Here",
+        react: WelcomeEmail({ discountCode }),
+      });
+    } catch (emailErr) {
+      console.warn("Newsletter Email Dispatch Failed:", emailErr);
+      // We don't fail the whole action if the email fails, as long as DB is updated
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Newsletter Subscription Error:", error);
+    return { error: "Failed to join the network. Please try again later." };
   }
 }
