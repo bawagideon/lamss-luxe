@@ -6,7 +6,6 @@ import Image from "next/image";
 import { performAdminLogin } from "@/app/actions/auth";
 
 export default function AdminLogin() {
-  const [operatorName, setOperatorName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -14,15 +13,11 @@ export default function AdminLogin() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    // We pass the operator name and password. 
-    // The device name is automatically detected as 'Desktop/Browser' for now.
-    const res = await performAdminLogin(operatorName, password, 'Web Console Node');
-    
+    const res = await performAdminLogin(password);
     if (res.success) {
-       window.location.href = "/admin";
+      window.location.href = "/admin";
     } else {
-       setError(true);
+      setError(true);
     }
     setLoading(false);
   };
@@ -38,32 +33,20 @@ export default function AdminLogin() {
           <Lock className="w-8 h-8" />
         </div>
         <h1 className="text-2xl font-black tracking-tight mb-2 uppercase">System Access</h1>
-        <p className="text-muted-foreground text-sm text-center mb-8 font-medium">Identify your node to enter the logistics matrix.</p>
+        <p className="text-muted-foreground text-sm text-center mb-8 font-medium">Enter the master passcode to access the logistics matrix.</p>
         
         <form onSubmit={handleLogin} className="w-full space-y-4">
-          <div className="space-y-3">
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Operator Name" 
-                className="w-full p-4 rounded-xl border-2 border-transparent bg-muted focus:border-black focus:outline-none text-sm font-bold transition-all"
-                value={operatorName}
-                onChange={(e) => setOperatorName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="relative">
-              <input 
-                type="password" 
-                placeholder="Secure Passcode" 
-                className={`w-full p-4 rounded-xl border-2 text-sm font-bold bg-muted focus:outline-none transition-colors ${error ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-black'}`}
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setError(false); }}
-                required
-              />
-            </div>
+          <div className="relative">
+            <input 
+              type="password" 
+              placeholder="Master Passcode" 
+              className={`w-full p-4 rounded-xl border-2 text-sm font-bold bg-muted focus:outline-none transition-colors ${error ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-black'}`}
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(false); }}
+              required
+            />
           </div>
-          {error && <p className="text-red-500 text-[11px] uppercase font-black tracking-widest text-center mt-2 animate-in slide-in-from-top-1">Access Denied: Node Rejected</p>}
+          {error && <p className="text-red-500 text-[11px] uppercase font-black tracking-widest text-center mt-2 animate-in slide-in-from-top-1">Access Denied: Invalid Passcode</p>}
           <button 
             type="submit" 
             disabled={loading}

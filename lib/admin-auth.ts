@@ -1,18 +1,9 @@
 import { cookies } from 'next/headers';
-import { createClient } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
 
-const getServiceSupabase = () => createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    auth: { persistSession: false }
-  }
-);
-
 /**
- * Validates if the current request is coming from an authorized administrator session.
- * Returns the staff member's profile if valid.
+ * Validates if the current request has a valid admin session cookie.
+ * Simple cookie-based check matching the single-password auth system.
  */
 export async function validateAdminSession() {
   const cookieStore = cookies();
@@ -22,17 +13,6 @@ export async function validateAdminSession() {
     redirect('/admin/login');
   }
 
-  // Check if token exists in active sessions and join with staff details
-  const supabase = getServiceSupabase();
-  const { data: session, error } = await supabase
-    .from('admin_sessions')
-    .select('*, admin_staff(*)')
-    .eq('token', sessionToken)
-    .single();
-
-  if (error || !session || !session.admin_staff) {
-    redirect('/admin/login');
-  }
-
-  return session.admin_staff;
+  // Return a default admin profile since we use a single global password
+  return { name: 'Admin', role: 'admin', email: '' };
 }
