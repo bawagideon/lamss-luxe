@@ -137,44 +137,7 @@ export function Navbar() {
                 </div>
               </div>
 
-              {/* TIER 2: Desktop Categories Header (Centered Symmetry) */}
-              {!isScrolled && (
-                <div className="container mx-auto px-6 border-t border-border/50 h-14 flex items-center justify-center gap-10">
-                  {/* Dept Pills */}
-                  <div className="flex items-center gap-4">
-                    {["Women"].map(dept => (
-                      <Link
-                        key={dept}
-                        href={`/shop?dept=${dept.toLowerCase()}`}
-                        className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${dept === "Women"
-                          ? "bg-pink-50 text-pink-500 border border-pink-100 shadow-sm"
-                          : "bg-transparent text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                          }`}
-                      >
-                        {dept}
-                      </Link>
-                    ))}
-                  </div>
-
-                  {/* Category Links with Explicit Slug Mapping */}
-                  <div className="flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400">
-                    {[
-                      { name: "Dresses", slug: "dresses" },
-                      { name: "Matching Sets", slug: "two-piece" },
-                      { name: "Tops", slug: "tops" },
-                      { name: "Restocks", slug: "restocks" }
-                    ].map(cat => (
-                      <Link
-                        key={cat.slug}
-                        href={`/shop/${cat.slug}`}
-                        className="hover:text-pink-500 transition-colors whitespace-nowrap"
-                      >
-                        {cat.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* TIER 2: Desktop Categories Header (REMOVED) */}
             </div>
 
             {/* MOBILE VIEW (Visible on <lg) */}
