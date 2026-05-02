@@ -63,9 +63,7 @@ export default async function AccountOverview() {
               Discover More
             </Link>
           </div>
-          
-          <ViewedGrid />
-          
+          <ViewedGrid initialViewedIds={profile?.viewed_ids || []} />
           <Link href="/shop" className="block w-full text-center py-3.5 border border-border rounded-full font-bold text-sm tracking-wide text-foreground hover:bg-foreground hover:text-background transition-colors">
             Continue Shopping
           </Link>

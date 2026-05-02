@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 
 interface ViewedState {
   viewedIds: string[];
+  setViewedIds: (ids: string[]) => void;
   recordView: (id: string, supabase?: any, userId?: string) => void;
   syncWithServer: (supabase: any, userId: string) => Promise<void>;
 }
@@ -13,6 +14,7 @@ export const useViewedStore = create<ViewedState>()(
   persist(
     (set, get) => ({
       viewedIds: [],
+      setViewedIds: (ids) => set({ viewedIds: ids }),
       recordView: async (id, supabase, userId) => {
         const { viewedIds } = get();
         

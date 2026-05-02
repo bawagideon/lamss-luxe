@@ -7,14 +7,26 @@ import { useViewedStore } from "@/store/useViewedStore";
 import { getProductsByIds } from "@/app/actions/products";
 import { Loader2, Eye } from "lucide-react";
 
-export function ViewedGrid() {
-  const { viewedIds } = useViewedStore();
+export function ViewedGrid({ initialViewedIds }: { initialViewedIds?: string[] }) {
+  const { viewedIds, setViewedIds } = useViewedStore();
   const [products, setProducts] = useState<{ id: string; name: string; price: number; images: string[] }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Hydrate store from server if available and store is empty or different
+    if (initialViewedIds && initialViewedIds.length > 0) {
+       // Only sync if there's a mismatch to avoid unnecessary renders
+       if (JSON.stringify(initialViewedIds) !== JSON.stringify(viewedIds)) {
+         setViewedIds(initialViewedIds);
+       }
+    }
+  }, [initialViewedIds, setViewedIds, viewedIds]);
+
+  useEffect(() => {
     async function hydrateProducts() {
-      if (!viewedIds || viewedIds.length === 0) {
+      const idsToFetch = initialViewedIds?.length ? initialViewedIds : viewedIds;
+      
+      if (!idsToFetch || idsToFetch.length === 0) {
         setProducts([]);
         setIsLoading(false);
         return;
@@ -22,9 +34,9 @@ export function ViewedGrid() {
 
       setIsLoading(true);
       try {
-        const data = await getProductsByIds(viewedIds);
+        const data = await getProductsByIds(idsToFetch);
         // Maintain the order from viewedIds (most recent first)
-        const ordered = viewedIds.map(id => data.find(p => p.id === id)).filter(Boolean) as { id: string; name: string; price: number; images: string[] }[];
+        const ordered = idsToFetch.map(id => data.find(p => p.id === id)).filter(Boolean) as { id: string; name: string; price: number; images: string[] }[];
         setProducts(ordered);
       } catch (err) {
         console.error("Failed to hydrate viewed products:", err);
