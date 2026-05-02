@@ -27,6 +27,9 @@ interface Product {
   category_id?: string;
   category?: string;
   image_url: string;
+  image_front?: string | null;
+  image_side?: string | null;
+  image_back?: string | null;
   colors?: string[];
   color_codes?: string[];
   stock_status?: string;
@@ -455,6 +458,11 @@ export default function AdminProductsPage() {
                               onChange={(e) => handleFileChange(e, `variant_image_${color}_front`)}
                               className="h-8 text-[11px] file:text-[10px] file:px-2" 
                             />
+                            {selectedProduct?.color_images?.[color]?.front && (
+                              <div className="relative w-10 h-12 border border-border rounded overflow-hidden mt-1">
+                                <Image src={selectedProduct.color_images[color].front!} alt="Existing Front" fill className="object-cover" sizes="40px" />
+                              </div>
+                            )}
                           </div>
                           <div className="space-y-1">
                             <Label className="text-[10px] uppercase text-gray-400 font-bold">Side</Label>
@@ -465,6 +473,11 @@ export default function AdminProductsPage() {
                               onChange={(e) => handleFileChange(e, `variant_image_${color}_side`)}
                               className="h-8 text-[11px] file:text-[10px] file:px-2" 
                             />
+                            {selectedProduct?.color_images?.[color]?.side && (
+                              <div className="relative w-10 h-12 border border-border rounded overflow-hidden mt-1">
+                                <Image src={selectedProduct.color_images[color].side!} alt="Existing Side" fill className="object-cover" sizes="40px" />
+                              </div>
+                            )}
                           </div>
                           <div className="space-y-1">
                             <Label className="text-[10px] uppercase text-gray-400 font-bold">Back</Label>
@@ -475,6 +488,11 @@ export default function AdminProductsPage() {
                               onChange={(e) => handleFileChange(e, `variant_image_${color}_back`)}
                               className="h-8 text-[11px] file:text-[10px] file:px-2" 
                             />
+                            {selectedProduct?.color_images?.[color]?.back && (
+                              <div className="relative w-10 h-12 border border-border rounded overflow-hidden mt-1">
+                                <Image src={selectedProduct.color_images[color].back!} alt="Existing Back" fill className="object-cover" sizes="40px" />
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -512,6 +530,11 @@ export default function AdminProductsPage() {
                     onChange={(e) => handleFileChange(e, 'image_front')}
                     className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" 
                   />
+                  {selectedProduct?.image_front && (
+                    <div className="relative w-16 h-20 border border-border rounded overflow-hidden mt-1">
+                       <Image src={selectedProduct.image_front} alt="Current Front" fill className="object-cover" sizes="64px" />
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="image_side" className="text-xs text-gray-500">Side Angle</Label>
@@ -523,6 +546,11 @@ export default function AdminProductsPage() {
                     onChange={(e) => handleFileChange(e, 'image_side')}
                     className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" 
                   />
+                  {selectedProduct?.image_side && (
+                    <div className="relative w-16 h-20 border border-border rounded overflow-hidden mt-1">
+                       <Image src={selectedProduct.image_side} alt="Current Side" fill className="object-cover" sizes="64px" />
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="image_back" className="text-xs text-gray-500">Back Angle</Label>
@@ -534,6 +562,11 @@ export default function AdminProductsPage() {
                     onChange={(e) => handleFileChange(e, 'image_back')}
                     className="border-gray-200 focus-visible:ring-black cursor-pointer file:text-sm file:font-semibold file:bg-muted file:text-foreground file:rounded-md file:px-3 file:border-none file:mr-4 file:-ml-1" 
                   />
+                  {selectedProduct?.image_back && (
+                    <div className="relative w-16 h-20 border border-border rounded overflow-hidden mt-1">
+                       <Image src={selectedProduct.image_back} alt="Current Back" fill className="object-cover" sizes="64px" />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="space-y-2">

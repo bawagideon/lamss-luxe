@@ -271,8 +271,7 @@ export async function addProduct(formData: FormData) {
 
     if (error) throw new Error(error.message);
 
-    revalidatePath('/admin/products');
-    revalidatePath('/shop');
+    revalidatePath('/', 'layout');
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to add product natively.";
@@ -398,8 +397,7 @@ export async function editProduct(formData: FormData) {
 
     if (error) throw new Error(error.message);
 
-    revalidatePath('/admin/products');
-    revalidatePath('/shop');
+    revalidatePath('/', 'layout');
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to update product natively.";
@@ -415,8 +413,7 @@ export async function deleteProduct(id: string) {
     const { error } = await supabase.from('products').delete().eq('id', id);
     if (error) throw new Error(error.message);
     
-    revalidatePath('/admin/products');
-    revalidatePath('/shop');
+    revalidatePath('/', 'layout');
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to delete from DB.";
