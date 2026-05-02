@@ -8,6 +8,7 @@ import { useUIStore } from "@/store/useUIStore";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { RegionSelector } from "@/components/RegionSelector";
 
 export function MobileSidebar() {
   const { isMobileMenuOpen, setMobileMenuOpen } = useUIStore();
@@ -96,6 +97,14 @@ export function MobileSidebar() {
                     <ChevronRight className="w-5 h-5 text-zinc-300 group-hover:text-[#FF2B8B] transition-all transform group-hover:translate-x-1 stroke-[2px]" />
                   </Link>
                 ))}
+                
+                {/* Region Selector Integration */}
+                <div className="flex justify-between items-center py-4 px-10 text-[16px] font-black uppercase tracking-[0.2em] border-b border-zinc-100 dark:border-zinc-800/50 transition-all">
+                  <span className="text-zinc-900 dark:text-zinc-100">Region</span>
+                  <div className="scale-110 origin-right">
+                    <RegionSelector />
+                  </div>
+                </div>
               </div>
 
               {/* Sidebar Footer Sections (1:1 Design Parity with Reference Image) */}

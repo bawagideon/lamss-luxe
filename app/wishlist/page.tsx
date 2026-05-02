@@ -95,6 +95,10 @@ export default function WishlistPage() {
                 className="group cursor-pointer relative"
               >
                 <div className="relative aspect-[3/4] overflow-hidden bg-muted mb-4 rounded-sm">
+                  <Link href={`/product/${product.id}`} className="absolute inset-0 z-10">
+                    <span className="sr-only">View {product.name}</span>
+                  </Link>
+
                   {/* Default Studio Image */}
                   <Image 
                     src={product.imageDefault} 
@@ -111,11 +115,11 @@ export default function WishlistPage() {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     className="object-cover absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 scale-105 group-hover:scale-100 transition-transform"
                   />
-                  {/* Quick View Button linking to the PDP */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-20">
-                    <Link href={`/product/${product.id}`} className="block text-center w-full bg-background/95 backdrop-blur-sm text-foreground py-3 px-4 font-bold text-sm tracking-wide shadow-lg hover:bg-primary hover:text-primary-foreground transition-colors rounded-sm">
+                  {/* Quick View Button linking to the PDP (Hidden on mobile where hover doesn't work well, but whole image is clickable anyway) */}
+                  <div className="hidden sm:block absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-20 pointer-events-none">
+                    <div className="block text-center w-full bg-background/95 backdrop-blur-sm text-foreground py-3 px-4 font-bold text-sm tracking-wide shadow-lg rounded-sm">
                       View Details &mdash; {product.price}
-                    </Link>
+                    </div>
                   </div>
                   {/* Guest Wishlist Heart Overlay */}
                   <button
@@ -134,7 +138,9 @@ export default function WishlistPage() {
                 
                 <div className="flex justify-between items-start mt-4">
                   <div>
-                    <h3 className="text-lg font-bold group-hover:text-primary transition-colors">{product.name}</h3>
+                    <Link href={`/product/${product.id}`} className="hover:text-primary transition-colors">
+                      <h3 className="text-lg font-bold">{product.name}</h3>
+                    </Link>
                   </div>
                   <span className="font-bold">{product.price}</span>
                 </div>

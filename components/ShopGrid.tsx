@@ -158,8 +158,8 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                           sizes="(max-width: 640px) 50vw, 25vw"
                           className="object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 scale-105 group-hover:scale-100 filter contrast-[1.05] saturate-[0.95]"
                         />
-                        {/* Urgency Badge */}
-                        <div className="absolute top-3 left-3 z-30 flex flex-col gap-2">
+                        {/* Urgency Badge (Desktop Only) */}
+                        <div className="hidden md:flex absolute top-3 left-3 z-30 flex-col gap-2">
                            {product.isNew && (
                              <motion.div 
                               initial={{ x: -20, opacity: 0 }}
@@ -199,26 +199,26 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                       </div>
                     </div>
 
-                    {/* MOBILE QUICK ADD (Fashion Nova FAB Style) */}
-                    <div className="md:hidden absolute bottom-3 right-3 z-20">
+                    {/* MOBILE QUICK ADD (Fashion Nova FAB Style) - Hidden on 4-cols */}
+                    <div className={`md:hidden absolute bottom-2 right-2 z-20 ${gridColumns === 4 ? 'hidden' : 'block'}`}>
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           handleQuickAdd(product, product.sizes[0] || 'M');
                         }}
-                        className="w-9 h-9 bg-white/95 dark:bg-black/95 rounded-full flex items-center justify-center shadow-lg border border-border/20 active:scale-90 transition-transform"
+                        className="w-8 h-8 sm:w-9 sm:h-9 bg-white/95 dark:bg-black/95 rounded-full flex items-center justify-center shadow-lg border border-border/20 active:scale-90 transition-transform"
                       >
-                        <ShoppingBag className="w-4 h-4 text-black dark:text-white" />
+                        <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white" />
                         <div className="absolute -top-1 -right-1">
-                           <div className="bg-primary text-[8px] font-black text-white w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-black">
-                             <Plus className="w-2.5 h-2.5" />
+                           <div className="bg-primary text-[8px] font-black text-white w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-black">
+                             <Plus className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
                            </div>
                         </div>
                       </button>
                     </div>
 
-                    {/* High Precision Wishlist Button */}
+                    {/* High Precision Wishlist Button (Desktop Only on Image) */}
                     {mounted && (
                       <button
                         onClick={(e) => {
@@ -226,27 +226,27 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                           e.stopPropagation();
                           toggleWishlist(product.id);
                         }}
-                        className="absolute top-3 right-3 z-30 p-2.5 rounded-full bg-white/60 dark:bg-black/40 backdrop-blur-md shadow-sm transition-all hover:scale-110 active:scale-95 group/heart"
+                        className="hidden md:flex absolute top-3 right-3 z-30 p-2.5 rounded-full bg-white/60 dark:bg-black/40 backdrop-blur-md shadow-sm transition-all hover:scale-110 active:scale-95 group/heart"
                       >
                         <Heart className={`w-3.5 h-3.5 transition-colors ${wishlistIds.includes(product.id) ? "fill-red-500 text-red-500" : "text-zinc-600 dark:text-zinc-400 group-hover/heart:text-zinc-800"}`} />
                       </button>
                     )}
                   </div>
                   
-                  {/* Detailed Information Layer */}
-                  <div className="mt-4 flex flex-col space-y-1 px-1">
+                  {/* Detailed Information Layer (Desktop) */}
+                  <div className="mt-4 hidden md:flex flex-col space-y-1 px-1">
                     <Link href={`/product/${product.id}`} className="group/link block">
                       <div className="flex justify-between items-start mb-0.5">
-                        <h3 className="text-[13px] md:text-[15px] font-black tracking-tight uppercase line-clamp-1 text-black dark:text-white group-hover/link:underline underline-offset-8">{product.name}</h3>
+                        <h3 className="text-[15px] font-black tracking-tight uppercase line-clamp-1 text-black dark:text-white group-hover/link:underline underline-offset-8">{product.name}</h3>
                         <PriceDisplay 
                           priceCAD={product.rawPrice} 
-                          className="text-[15px] md:text-[17px] font-black tracking-tighter text-black dark:text-zinc-50" 
+                          className="text-[17px] font-black tracking-tighter text-black dark:text-zinc-50" 
                         />
                       </div>
                       
                       {/* Dynamic Product Sub-Message (Marketing Layer) */}
                       {product.marketingMessage && (
-                        <p className="text-[10px] md:text-[11px] font-black text-red-600 dark:text-red-500 uppercase tracking-tight italic">
+                        <p className="text-[11px] font-black text-red-600 dark:text-red-500 uppercase tracking-tight italic">
                           {product.marketingMessage}
                         </p>
                       )}
@@ -273,6 +273,62 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                          </span>
                       </div>
                     </Link>
+                  </div>
+
+                  {/* Detailed Information Layer (Mobile) */}
+                  <div className="mt-2 flex md:hidden flex-col px-0.5">
+                     <Link href={`/product/${product.id}`} className="block">
+                       {gridColumns === 4 ? (
+                         // 4 Columns Mobile: Minimalist View
+                         <div className="flex flex-col gap-0.5">
+                           <h3 className="text-[8px] sm:text-[9px] font-black tracking-tight uppercase truncate text-black dark:text-white">{product.name}</h3>
+                           <PriceDisplay priceCAD={product.rawPrice} className="text-[9px] sm:text-[10px] font-black tracking-tighter" />
+                           <div className="flex gap-0.5 items-center mt-0.5">
+                             {(product.colors.length > 0 ? product.colors : ['#000000']).slice(0, 2).map((color, cIdx) => (
+                               <div key={cIdx} className="w-2 h-2 rounded-full ring-[0.5px] ring-offset-[0.5px] ring-border/50 border border-black/5" style={{ backgroundColor: color }} />
+                             ))}
+                           </div>
+                         </div>
+                       ) : (
+                         // 2 or 3 Columns Mobile: Detailed View
+                         <div className="flex flex-col">
+                           <h3 className="text-[11px] sm:text-[12px] font-black tracking-tight uppercase text-black dark:text-white line-clamp-2 leading-snug">{product.name}</h3>
+                           <div className="flex justify-between items-center mt-1">
+                             <PriceDisplay priceCAD={product.rawPrice} className="text-[12px] sm:text-[13px] font-black tracking-tighter" />
+                             {mounted && (
+                               <button 
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(product.id); }} 
+                                className="p-1 active:scale-95 transition-transform"
+                               >
+                                 <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${wishlistIds.includes(product.id) ? "fill-red-500 text-red-500" : "text-zinc-400 dark:text-zinc-500"}`} />
+                               </button>
+                             )}
+                           </div>
+                           <div className="flex gap-1 items-center mt-1 mb-2">
+                             {(product.colors.length > 0 ? product.colors : ['#000000']).slice(0, 3).map((color, cIdx) => (
+                               <div key={cIdx} className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ring-[1px] ring-offset-1 ring-border/50 border border-black/5" style={{ backgroundColor: color }} />
+                             ))}
+                             {product.colors.length > 3 && (
+                               <span className="text-[8px] font-bold text-muted-foreground">+{product.colors.length - 3}</span>
+                             )}
+                           </div>
+                           {/* Banners underneath as text */}
+                           <div className="flex flex-col gap-0.5">
+                              {product.isNew && (
+                                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-primary flex items-center gap-1">
+                                  <span className="w-1 h-1 rounded-full bg-primary animate-pulse" /> New Drop
+                                </span>
+                              )}
+                              <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-zinc-500 italic">Limited Drop</span>
+                              {product.marketingMessage && (
+                                <p className="text-[8px] sm:text-[9px] font-black text-red-600 dark:text-red-500 uppercase tracking-tight italic mt-0.5">
+                                  {product.marketingMessage}
+                                </p>
+                              )}
+                           </div>
+                         </div>
+                       )}
+                     </Link>
                   </div>
                 </motion.div>
               ))}

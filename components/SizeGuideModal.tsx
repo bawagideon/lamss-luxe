@@ -19,24 +19,24 @@ export function SizeGuideModal() {
           Size Guide
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl bg-white dark:bg-zinc-950 border-border p-0 overflow-hidden">
-        <div className="bg-black text-white p-8">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-zinc-950 border-border p-0">
+        <div className="bg-black text-white p-6 md:p-8">
           <DialogHeader>
-            <DialogTitle className="text-3xl font-black uppercase tracking-tighter italic">Size Guide</DialogTitle>
-            <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mt-2">Find your perfect fit with Lamssé Luxe</p>
+            <DialogTitle className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic">Size Guide</DialogTitle>
+            <p className="text-zinc-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mt-2">Find your perfect fit with Lamssé Luxe</p>
           </DialogHeader>
         </div>
 
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           <Tabs defaultValue="cm" className="w-full">
-            <div className="flex justify-between items-center mb-6">
-              <TabsList className="grid w-[200px] grid-cols-2 bg-zinc-100 dark:bg-zinc-900">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+              <TabsList className="grid w-full sm:w-[200px] grid-cols-2 bg-zinc-100 dark:bg-zinc-900">
                 <TabsTrigger value="cm" className="text-[10px] font-black uppercase">Centimeters</TabsTrigger>
                 <TabsTrigger value="inches" className="text-[10px] font-black uppercase">Inches</TabsTrigger>
               </TabsList>
               <div className="flex items-center gap-2 text-primary">
-                 <Info className="w-3.5 h-3.5" />
-                 <span className="text-[10px] font-bold uppercase tracking-widest">Model is 5&apos;8&quot; wearing size S</span>
+                 <Info className="w-3.5 h-3.5 shrink-0" />
+                 <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest">Model is 5&apos;8&quot; wearing size S</span>
               </div>
             </div>
 
@@ -48,35 +48,35 @@ export function SizeGuideModal() {
             </TabsContent>
           </Tabs>
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-zinc-100 dark:border-zinc-900 pt-8">
+          <div className="mt-8 md:mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 border-t border-zinc-100 dark:border-zinc-900 pt-6 md:pt-8">
              <div className="space-y-4">
-                <h4 className="text-xs font-black uppercase tracking-[0.2em]">How to measure</h4>
+                <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">How to measure</h4>
                 <div className="space-y-6">
                   <MeasureStep label="Bust" desc="Measure around the fullest part of your chest." />
                   <MeasureStep label="Waist" desc="Measure around your natural waistline (narrowest part)." />
                   <MeasureStep label="Hips" desc="Measure around the fullest part of your hips." />
                 </div>
                 
-                <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-900 space-y-4">
-                   <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary">Fitting Rules</h4>
+                <div className="mt-6 md:mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-900 space-y-4">
+                   <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-primary">Fitting Rules</h4>
                    <ul className="space-y-2">
-                      <li className="text-[10px] font-bold text-zinc-500 uppercase leading-relaxed flex gap-2">
-                         <span className="text-primary">•</span> Between sizes? Size down for a snatched fit, or up for comfort.
+                      <li className="text-[9px] md:text-[10px] font-bold text-zinc-500 uppercase leading-relaxed flex gap-2">
+                         <span className="text-primary shrink-0">•</span> <span>Between sizes? Size down for a snatched fit, or up for comfort.</span>
                       </li>
-                      <li className="text-[10px] font-bold text-zinc-500 uppercase leading-relaxed flex gap-2">
-                         <span className="text-primary">•</span> Measure over your favorite lingerie for the most accurate silhouette.
+                      <li className="text-[9px] md:text-[10px] font-bold text-zinc-500 uppercase leading-relaxed flex gap-2">
+                         <span className="text-primary shrink-0">•</span> <span>Measure over your favorite lingerie for the most accurate silhouette.</span>
                       </li>
-                      <li className="text-[10px] font-bold text-zinc-500 uppercase leading-relaxed flex gap-2">
-                         <span className="text-primary">•</span> Keep the tape level and flat against your body—no pulling tight.
+                      <li className="text-[9px] md:text-[10px] font-bold text-zinc-500 uppercase leading-relaxed flex gap-2">
+                         <span className="text-primary shrink-0">•</span> <span>Keep the tape level and flat against your body—no pulling tight.</span>
                       </li>
                    </ul>
                 </div>
              </div>
-             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-8 rounded-sm flex items-center justify-center relative overflow-hidden group">
+             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 md:p-8 rounded-sm flex items-center justify-center relative overflow-hidden group min-h-[300px]">
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 
                 {/* Elegant High-Fashion Silhouette */}
-                <svg viewBox="0 0 100 200" className="w-40 h-80 text-zinc-900 dark:text-zinc-100 relative z-10">
+                <svg viewBox="0 0 100 200" className="w-32 h-64 md:w-40 md:h-80 text-zinc-900 dark:text-zinc-100 relative z-10">
                    {/* Abstract but recognizable female form */}
                    <path 
                      fill="currentColor" 

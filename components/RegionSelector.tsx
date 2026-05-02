@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/popover";
 import { useRegion, regions, type Region } from "@/store/useRegion";
 import toast from "react-hot-toast";
+import { useUIStore } from "@/store/useUIStore";
 
 interface RegionSelectorProps {
   isTransparent?: boolean;
@@ -27,10 +28,12 @@ interface RegionSelectorProps {
 export function RegionSelector({ isTransparent }: RegionSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const { region: selectedRegion, setRegion } = useRegion();
+  const { setMobileMenuOpen } = useUIStore();
 
   const handleSelect = (region: Region) => {
     setRegion(region);
     setOpen(false);
+    setMobileMenuOpen(false); // Close mobile sidebar on selection for visual feedback
     toast.success(`Region updated to ${region.country}`, {
       icon: region.flag,
       style: {
@@ -67,7 +70,7 @@ export function RegionSelector({ isTransparent }: RegionSelectorProps) {
           )} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[320px] p-0 bg-white dark:bg-zinc-950 border-border shadow-2xl rounded-xl overflow-hidden" align="end">
+      <PopoverContent className="z-[100] w-[320px] p-0 bg-white dark:bg-zinc-950 border-border shadow-2xl rounded-xl overflow-hidden" align="end">
         <div className="p-4 border-b border-border bg-gray-50/50 dark:bg-zinc-900/50">
           <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">Your Currency and Region</h3>
         </div>

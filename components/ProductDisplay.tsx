@@ -130,7 +130,7 @@ export function ProductDisplay({ product }: { product: Product }) {
       <div className="container mx-auto px-8 sm:px-10 lg:px-16 flex flex-col lg:flex-row gap-12 lg:gap-24 mb-24">
       
       {/* Left Column: Image Gallery */}
-      <ProductGallery images={imagesToRelyOn} />
+      <ProductGallery images={imagesToRelyOn} productId={product.id} productName={product.name} />
 
       {/* Right Column: Details & Add to Cart */}
       <div className="w-full lg:w-2/5 flex flex-col pt-4 lg:pt-10">

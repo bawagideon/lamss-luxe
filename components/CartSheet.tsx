@@ -127,9 +127,19 @@ export function CartSheet() {
           // POPULATED STATE (Image 2 Ref)
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Top Fixed Header */}
-            <div className="p-6 border-b border-border shrink-0 bg-background z-10 space-y-4 shadow-sm">
-              <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center justify-between w-full">
-                <span>Subtotal:</span>
+            <div className="p-4 sm:p-6 border-b border-border shrink-0 bg-background z-10 space-y-4 shadow-sm relative">
+              <button 
+                onClick={() => setIsOpen(false)}
+                className="absolute top-4 sm:top-6 left-4 sm:left-6 p-2 -ml-2 -mt-2 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="Close cart"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 md:w-6 md:h-6 transition-transform hover:-translate-x-1">
+                  <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              
+              <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center justify-end w-full pt-1">
+                <span className="mr-3">Subtotal:</span>
                 <PriceDisplay priceCAD={rawTotal} className="font-black text-foreground text-2xl tracking-tighter italic" />
               </h2>
               <div className="flex gap-3">

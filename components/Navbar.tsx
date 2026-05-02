@@ -180,55 +180,38 @@ export function Navbar() {
             {/* MOBILE VIEW (Visible on <lg) */}
             <div className="flex lg:hidden flex-col">
               {/* TIER 1: Logo, Grid Switcher & Basic Icons */}
-              <div className={`container mx-auto px-4 h-16 grid grid-cols-3 items-center transition-all duration-500 text-black dark:text-white relative z-30`}>
+              <div className={`container mx-auto px-2 h-16 flex justify-between items-center gap-1 transition-all duration-500 text-black dark:text-white relative z-30`}>
                 {/* Left: Logo */}
-                <div className="flex justify-start">
-                  <Link href="/" className="flex-shrink-0 group">
-                    <div className={`relative ${isScrolled ? "w-44 h-10" : "w-52 h-12"} transition-all duration-500`}>
-                      <Image src="/Logo-light.png" alt="Logo" fill sizes="(max-width: 768px) 208px, 208px" className="object-contain object-left dark:hidden" priority />
-                      <Image src="/Logo-dark.png" alt="Logo" fill sizes="(max-width: 768px) 208px, 208px" className="object-contain object-left hidden dark:block" priority />
+                <div className="flex-shrink-0">
+                  <Link href="/" className="group flex items-center">
+                    <div className={`relative ${isScrolled ? "w-28 h-7" : "w-32 h-8"} sm:${isScrolled ? "w-40 h-10" : "w-48 h-12"} transition-all duration-500`}>
+                      <Image src="/Logo-light.png" alt="Logo" fill sizes="(max-width: 768px) 160px, 208px" className="object-contain object-left dark:hidden" priority />
+                      <Image src="/Logo-dark.png" alt="Logo" fill sizes="(max-width: 768px) 160px, 208px" className="object-contain object-left hidden dark:block" priority />
                     </div>
                   </Link>
                 </div>
 
-                {/* Center: Grid Switcher (Prominent & Centered) */}
-                <div className="flex justify-center">
-                  <GridSwitcher />
+                {/* Center: Grid Switcher */}
+                <div className="flex-shrink-0 flex justify-center w-[75px] sm:w-[90px]">
+                  <div className="scale-[0.65] sm:scale-90 origin-center whitespace-nowrap">
+                    {pathname.includes('/shop') ? <GridSwitcher /> : <div className="w-full" />}
+                  </div>
                 </div>
 
                 {/* Right: Actions */}
-                <div className="flex justify-end items-center gap-2">
+                <div className="flex justify-end items-center gap-0.5 sm:gap-2 flex-shrink-0">
                   <Link href="/wishlist" className="p-1">
-                    <Heart className="w-5 h-5 stroke-[1.5px] hover:text-pink-500 transition-colors" />
+                    <Heart className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.5px] hover:text-pink-500 transition-colors" />
                   </Link>
-                  <UserProfileDropdown />
-                  <CartSheet />
+                  <div className="scale-90 sm:scale-100"><UserProfileDropdown /></div>
+                  <div className="scale-90 sm:scale-100"><CartSheet /></div>
                   <button onClick={toggleMobileMenu} className="p-1 hover:opacity-70">
-                    <Menu className="w-6 h-6 stroke-[1.5px]" />
+                    <Menu className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
                   </button>
                 </div>
               </div>
 
-              {/* TIER 2: Mobile Horizontal Scroller - Unified Core Nav */}
-              <div className="w-full border-t border-border/40 bg-white dark:bg-black overflow-x-auto no-scrollbar py-3 px-4 shadow-sm relative z-20">
-                <div className="flex items-center justify-between min-w-max gap-8 px-2">
-                  {[
-                    { name: "New In", href: "/shop/new-in" },
-                    { name: "Clothing", href: "/shop" },
-                    { name: "Luxe Network", href: "/community" },
-                    { name: "About", href: "/about" },
-                    { name: "Contact", href: "/contact" }
-                  ].map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400 hover:text-[#FF2B8B] transition-colors active:text-[#FF2B8B]"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+              {/* TIER 2: Mobile Horizontal Scroller - Unified Core Nav (REMOVED) */}
 
               {/* TIER 3: Mobile Search Input */}
               <div className="w-full px-4 py-2 border-t border-border/40 bg-zinc-50/50 dark:bg-background/50 relative z-10">
