@@ -18,11 +18,11 @@ interface WelcomeEmailProps {
 }
 
 export const WelcomeEmail = ({
-  discountCode = "LUXE30",
+  discountCode = "LUXE20",
 }: WelcomeEmailProps) => (
   <Html>
     <Head />
-    <Preview>Welcome to The Luxe Network — Your 30% discount is here.</Preview>
+    <Preview>Welcome to The Luxe Network — Your 20% discount is here.</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
@@ -39,7 +39,7 @@ export const WelcomeEmail = ({
           <Section style={codeContainer}>
             <Text style={codeLabel}>YOUR FIRST VISIT REWARD</Text>
             <Heading style={codeText}>{discountCode}</Heading>
-            <Text style={codeSubtext}>USE AT CHECKOUT FOR 30% OFF</Text>
+            <Text style={codeSubtext}>USE AT CHECKOUT FOR 20% OFF (MIN $30 ORDER)</Text>
           </Section>
 
           <Section style={buttonContainer}>

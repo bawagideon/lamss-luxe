@@ -28,8 +28,10 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
 
   let promoApplied = false;
 
+  const cartTotal = cartItems.reduce((acc, item) => acc + (item.rawPrice * item.quantity), 0);
+
   const line_items = await Promise.all(cartItems.map(async (item) => {
-    const { finalPrice, applied } = await applyLaunchPromo(userEmail, item.rawPrice);
+    const { finalPrice, applied } = await applyLaunchPromo(userEmail, item.rawPrice, cartTotal);
     if (applied) promoApplied = true;
     
     return {

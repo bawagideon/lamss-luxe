@@ -3,7 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 // Launch Date: April 13, 2026
 const LAUNCH_DATE = new Date("2026-04-13T00:00:00Z");
 const PROMO_DURATION_DAYS = 7;
-const DISCOUNT_MULTIPLIER = 0.7; // 30% OFF
+const DISCOUNT_MULTIPLIER = 0.8; // 20% OFF
+const MIN_ORDER_VALUE = 30;
 
 /**
  * Checks if the current date is within the first week of launch
@@ -39,11 +40,11 @@ export async function isNewsletterSubscriber(email: string): Promise<boolean> {
 /**
  * Calculates the final price with launch discount if eligible
  */
-export async function applyLaunchPromo(email: string, rawPrice: number): Promise<{ finalPrice: number; applied: boolean }> {
+export async function applyLaunchPromo(email: string, rawPrice: number, cartTotal: number = 0): Promise<{ finalPrice: number; applied: boolean }> {
   const launchActive = isLaunchWeek();
   const subscriber = await isNewsletterSubscriber(email);
   
-  if (launchActive && subscriber) {
+  if (launchActive && subscriber && cartTotal >= MIN_ORDER_VALUE) {
     return {
       finalPrice: Math.round(rawPrice * DISCOUNT_MULTIPLIER),
       applied: true

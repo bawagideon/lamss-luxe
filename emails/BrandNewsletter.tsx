@@ -24,7 +24,7 @@ export const BrandNewsletter = ({
   subject = "The Latest from Lamssé Luxe",
   content = "Welcome to the Soft Life.",
   isPromo = false,
-  discountCode = "LUXELAUNCH30",
+  discountCode = "LUXELAUNCH20",
 }: BrandNewsletterProps) => (
   <Html>
     <Head />
@@ -47,7 +47,7 @@ export const BrandNewsletter = ({
             <Section style={promoBox}>
                <Text style={promoTop}>YOUR EXCLUSIVE GIFT</Text>
                <Heading style={promoCode}>{discountCode}</Heading>
-               <Text style={promoBottom}>30% OFF YOUR FIRST DROP</Text>
+               <Text style={promoBottom}>20% OFF YOUR FIRST DROP</Text>
             </Section>
           )}
 

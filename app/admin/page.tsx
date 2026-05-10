@@ -86,7 +86,7 @@ export default function AdminOverviewPage() {
                <div className="w-10 h-10 bg-[#FF2B8B] rounded-full flex items-center justify-center">
                   <Gift className="w-5 h-5" />
                </div>
-               <h2 className="text-xl font-black uppercase tracking-tighter">Launch Promotion (30% OFF)</h2>
+               <h2 className="text-xl font-black uppercase tracking-tighter">Launch Promotion (20% OFF)</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">

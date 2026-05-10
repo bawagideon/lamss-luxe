@@ -111,8 +111,8 @@ export function NewsletterPopup() {
                         <div className="inline-flex items-center gap-3 px-5 py-2 bg-primary text-white rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-widest mb-2 shadow-xl shadow-primary/20">
                           <Sparkles className="w-4 h-4 md:w-5 md:h-5" /> Special Invitation
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">Unlock 30% Off Your First Look</h2>
-                        <p className="text-base md:text-lg text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">Join the Luxe Network for early access to drops and a one-time 30% discount code.</p>
+                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">Unlock 20% Off Your First Look</h2>
+                        <p className="text-base md:text-lg text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">Join the Luxe Network for early access to drops and a one-time 20% discount code.</p>
                       </div>
   
                       <form onSubmit={handleSubmit} className="space-y-6">
@@ -132,7 +132,7 @@ export function NewsletterPopup() {
                           disabled={loading}
                           className="w-full h-16 md:h-20 bg-primary text-white font-black uppercase tracking-[0.25em] text-xs md:text-sm rounded-3xl shadow-2xl hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all transform hover:-translate-y-1 active:scale-95"
                         >
-                          {loading ? "Joining the Network..." : "Send My 30% Discount"}
+                          {loading ? "Joining the Network..." : "Send My 20% Discount"}
                         </Button>
                       </form>
                       <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest opacity-60">One Code Per Identity • Limited Time Invite</p>
@@ -149,8 +149,8 @@ export function NewsletterPopup() {
                       </div>
                       <div className="space-y-2">
                          <h2 className="text-4xl font-black uppercase tracking-tighter">You&apos;re In!</h2>
-                         <p className="text-lg text-zinc-800 dark:text-zinc-200 font-black uppercase tracking-widest">Code: LUXE30</p>
-                         <p className="text-sm text-zinc-500 font-medium italic">Your 30% discount has been dispatched to your inbox.</p>
+                         <p className="text-lg text-zinc-800 dark:text-zinc-200 font-black uppercase tracking-widest">Code: LUXE20</p>
+                         <p className="text-sm text-zinc-500 font-medium italic">Your 20% discount has been dispatched to your inbox.</p>
                       </div>
                     </motion.div>
                   )}

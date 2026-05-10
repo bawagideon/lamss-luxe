@@ -75,7 +75,7 @@ export function Footer() {
                  Get style inspiration, event updates, and exclusive drops.
                </p>
                <div className="bg-[#FF2B8B]/10 border border-[#FF2B8B]/20 p-4 rounded-md">
-                 <p className="text-[10px] font-black uppercase tracking-widest text-[#FF2B8B]">30% Discount Promotion</p>
+                 <p className="text-[10px] font-black uppercase tracking-widest text-[#FF2B8B]">20% Discount Promotion</p>
                  <p className="text-[9px] font-medium text-zinc-400 mt-1">Available during our first week for newsletter subscribers. Automatically applied at checkout.</p>
                </div>
                <div className="flex flex-col gap-3">
@@ -108,9 +108,9 @@ export function Footer() {
            <div className="w-full bg-[#0F0F0F] rounded-2xl p-10 flex flex-col items-center mb-16 shadow-2xl">
               <h3 className="text-[12px] font-black uppercase tracking-[0.3em] mb-4 text-center text-white">Join The Circle</h3>
               <div className="bg-[#FF2B8B]/10 border border-[#FF2B8B]/20 p-6 rounded-xl mb-10 w-full text-center">
-                 <p className="text-[11px] font-black uppercase tracking-widest text-[#FF2B8B]">30% Launch Discount</p>
-                 <p className="text-[10px] font-medium text-zinc-400 mt-2 leading-relaxed">
-                   Subscribe today to unlock 30% off your entire order during our first week. 
+                 <p className="text-[11px] font-black uppercase tracking-widest text-[#FF2B8B]">20% Launch Discount</p>
+                 <p className="text-zinc-400 text-sm font-medium leading-relaxed max-w-[280px]">
+                   Subscribe today to unlock 20% off your entire order over $30 during our first week. 
                    Automatically applied at checkout.
                  </p>
               </div>

@@ -40,7 +40,7 @@ export async function subscribeToNewsletter(email: string) {
       return { error: "This email is already part of The Luxe Network.", alreadySubscribed: true };
     }
 
-    const discountCode = 'LUXE30';
+    const discountCode = 'LUXE20';
 
     // 2. Insert new subscriber
     const { error: insertError } = await supabase
@@ -64,7 +64,7 @@ export async function subscribeToNewsletter(email: string) {
         const emailResult = await resend.emails.send({
           from: 'The Luxe Network <network@lamsseluxe.ca>',
           to: email.toLowerCase(),
-          subject: "YOU'RE IN, QUEEN — Your 30% Discount is Here",
+          subject: "YOU'RE IN, QUEEN — Your 20% Discount is Here",
           react: WelcomeEmail({ discountCode }),
         });
         
