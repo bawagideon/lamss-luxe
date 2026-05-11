@@ -94,7 +94,7 @@ export function SearchBar({ isTransparent }: { isTransparent: boolean }) {
         <input 
           type="text" 
           placeholder={`Search within ${searchParams.get('dept') || "Women's"} Clothing...`} 
-          className={`bg-transparent border-none outline-none w-full text-xs font-bold tracking-wide ${isFocused ? 'text-black placeholder-gray-500' : 'placeholder-current opacity-80'}`}
+          className={`bg-transparent border-none outline-none w-full text-base md:text-xs font-bold tracking-wide ${isFocused ? 'text-black placeholder-gray-500' : 'placeholder-current opacity-80'}`}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
