@@ -15,11 +15,8 @@ export default async function AccountOverview() {
 
   const name = profile?.first_name ? profile.first_name.toUpperCase() : "GUEST";
 
-  // Fetch count server-side for initial hydration
-  await supabase
-    .from("wishlist")
-    .select("product_id", { count: 'exact', head: true })
-    .eq("user_id", user?.id);
+  // Wishlist count from profiles array
+  const wishlistCount = profile?.wishlist?.length || 0;
 
   // Fetch max 3 recent orders
   const { data: recentOrders } = await supabase

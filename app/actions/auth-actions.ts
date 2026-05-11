@@ -23,7 +23,7 @@ export async function signUpUser(data: SignUpData) {
     email: data.email,
     password: data.password,
     options: {
-      emailRedirectTo: data.redirectTo || `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/confirm`,
+      emailRedirectTo: data.redirectTo || `${process.env.NODE_ENV === 'production' ? 'https://www.lamsseluxe.ca' : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')}/api/auth/confirm`,
       data: {
         first_name: data.firstName,
         last_name: data.lastName,
@@ -52,7 +52,7 @@ export async function signUpUser(data: SignUpData) {
                 You're officially part of the elite. Lamssé Luxe is more than a brand—it's an intention. We're here to ensure you show up with confidence, every single time.
               </p>
               <div style="margin: 40px 0; text-align: center;">
-                <a href="${process.env.NEXT_PUBLIC_SITE_URL}" style="background: #000; color: #fff; padding: 16px 32px; text-decoration: none; border-radius: 50px; font-weight: bold; text-transform: uppercase; font-size: 14px;">Shop the Latest Drops</a>
+                <a href="${process.env.NODE_ENV === 'production' ? 'https://www.lamsseluxe.ca' : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')}" style="background: #000; color: #fff; padding: 16px 32px; text-decoration: none; border-radius: 50px; font-weight: bold; text-transform: uppercase; font-size: 14px;">Shop the Latest Drops</a>
               </div>
               <p style="font-size: 12px; color: #999; text-align: center;">
                 If you didn't create an account, you can safely ignore this email.
@@ -128,15 +128,23 @@ export async function syncWishlistOnAuth(productIds: string[]) {
   if (!user || !productIds.length) return { success: false };
 
   try {
-    const records = productIds.map(pid => ({
-      user_id: user.id,
-      product_id: pid
-    }));
+    // 1. Fetch existing wishlist array from profiles
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('wishlist')
+      .eq('id', user.id)
+      .single();
 
-    // Upsert to ignore duplicates
+    const existingWishlist = profile?.wishlist || [];
+    
+    // 2. Merge unique items
+    const mergedWishlist = Array.from(new Set([...existingWishlist, ...productIds]));
+
+    // 3. Update profiles table
     const { error } = await supabase
-      .from('wishlist')
-      .upsert(records, { onConflict: 'user_id,product_id' });
+      .from('profiles')
+      .update({ wishlist: mergedWishlist })
+      .eq('id', user.id);
 
     if (error) throw error;
 

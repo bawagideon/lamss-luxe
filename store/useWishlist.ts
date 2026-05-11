@@ -25,26 +25,23 @@ export const useWishlistStore = create<WishlistState>()(
 
         // PERSISTENCE: If user is logged in, sync to Supabase instantly
         if (supabase && userId) {
-          if (exists) {
-            await supabase.from('wishlist').delete().eq('user_id', userId).eq('product_id', id);
-          } else {
-            await supabase.from('wishlist').insert({ user_id: userId, product_id: id });
-          }
+          // Update the array in the profiles table
+          await supabase.from('profiles').update({ wishlist: next }).eq('id', userId);
         }
       },
       syncWithServer: async (supabase, userId) => {
         const { wishlistIds } = get();
         // 1. Fetch from server
         const { data, error } = await supabase
-          .from('wishlist')
-          .select('product_id')
-          .eq('user_id', userId);
+          .from('profiles')
+          .select('wishlist')
+          .eq('id', userId)
+          .single();
           
-        if (!error && data) {
-          const serverIds = data.map((d: any) => d.product_id);
+        if (!error && data?.wishlist) {
           // If local has items, we've already synced them via AuthModal 
           // So we just take the latest from the server
-          set({ wishlistIds: serverIds });
+          set({ wishlistIds: data.wishlist });
         }
       },
     }),

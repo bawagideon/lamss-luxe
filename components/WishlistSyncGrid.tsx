@@ -9,7 +9,7 @@ import { Loader2, Heart } from "lucide-react";
 
 export function WishlistGrid() {
   const { wishlistIds } = useWishlistStore();
-  const [products, setProducts] = useState<{ id: string; name: string; price: number; images: string[] }[]>([]);
+  const [products, setProducts] = useState<{ id: string; name: string; price: number; image_url: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ export function WishlistGrid() {
           className="flex-[1.5] bg-slate-50 rounded-lg overflow-hidden relative group"
         >
           <Image 
-            src={products[0].images?.[0] || "/placeholder.jpg"} 
+            src={products[0].image_url || "/placeholder.jpg"} 
             alt={products[0].name}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -89,7 +89,7 @@ export function WishlistGrid() {
               className="flex-1 bg-slate-50 rounded-lg overflow-hidden relative group border border-border/50"
             >
               <Image 
-                src={product.images?.[0] || "/placeholder.jpg"} 
+                src={product.image_url || "/placeholder.jpg"} 
                 alt={product.name}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-110"

@@ -9,7 +9,7 @@ import { Loader2, Eye } from "lucide-react";
 
 export function ViewedGrid({ initialViewedIds }: { initialViewedIds?: string[] }) {
   const { viewedIds, setViewedIds } = useViewedStore();
-  const [products, setProducts] = useState<{ id: string; name: string; price: number; images: string[] }[]>([]);
+  const [products, setProducts] = useState<{ id: string; name: string; price: number; image_url: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export function ViewedGrid({ initialViewedIds }: { initialViewedIds?: string[] }
       try {
         const data = await getProductsByIds(idsToFetch);
         // Maintain the order from viewedIds (most recent first)
-        const ordered = idsToFetch.map(id => data.find(p => p.id === id)).filter(Boolean) as { id: string; name: string; price: number; images: string[] }[];
+        const ordered = idsToFetch.map(id => data.find(p => p.id === id)).filter(Boolean) as { id: string; name: string; price: number; image_url: string }[];
         setProducts(ordered);
       } catch (err) {
         console.error("Failed to hydrate viewed products:", err);
@@ -80,7 +80,7 @@ export function ViewedGrid({ initialViewedIds }: { initialViewedIds?: string[] }
           className="flex-[1.5] bg-slate-50 rounded-lg overflow-hidden relative group"
         >
           <Image 
-            src={products[0].images?.[0] || "/placeholder.jpg"} 
+            src={products[0].image_url || "/placeholder.jpg"} 
             alt={products[0].name}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -97,7 +97,7 @@ export function ViewedGrid({ initialViewedIds }: { initialViewedIds?: string[] }
               className="flex-1 bg-slate-50 rounded-lg overflow-hidden relative group border border-border/50"
             >
               <Image 
-                src={product.images?.[0] || "/placeholder.jpg"} 
+                src={product.image_url || "/placeholder.jpg"} 
                 alt={product.name}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-110"

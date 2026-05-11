@@ -57,8 +57,8 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
     payment_method_types: ['card'],
     line_items,
     client_reference_id: user?.id || undefined, // Strict Database Profile Binding
-    success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/shop`,
+    success_url: `${process.env.NODE_ENV === 'production' ? 'https://www.lamsseluxe.ca' : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.NODE_ENV === 'production' ? 'https://www.lamsseluxe.ca' : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')}/shop`,
     billing_address_collection: 'required',
     shipping_address_collection: { 
       allowed_countries: ['US', 'CA', 'GB', 'NG', 'GH'] 
@@ -67,7 +67,6 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
       { shipping_rate: 'shr_1TOJXeQULXOBgYBBlffTbzNb' }, // US Standard
       { shipping_rate: 'shr_1TOJYjQULXOBgYBBM5XGQpVD' }, // US Express
       { shipping_rate: 'shr_1TOJHUQULXOBgYBB6UgxDC26' }, // Local Delivery (St. John's)
-      { shipping_rate: 'shr_1TOJSjQULXOBgYBBNQuSHjkJ' }, // NL Outside St. John's
       { shipping_rate: 'shr_1TOJWUQULXOBgYBB6Pyl7u44' }, // Canada Standard
       { shipping_rate: 'shr_1TOJXHQULXOBgYBB170Egmnp' }, // Canada Express
     ],

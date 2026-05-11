@@ -446,26 +446,9 @@ export async function fetchCustomers() {
     return [];
   }
 
-  // 2. Fetch all wishlist records to map counts
-  const { data: wishlistData, error: wError } = await supabase
-    .from('wishlist')
-    .select('user_id');
-
-  if (wError) {
-    console.warn("Could not aggregate wishlist counts:", wError.message);
-    return profiles || [];
-  }
-
-  // 3. Map counts to profiles
-  const wishlistCounts: Record<string, string[]> = {};
-  (wishlistData as { user_id: string }[]).forEach((row) => {
-    if (!wishlistCounts[row.user_id]) wishlistCounts[row.user_id] = [];
-    wishlistCounts[row.user_id].push('marker'); 
-  });
-
   return (profiles || []).map(p => ({
     ...p,
-    wishlist: wishlistCounts[p.id] || []
+    wishlist: p.wishlist || []
   }));
 }
 
