@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useTransition, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -15,6 +15,7 @@ import { PriceDisplay } from "@/components/PriceDisplay";
 export function CartSheet() {
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isCheckoutPending, startCheckoutTransition] = useTransition();
   const [user, setUser] = useState<User | null>(null);
   const { cartItems, getItemCount, getCartTotal, updateQuantity, removeItem, syncWithServer } = useCart();
   const supabase = createClient();
@@ -61,13 +62,15 @@ export function CartSheet() {
   const awayFromShipping = Math.max(0, threshold - rawTotal);
   const progressPercent = Math.min(100, (rawTotal / threshold) * 100);
 
-  const handleCheckout = async () => {
-    try {
-      const url = await createCheckoutSession(cartItems);
-      if (url) window.location.href = url;
-    } catch (err) {
-      console.error("Checkout handoff pipeline blocked", err);
-    }
+  const handleCheckout = () => {
+    startCheckoutTransition(async () => {
+      try {
+        const url = await createCheckoutSession(cartItems);
+        if (url) window.location.href = url;
+      } catch (err) {
+        console.error("Checkout handoff pipeline blocked", err);
+      }
+    });
   };
 
   return (
@@ -150,12 +153,14 @@ export function CartSheet() {
                 >
                   View bag ({count})
                 </Button>
-                <Button 
+                <button 
+                  type="button"
                   onClick={handleCheckout}
-                  className="flex-1 rounded-full bg-black text-white font-black tracking-wide h-12 hover:bg-black/90"
+                  disabled={isCheckoutPending}
+                  className="flex-1 rounded-full bg-black text-white font-black tracking-wide h-12 hover:bg-black/90 transition-colors disabled:opacity-50"
                 >
-                  Proceed to Checkout
-                </Button>
+                  {isCheckoutPending ? "Processing..." : "Proceed to Checkout"}
+                </button>
               </div>
 
               {/* Free Shipping Progress */}
