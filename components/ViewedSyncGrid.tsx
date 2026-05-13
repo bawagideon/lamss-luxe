@@ -46,7 +46,7 @@ export function ViewedGrid({ initialViewedIds }: { initialViewedIds?: string[] }
     }
 
     hydrateProducts();
-  }, [viewedIds]);
+  }, [viewedIds, initialViewedIds]);
 
   if (isLoading) {
     return (
