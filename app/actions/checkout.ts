@@ -78,11 +78,46 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
       allowed_countries: ['US', 'CA', 'GB', 'NG', 'GH'] 
     },
     shipping_options: [
-      { shipping_rate: 'shr_1TOJXeQULXOBgYBBlffTbzNb' }, // US Standard
-      { shipping_rate: 'shr_1TOJYjQULXOBgYBBM5XGQpVD' }, // US Express
-      { shipping_rate: 'shr_1TOJHUQULXOBgYBB6UgxDC26' }, // Local Delivery (St. John's)
-      { shipping_rate: 'shr_1TOJWUQULXOBgYBB6Pyl7u44' }, // Canada Standard
-      { shipping_rate: 'shr_1TOJXHQULXOBgYBB170Egmnp' }, // Canada Express
+      { 
+        shipping_rate_data: {
+          type: 'fixed_amount',
+          fixed_amount: { amount: 3000, currency: 'cad' },
+          display_name: 'Canada Standard',
+          delivery_estimate: { minimum: { unit: 'business_day', value: 3 }, maximum: { unit: 'business_day', value: 7 } },
+        }
+      },
+      { 
+        shipping_rate_data: {
+          type: 'fixed_amount',
+          fixed_amount: { amount: 4500, currency: 'cad' },
+          display_name: 'Canada Express',
+          delivery_estimate: { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 3 } },
+        }
+      },
+      { 
+        shipping_rate_data: {
+          type: 'fixed_amount',
+          fixed_amount: { amount: 3000, currency: 'cad' },
+          display_name: 'US Standard',
+          delivery_estimate: { minimum: { unit: 'business_day', value: 5 }, maximum: { unit: 'business_day', value: 10 } },
+        }
+      },
+      { 
+        shipping_rate_data: {
+          type: 'fixed_amount',
+          fixed_amount: { amount: 5000, currency: 'cad' },
+          display_name: 'US Express',
+          delivery_estimate: { minimum: { unit: 'business_day', value: 2 }, maximum: { unit: 'business_day', value: 5 } },
+        }
+      },
+      { 
+        shipping_rate_data: {
+          type: 'fixed_amount',
+          fixed_amount: { amount: 1500, currency: 'cad' },
+          display_name: 'Local Delivery (St. John\'s)',
+          delivery_estimate: { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 2 } },
+        }
+      },
     ],
     metadata: { 
         cart_payload: orderMetadata,
