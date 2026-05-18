@@ -3,7 +3,7 @@
 import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { applyLaunchPromo } from '@/lib/promo';
+import { checkLaunchPromoEligibility } from '@/lib/promo';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy', { apiVersion: '2026-02-25.clover' });
 
@@ -26,14 +26,11 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
   const { data: { user } } = await supabase.auth.getUser();
   const userEmail = user?.email || "";
 
-  let promoApplied = false;
-
   const cartTotal = cartItems.reduce((acc, item) => acc + (item.rawPrice * item.quantity), 0);
+  const isPromoEligible = await checkLaunchPromoEligibility(userEmail, cartTotal);
+  const promoApplied = isPromoEligible;
 
-  const line_items = await Promise.all(cartItems.map(async (item) => {
-    const { finalPrice, applied } = await applyLaunchPromo(userEmail, item.rawPrice, cartTotal);
-    if (applied) promoApplied = true;
-    
+  const line_items = cartItems.map((item) => {
     return {
       price_data: {
         currency: 'cad',
@@ -41,11 +38,27 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
           name: `${item.name} - Size: ${item.selectedSize} | Color: ${item.selectedColor}`, 
           images: item.image ? [item.image] : undefined 
         },
-        unit_amount: Math.round(finalPrice * 100),
+        unit_amount: Math.round(item.rawPrice * 100),
       },
       quantity: item.quantity,
     };
-  }));
+  });
+
+  let discounts: Stripe.Checkout.SessionCreateParams.Discount[] | undefined = undefined;
+  if (isPromoEligible) {
+    // Find or create a Stripe coupon for the 20% off total
+    const coupons = await stripe.coupons.list({ limit: 100 });
+    let coupon = coupons.data.find(c => c.name === 'Launch Promo 20% OFF' && c.percent_off === 20 && c.valid);
+    
+    if (!coupon) {
+      coupon = await stripe.coupons.create({
+        percent_off: 20,
+        duration: 'once',
+        name: 'Launch Promo 20% OFF',
+      });
+    }
+    discounts = [{ coupon: coupon.id }];
+  }
 
   // Stringify concise parameters mapping strict limits of Stripe's 500-char metadata boundary
   const orderMetadata = JSON.stringify(cartItems.map(i => ({
@@ -56,6 +69,7 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
     mode: 'payment',
     payment_method_types: ['card'],
     line_items,
+    discounts,
     client_reference_id: user?.id || undefined, // Strict Database Profile Binding
     success_url: `${process.env.NODE_ENV === 'production' ? 'https://www.lamsseluxe.ca' : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.NODE_ENV === 'production' ? 'https://www.lamsseluxe.ca' : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')}/shop`,

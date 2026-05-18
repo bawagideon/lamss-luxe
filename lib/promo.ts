@@ -38,6 +38,15 @@ export async function isNewsletterSubscriber(email: string): Promise<boolean> {
 }
 
 /**
+ * Checks if the user and cart are eligible for the launch promo
+ */
+export async function checkLaunchPromoEligibility(email: string, cartTotal: number): Promise<boolean> {
+  const launchActive = isLaunchWeek();
+  const subscriber = await isNewsletterSubscriber(email);
+  return launchActive && subscriber && cartTotal >= MIN_ORDER_VALUE;
+}
+
+/**
  * Calculates the final price with launch discount if eligible
  */
 export async function applyLaunchPromo(email: string, rawPrice: number, cartTotal: number = 0): Promise<{ finalPrice: number; applied: boolean }> {
