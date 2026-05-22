@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Star, Check, Trash2, User, MessageSquare, AlertCircle } from "lucide-react";
 import { getAdminReviews, updateReviewStatus, deleteReview } from "@/app/actions/reviews";
@@ -9,7 +8,6 @@ import toast from "react-hot-toast";
 import NextImage from "next/image";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface AdminReview {
   id: string;

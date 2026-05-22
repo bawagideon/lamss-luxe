@@ -16,7 +16,7 @@ export async function sendNewsletterEmail(email: string, subject: string, conten
       })
     );
 
-    const { data, error } = await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: 'Lamssé Luxe <newsletter@lamsseluxe.com>',
       to: [email],
       subject: subject,
@@ -45,7 +45,7 @@ export async function sendOrderConfirmationEmail(email: string, orderDetails: Or
   try {
     const { amount, size, color } = orderDetails;
     
-    const { data, error } = await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: 'Lamssé Luxe <orders@lamsseluxe.com>',
       to: [email],
       subject: 'Order Confirmed! Your Lamssé Luxe Drop is Secured.',
@@ -114,7 +114,7 @@ export async function sendShippingConfirmationEmail(
       }
     }
 
-    const { data, error } = await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: 'Lamssé Luxe <shipping@lamsseluxe.com>',
       to: [email],
       subject: 'Your Lamssé Luxe Order has Shipped!',

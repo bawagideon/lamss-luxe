@@ -54,15 +54,16 @@ export async function sendAdminEmail({
       throw error;
     }
     return { success: true, id: data?.id };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Admin Email Error:", error);
     
     let errorMessage = "Failed to send email. Please try again.";
     if (error && typeof error === 'object') {
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.error && typeof error.error === 'object' && error.error.message) {
-        errorMessage = error.error.message;
+      const err = error as { message?: string; error?: { message?: string } };
+      if (err.message) {
+        errorMessage = err.message;
+      } else if (err.error && typeof err.error === 'object' && err.error.message) {
+        errorMessage = err.error.message;
       } else {
         errorMessage = JSON.stringify(error);
       }

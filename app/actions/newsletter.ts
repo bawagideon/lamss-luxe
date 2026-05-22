@@ -133,15 +133,16 @@ export async function sendTestEmail(email: string, subject: string, content: str
     console.log(`[Newsletter] Sending test to ${email}: ${subject} | Payload size: ${content.length} chars`);
     await sendNewsletterEmail(email, subject, content);
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Test Newsletter dispatch exception:", error);
     
     let errorMessage = "Failed to dispatch test.";
     if (error && typeof error === 'object') {
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.error && typeof error.error === 'object' && error.error.message) {
-        errorMessage = error.error.message;
+      const err = error as { message?: string; error?: { message?: string } };
+      if (err.message) {
+        errorMessage = err.message;
+      } else if (err.error && typeof err.error === 'object' && err.error.message) {
+        errorMessage = err.error.message;
       } else {
         errorMessage = JSON.stringify(error);
       }
@@ -185,15 +186,16 @@ export async function sendLiveNewsletter(subject: string, content: string): Prom
     await Promise.allSettled(dispatches);
     
     return { success: true, count: successCount, failures: failureCount };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Critical Newsletter Broadcast Failure:", error);
     
     let errorMessage = "Failed to broadcast newsletter.";
     if (error && typeof error === 'object') {
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.error && typeof error.error === 'object' && error.error.message) {
-        errorMessage = error.error.message;
+      const err = error as { message?: string; error?: { message?: string } };
+      if (err.message) {
+        errorMessage = err.message;
+      } else if (err.error && typeof err.error === 'object' && err.error.message) {
+        errorMessage = err.error.message;
       } else {
         errorMessage = JSON.stringify(error);
       }
