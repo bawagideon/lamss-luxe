@@ -333,8 +333,12 @@ export async function editProduct(formData: FormData) {
     const relIds = formData.get('related_product_ids');
     if (relIds !== null) updatePayload.related_product_ids = (relIds as string).split(',').filter(Boolean);
 
-    const colorBadges = formData.get('color_badges_json');
-    if (colorBadges) updatePayload.color_badges = JSON.parse(colorBadges as string);
+    // Merge color badges
+    let color_badges: Record<string, string> = {};
+    try {
+      const badgesJson = formData.get('color_badges_json') as string;
+      if (badgesJson) color_badges = JSON.parse(badgesJson);
+    } catch {}
 
     // Asset Handling
     const image_main = formData.get('image_main');
@@ -352,18 +356,7 @@ export async function editProduct(formData: FormData) {
     // Color & Variant Logic
     const rawColorNames = formData.getAll('color_names') as string[];
     const rawColorCodes = formData.getAll('color_codes') as string[];
-    if (rawColorNames.length > 0 && rawColorNames.some(n => n.trim() !== '')) {
-      const colors: string[] = [];
-      const color_codes: string[] = [];
-      rawColorNames.forEach((name, idx) => {
-        if (name.trim() !== '') {
-          colors.push(name.trim());
-          color_codes.push(rawColorCodes[idx] || "#000000");
-        }
-      });
-      updatePayload.colors = colors;
-      updatePayload.color_codes = color_codes;
-    }
+    const originalColorNames = formData.getAll('original_color_names') as string[];
 
     // Merge color images
     let color_images: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
@@ -372,8 +365,39 @@ export async function editProduct(formData: FormData) {
       if (existingJson) color_images = JSON.parse(existingJson);
     } catch {}
 
-    const activeColors = (updatePayload.colors as string[]) || [];
-    for (const color of activeColors) {
+    // Rename preservation mapping
+    if (originalColorNames.length > 0) {
+      originalColorNames.forEach((originalName, idx) => {
+        const currentName = rawColorNames[idx]?.trim();
+        if (originalName && currentName && originalName !== currentName) {
+          // If color was renamed, transfer variant images
+          if (color_images[originalName]) {
+            color_images[currentName] = color_images[originalName];
+            delete color_images[originalName];
+          }
+          // Transfer badges
+          if (color_badges[originalName] !== undefined) {
+            color_badges[currentName] = color_badges[originalName];
+            delete color_badges[originalName];
+          }
+        }
+      });
+    }
+
+    const colors: string[] = [];
+    const color_codes: string[] = [];
+    rawColorNames.forEach((name, idx) => {
+      if (name.trim() !== '') {
+        colors.push(name.trim());
+        color_codes.push(rawColorCodes[idx] || "#000000");
+      }
+    });
+
+    updatePayload.colors = colors;
+    updatePayload.color_codes = color_codes;
+
+    // Update variant images for active colors
+    for (const color of colors) {
       const vMain = formData.get(`variant_image_${color}_main`);
       const vFront = formData.get(`variant_image_${color}_front`);
       const vSide = formData.get(`variant_image_${color}_side`);
@@ -390,7 +414,21 @@ export async function editProduct(formData: FormData) {
         };
       }
     }
-    if (Object.keys(color_images).length > 0) updatePayload.color_images = color_images;
+
+    // Cleanup color_images and color_badges to only contain currently active colors
+    const finalColorImages: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
+    const finalColorBadges: Record<string, string> = {};
+    for (const color of colors) {
+      if (color_images[color]) {
+        finalColorImages[color] = color_images[color];
+      }
+      if (color_badges[color] !== undefined) {
+        finalColorBadges[color] = color_badges[color];
+      }
+    }
+
+    updatePayload.color_images = finalColorImages;
+    updatePayload.color_badges = finalColorBadges;
 
     const supabase = getAdminSupabase();
     const { error } = await supabase.from('products').update(updatePayload).eq('id', id);

@@ -69,6 +69,7 @@ export default function AdminProductsPage() {
   );
 
   const [activeColors, setActiveColors] = useState<string[]>(['', '', '', '']);
+  const [activeColorCodes, setActiveColorCodes] = useState<string[]>(['#000000', '#DC143C', '#F5F5DC', '#4682B4']);
   const [colorBadges, setColorBadges] = useState<Record<string, string>>({});
   const [relatedProductIds, setRelatedProductIds] = useState<string[]>([]);
   const [isNewDrop, setIsNewDrop] = useState(false);
@@ -76,6 +77,33 @@ export default function AdminProductsPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [compressedFiles, setCompressedFiles] = useState<Record<string, File>>({});
+
+  const addColorField = () => {
+    setActiveColors(prev => [...prev, '']);
+    setActiveColorCodes(prev => [...prev, '#000000']);
+  };
+
+  const removeColorField = (index: number) => {
+    const colorToRemove = activeColors[index];
+    setActiveColors(prev => prev.filter((_, i) => i !== index));
+    setActiveColorCodes(prev => prev.filter((_, i) => i !== index));
+    
+    if (colorToRemove) {
+      setColorBadges(prev => {
+        const copy = { ...prev };
+        delete copy[colorToRemove];
+        return copy;
+      });
+      setCompressedFiles(prev => {
+        const copy = { ...prev };
+        delete copy[`variant_image_${colorToRemove}_main`];
+        delete copy[`variant_image_${colorToRemove}_front`];
+        delete copy[`variant_image_${colorToRemove}_side`];
+        delete copy[`variant_image_${colorToRemove}_back`];
+        return copy;
+      });
+    }
+  };
 
   useEffect(() => {
     getAdminProducts()
@@ -88,13 +116,19 @@ export default function AdminProductsPage() {
 
   useEffect(() => {
     if (selectedProduct) {
-      setActiveColors(selectedProduct.colors || ['', '', '', '']);
+      const colors = selectedProduct.colors || [];
+      const codes = selectedProduct.color_codes || [];
+      setActiveColors(colors);
+      // Ensure codes array matches colors length
+      const alignedCodes = colors.map((_, idx) => codes[idx] || ["#000000", "#DC143C", "#F5F5DC", "#4682B4"][idx] || "#000000");
+      setActiveColorCodes(alignedCodes);
       setColorBadges(selectedProduct.color_badges || {});
       setRelatedProductIds(selectedProduct.related_product_ids || []);
       setIsNewDrop(!!selectedProduct.is_new);
       setIsSetAvailable(!!selectedProduct.is_set_available);
     } else {
       setActiveColors(['', '', '', '']);
+      setActiveColorCodes(['#000000', '#DC143C', '#F5F5DC', '#4682B4']);
       setColorBadges({});
       setRelatedProductIds([]);
       setIsNewDrop(false);
@@ -388,7 +422,18 @@ export default function AdminProductsPage() {
                 </div>
               </div>
               <div className="space-y-2 border-t border-gray-100 pt-4">
-                <Label className="text-xs uppercase font-bold text-gray-500">Colors (Name & Exact Hex Picker)</Label>
+                <div className="flex justify-between items-center mb-2">
+                  <Label className="text-xs uppercase font-bold text-gray-500">Colors (Name & Exact Hex Picker)</Label>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm"
+                    onClick={addColorField}
+                    className="text-[10px] h-7 font-bold uppercase tracking-wider px-2"
+                  >
+                    + Add Color
+                  </Button>
+                </div>
                 {activeColors.map((color, i) => (
                   <div key={i} className="flex gap-2 items-center">
                     <Input 
@@ -403,6 +448,14 @@ export default function AdminProductsPage() {
                       placeholder={`Color ${i + 1} Name`} 
                       className="border-gray-200 focus-visible:ring-black flex-1" 
                     />
+                    
+                    {/* Hidden input to pass original color names to track renaming */}
+                    <input 
+                      type="hidden" 
+                      name="original_color_names" 
+                      value={selectedProduct?.colors?.[i] || ''} 
+                    />
+
                     <Input 
                       placeholder="Sub-Badge (e.g. Selling Fast)" 
                       value={colorBadges[color] || ''}
@@ -413,8 +466,30 @@ export default function AdminProductsPage() {
                       className="border-gray-100 text-[10px] w-28 h-10"
                     />
                     <div className="h-10 w-12 rounded-lg overflow-hidden border border-gray-200 shrink-0">
-                      <input type="color" name="color_codes" className="w-[150%] h-[150%] -ml-1 -mt-1 cursor-pointer" defaultValue={selectedProduct?.color_codes?.[i] || ["#000000", "#DC143C", "#F5F5DC", "#4682B4"][i]} />
+                      <input 
+                        type="color" 
+                        name="color_codes" 
+                        value={activeColorCodes[i] || '#000000'}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const newCodes = [...activeColorCodes];
+                          newCodes[i] = val;
+                          setActiveColorCodes(newCodes);
+                        }}
+                        className="w-[150%] h-[150%] -ml-1 -mt-1 cursor-pointer" 
+                      />
                     </div>
+                    
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => removeColorField(i)}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 h-10 w-10 shrink-0"
+                      title="Remove Color"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 ))}
                 <p className="text-[10px] text-gray-400">Leave name blank to skip. Hex codes power the visual swatches.</p>
