@@ -157,8 +157,37 @@ export async function getAdminAllOrders() {
   noStore();
   await validateAdminSession();
   const supabase = getAdminSupabase();
-  const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-  return data || [];
+  
+  // Fetch orders with associated line items and products
+  const { data: orders, error: ordersError } = await supabase
+    .from('orders')
+    .select('*, order_items(*, products(*))')
+    .order('created_at', { ascending: false });
+
+  if (ordersError) {
+    console.error("Error fetching admin orders:", ordersError);
+    return [];
+  }
+
+  // Fetch profiles to enrich customer CRM data
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('*');
+
+  const profileMap = new Map();
+  if (profiles) {
+    profiles.forEach(p => {
+      profileMap.set(p.id, p);
+    });
+  }
+
+  // Map user profile info back to their orders
+  const ordersWithProfiles = (orders || []).map(o => ({
+    ...o,
+    profile: o.user_id ? profileMap.get(o.user_id) : null
+  }));
+
+  return ordersWithProfiles;
 }
 
 // 3. Secure Asset Pivot (Proxies client uploads to bypass RLS and 4.5MB limits)

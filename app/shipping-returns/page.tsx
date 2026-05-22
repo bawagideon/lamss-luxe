@@ -18,7 +18,7 @@ export default function ShippingPage() {
                    <div className="p-8 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-border">
                       <h3 className="text-[12px] font-black uppercase tracking-widest mb-4 text-primary">Canada</h3>
                       <ul className="space-y-4 text-[14px] font-bold text-zinc-600 dark:text-zinc-400">
-                        <li>Standard (3-5 Days): <span className="text-foreground">Free Over $150</span></li>
+                        <li>Standard (3-5 Days): <span className="text-foreground">Free Over $200</span></li>
                         <li>Express (1-2 Days): <span className="text-foreground">Flat $25</span></li>
                       </ul>
                    </div>

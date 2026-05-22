@@ -58,7 +58,7 @@ export function CartSheet() {
   const count = getItemCount();
   const rawTotal = getCartTotal();
   
-  const threshold = 150;
+  const threshold = 200;
   const awayFromShipping = Math.max(0, threshold - rawTotal);
   const progressPercent = Math.min(100, (rawTotal / threshold) * 100);
 

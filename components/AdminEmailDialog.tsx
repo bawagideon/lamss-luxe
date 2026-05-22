@@ -18,6 +18,8 @@ interface AdminEmailDialogProps {
 export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [testEmail, setTestEmail] = useState("");
+  const [testLoading, setTestLoading] = useState(false);
   const [formData, setFormData] = useState({
     subject: "",
     title: "",
@@ -47,6 +49,30 @@ export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialo
       setIsOpen(false);
       setFormData({ subject: "", title: "", message: "", buttonText: "", buttonUrl: "" });
       onSuccess?.();
+    }
+  };
+
+  const handleSendTest = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!testEmail) {
+      toast.error("Please enter a test email address first.");
+      return;
+    }
+
+    setTestLoading(true);
+    const res = await sendAdminEmail({
+      to: [testEmail],
+      ...formData
+    });
+    setTestLoading(false);
+
+    if (res.error) {
+      toast.error(res.error);
+    } else {
+      toast.success(`Test proof sent successfully to ${testEmail}!`, {
+        icon: '🚀',
+        style: { borderRadius: '0px', background: '#000', color: '#fff' }
+      });
     }
   };
 
@@ -125,6 +151,32 @@ export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialo
                 />
               </div>
             </div>
+          </div>
+
+          <div className="border-t border-dashed border-gray-200 pt-6 mt-6">
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3">Proofing / Test Mode</h4>
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">Test Recipient Email</label>
+                <Input 
+                  placeholder="your-email@example.com" 
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  className="font-bold h-12"
+                />
+              </div>
+              <Button
+                type="button"
+                onClick={handleSendTest}
+                disabled={testLoading || !testEmail}
+                className="h-12 px-6 bg-zinc-900 text-white font-black uppercase tracking-wider text-[10px] hover:bg-zinc-800 transition-all rounded-none shrink-0 animate-in fade-in duration-300"
+              >
+                {testLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Test Proof"}
+              </Button>
+            </div>
+            <p className="text-[10px] text-gray-400 mt-2 font-medium">
+              Send a draft proof to your personal email to verify layout, titles, and button URLs before launching to the active email list.
+            </p>
           </div>
 
           <Button 

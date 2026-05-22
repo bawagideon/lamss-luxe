@@ -81,8 +81,8 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
       { 
         shipping_rate_data: {
           type: 'fixed_amount',
-          fixed_amount: { amount: 3000, currency: 'cad' },
-          display_name: 'Canada Standard',
+          fixed_amount: { amount: cartTotal >= 200 ? 0 : 3000, currency: 'cad' },
+          display_name: cartTotal >= 200 ? 'Free Standard Shipping (Canada)' : 'Canada Standard',
           delivery_estimate: { minimum: { unit: 'business_day', value: 3 }, maximum: { unit: 'business_day', value: 7 } },
         }
       },
@@ -97,8 +97,8 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
       { 
         shipping_rate_data: {
           type: 'fixed_amount',
-          fixed_amount: { amount: 3000, currency: 'cad' },
-          display_name: 'US Standard',
+          fixed_amount: { amount: cartTotal >= 200 ? 0 : 3000, currency: 'cad' },
+          display_name: cartTotal >= 200 ? 'Free Standard Shipping (US)' : 'US Standard',
           delivery_estimate: { minimum: { unit: 'business_day', value: 5 }, maximum: { unit: 'business_day', value: 10 } },
         }
       },

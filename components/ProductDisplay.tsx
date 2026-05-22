@@ -369,7 +369,7 @@ export function ProductDisplay({ product }: { product: Product }) {
               <span className={`w-2 h-2 rounded-full mr-2 ${product.stock > 0 ? "bg-green-500" : "bg-red-500 animate-pulse"}`}></span>
               {product.stock > 0 ? "In Stock - Ready to Ship" : "Currently Unavailable"}
             </div>
-            <p className="text-sm text-muted-foreground">Free international shipping on orders over $150.</p>
+            <p className="text-sm text-muted-foreground">Free international shipping on orders over $200.</p>
           </div>
           </div>
         </div>
