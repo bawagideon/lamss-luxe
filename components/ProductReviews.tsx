@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { Star, MessageSquare, CircleCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -68,28 +67,28 @@ export function ProductReviews({ productId, userId, userName }: { productId: str
     : "0";
 
   return (
-    <div className="mt-20 border-t border-border pt-16">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+    <div className="mt-16 border-t border-zinc-800 pt-12">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
         <div>
-          <h3 className="text-2xl font-black uppercase tracking-tighter">Customer Reviews</h3>
+          <h3 className="text-2xl font-black uppercase tracking-tight text-zinc-100">Customer Reviews</h3>
           <div className="flex items-center gap-4 mt-2">
-            <div className="flex text-black">
+            <div className="flex text-amber-400">
               {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} className={`w-4 h-4 ${Number(averageRating) >= s ? 'fill-current' : 'text-zinc-200'}`} />
+                <Star key={s} className={`w-4 h-4 ${Number(averageRating) >= s ? 'fill-current text-amber-400' : 'text-zinc-800'}`} />
               ))}
             </div>
-            <span className="text-sm font-bold uppercase tracking-widest">{averageRating} / 5.0</span>
-            <span className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">({reviews.length} Reviews)</span>
+            <span className="text-sm font-bold uppercase tracking-widest text-zinc-100">{averageRating} / 5.0</span>
+            <span className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest">({reviews.length} Reviews)</span>
           </div>
         </div>
 
         {userReviewStatus?.hasReviewed ? (
-          <div className="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-900 px-6 py-3 border border-zinc-100 dark:border-zinc-800 rounded-sm shadow-sm">
-             <div className={`w-2 h-2 rounded-full ${userReviewStatus.isVerified ? 'bg-green-500' : 'bg-primary animate-pulse'}`} />
-             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-800 dark:text-zinc-200">
+          <div className="flex items-center gap-3 bg-zinc-950 px-5 py-3 border border-zinc-800 rounded-none">
+             <div className={`w-2 h-2 rounded-full ${userReviewStatus.isVerified ? 'bg-green-500' : 'bg-zinc-500 animate-pulse'}`} />
+             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">
                {userReviewStatus.isVerified 
                  ? "You have already reviewed this piece" 
-                 : "Come back later to see your review — Approval Pending"}
+                 : "Review Approval Pending"}
              </span>
           </div>
         ) : (
@@ -101,7 +100,7 @@ export function ProductReviews({ productId, userId, userName }: { productId: str
               }
               setShowForm(!showForm);
             }}
-            className="bg-black text-white hover:bg-zinc-800 font-bold uppercase tracking-widest text-[10px] h-12 px-8 rounded-none transition-all shadow-xl"
+            className="bg-zinc-100 text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-[10px] h-11 px-6 rounded-none transition-all"
           >
             {showForm ? "Close Form" : userId ? "Share Your Experience" : "Sign in to Review"}
           </Button>
@@ -114,38 +113,38 @@ export function ProductReviews({ productId, userId, userName }: { productId: str
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="overflow-hidden mb-20 bg-white border border-zinc-100 shadow-2xl p-8 md:p-12 relative"
+            className="overflow-hidden mb-12 bg-zinc-950 border border-zinc-800 p-6 md:p-8 relative rounded-none"
           >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-black to-primary opacity-50" />
+            <div className="absolute top-0 left-0 w-full h-0.5 bg-zinc-100 opacity-80" />
 
-            <form onSubmit={handleSubmit} className="space-y-10 max-w-2xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Overall Rating */}
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-800 block">Overall Vibe</label>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 block">Overall Vibe</label>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((s) => (
                       <button
                         key={s}
                         type="button"
                         onClick={() => setRating(s)}
-                        className={`transition-all hover:scale-110 ${rating >= s ? 'text-primary' : 'text-zinc-200'}`}
+                        className={`transition-all hover:scale-110 ${rating >= s ? 'text-amber-400' : 'text-zinc-800'}`}
                       >
-                        <Star className={`w-8 h-8 ${rating >= s ? 'fill-current' : ''}`} />
+                        <Star className={`w-8 h-8 ${rating >= s ? 'fill-current text-amber-400' : ''}`} />
                       </button>
                     ))}
                   </div>
-                  <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Select stars to rate</p>
+                  <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mt-1">Select stars to rate</p>
                 </div>
 
                 {/* Fit Selector */}
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-800 block">Fit Experience</label>
-                  <div className="flex bg-zinc-50 p-1 rounded-sm border border-zinc-200">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 block">Fit Experience</label>
+                  <div className="flex bg-zinc-900 p-0.5 rounded-none border border-zinc-800">
                     {["Runs Small", "True To Size", "Runs Large"].map((fit) => (
                       <label key={fit} className="flex-1 cursor-pointer">
                         <input type="radio" name="fit_rating" value={fit} defaultChecked={fit === "True To Size"} className="sr-only peer" />
-                        <div className="text-[9px] font-black uppercase tracking-widest py-3 text-center transition-all peer-checked:bg-black peer-checked:text-white hover:bg-zinc-100">
+                        <div className="text-[9px] font-black uppercase tracking-widest py-3 text-center transition-all peer-checked:bg-zinc-100 peer-checked:text-black hover:bg-zinc-800 text-zinc-400">
                           {fit}
                         </div>
                       </label>
@@ -154,22 +153,22 @@ export function ProductReviews({ productId, userId, userName }: { productId: str
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-800 block">Your Story</label>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 block">Your Story</label>
                 <textarea
                   name="comment"
                   required
                   placeholder="Tell us about the fabric, the silhouette, and the moments you created in this piece..."
-                  className="w-full p-6 bg-zinc-50 border border-zinc-200 text-sm font-bold text-zinc-800 focus:bg-white focus:ring-1 focus:ring-primary outline-none min-h-[160px] transition-all italic placeholder:text-zinc-400 placeholder:not-italic"
+                  className="w-full p-4 bg-zinc-900 border border-zinc-800 text-sm font-medium text-zinc-100 focus:bg-zinc-950 focus:border-zinc-500 focus:ring-0 outline-none min-h-[120px] transition-all italic placeholder:text-zinc-500 placeholder:not-italic rounded-none"
                 />
               </div>
 
-              <div className="flex items-center justify-between pt-4">
-                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.4em] text-zinc-800">
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.4em] text-zinc-400">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                   Posting as {userName || "Verified Guest"}
                 </div>
-                <Button type="submit" className="bg-black text-white font-black uppercase tracking-[0.2em] h-14 px-12 rounded-none hover:bg-primary transition-colors text-xs">
+                <Button type="submit" className="bg-zinc-100 text-black font-black uppercase tracking-[0.2em] h-11 px-8 rounded-none hover:bg-zinc-200 transition-colors text-[10px]">
                   Post Your Review
                 </Button>
               </div>
@@ -178,47 +177,48 @@ export function ProductReviews({ productId, userId, userName }: { productId: str
         )}
       </AnimatePresence>
 
-      <div className="space-y-12">
+      <div className="space-y-8">
         {reviews.map((review) => (
-          <div key={review.id} className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-zinc-100">
+          <div key={review.id} className="grid grid-cols-1 md:grid-cols-4 gap-6 pb-8 border-b border-zinc-900">
             <div className="md:col-span-1 space-y-2">
               <div className="flex items-center gap-2">
-                <span className="font-black text-sm uppercase tracking-tight">{review.user_name}</span>
-                {review.is_verified && <CircleCheck className="w-3.5 h-3.5 text-black" />}
+                <span className="font-black text-sm uppercase tracking-tight text-zinc-100">{review.user_name}</span>
+                {review.is_verified && <CircleCheck className="w-3.5 h-3.5 text-zinc-300" />}
               </div>
-              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
+              <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
                 {new Date(review.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
               </p>
-              <div className="flex text-black pt-2">
+              <div className="flex text-amber-400 pt-1.5">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <Star key={s} className={`w-3 h-3 ${review.rating >= s ? 'fill-current' : 'text-zinc-200'}`} />
+                  <Star key={s} className={`w-3 h-3 ${review.rating >= s ? 'fill-current text-amber-400' : 'text-zinc-800'}`} />
                 ))}
               </div>
             </div>
 
-            <div className="md:col-span-3 space-y-4">
+            <div className="md:col-span-3 space-y-3">
               <div className="flex items-center gap-4">
-                <Badge variant="outline" className="text-[9px] uppercase font-black px-2 py-0.5 border-zinc-200 text-zinc-500 rounded-none bg-zinc-50">
+                <Badge variant="outline" className="text-[9px] uppercase font-black px-2 py-0.5 border-zinc-800 text-zinc-400 rounded-none bg-zinc-900/40">
                   Fit: {review.fit_rating}
                 </Badge>
                 {review.is_verified && (
                   <span className="text-[9px] font-black uppercase text-zinc-400 tracking-widest flex items-center gap-1">
-                    <CircleCheck className="w-2.5 h-2.5" /> Verified Purchase
+                    <CircleCheck className="w-2.5 h-2.5 text-zinc-400" /> Verified Purchase
                   </span>
                 )}
               </div>
-              <p className="text-[15px] leading-relaxed text-zinc-700 font-medium italic">&quot;{review.comment}&quot;</p>
+              <p className="text-[15px] leading-relaxed text-zinc-300 font-medium italic">&quot;{review.comment}&quot;</p>
             </div>
           </div>
         ))}
 
         {reviews.length === 0 && !loading && (
-          <div className="py-12 text-center bg-zinc-50 border border-dashed border-zinc-200 rounded-lg">
-            <MessageSquare className="w-8 h-8 mx-auto text-zinc-300 mb-4" />
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Be the first to share your Luxe experience.</p>
+          <div className="py-8 text-center bg-zinc-900/30 border border-zinc-800 rounded-none">
+            <MessageSquare className="w-6 h-6 mx-auto text-zinc-700 mb-3" />
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">Be the first to share your Luxe experience.</p>
           </div>
         )}
       </div>
     </div>
   );
 }
+

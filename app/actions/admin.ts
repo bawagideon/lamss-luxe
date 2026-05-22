@@ -448,7 +448,8 @@ export async function fetchCustomers() {
 
   return (profiles || []).map(p => ({
     ...p,
-    wishlist: p.wishlist || []
+    wishlist: p.wishlist || [],
+    viewed_ids: p.viewed_ids || []
   }));
 }
 
@@ -559,4 +560,79 @@ export async function getCustomers() {
     spent: `$${c.spent.toFixed(2)}`,
     status: 'Active'
   }));
+}
+
+export async function updateOrderTracking(orderId: string, status: string, trackingNum: string, carrier: string) {
+  noStore();
+  await validateAdminSession();
+  try {
+    const supabase = getAdminSupabase();
+    
+    // 1. Update the order row
+    const { error: updateError } = await supabase
+      .from('orders')
+      .update({
+        order_status: status,
+        tracking_number: trackingNum || null,
+        tracking_carrier: carrier || null
+      })
+      .eq('id', orderId);
+
+    if (updateError) throw new Error(updateError.message);
+
+    // 2. If the new status is 'Shipped', fetch details and trigger email
+    if (status.toLowerCase() === 'shipped') {
+      // Fetch customer email
+      const { data: order, error: fetchError } = await supabase
+        .from('orders')
+        .select('customer_email, id')
+        .eq('id', orderId)
+        .single();
+        
+      if (!fetchError && order && order.customer_email) {
+        // Fetch items summary from order_items with product names
+        const { data: items } = await supabase
+          .from('order_items')
+          .select('quantity, products(name)')
+          .eq('order_id', orderId);
+          
+        let itemsSummary = '';
+        if (items && items.length > 0) {
+          itemsSummary = (items as unknown as Array<{ quantity: number; products: { name: string } | null }>).map((item) => `${item.products?.name || 'Luxury Piece'} (x${item.quantity})`).join(', ');
+        }
+        
+        await sendShippingConfirmationEmail(
+          order.customer_email,
+          trackingNum,
+          carrier,
+          { orderId: order.id, itemsSummary }
+        );
+      }
+    }
+
+    revalidatePath('/admin/orders');
+    revalidatePath('/account/orders');
+    revalidatePath('/admin');
+    
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error updating order tracking:", error);
+    
+    let errorMessage = "Failed to update fulfillment.";
+    if (error && typeof error === 'object') {
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.error && typeof error.error === 'object' && error.error.message) {
+        errorMessage = error.error.message;
+      } else {
+        errorMessage = JSON.stringify(error);
+      }
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
+    return { error: errorMessage };
+  }
 }

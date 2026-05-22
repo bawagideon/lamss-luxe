@@ -290,6 +290,7 @@ export default function NewsletterStudioPage() {
                  <TableHeader className="bg-zinc-50 border-b border-black">
                    <TableRow className="hover:bg-transparent">
                      <TableHead className="text-[10px] font-black uppercase tracking-widest text-black h-12">Audience Member</TableHead>
+                     <TableHead className="text-[10px] font-black uppercase tracking-widest text-black h-12">City</TableHead>
                      <TableHead className="text-[10px] font-black uppercase tracking-widest text-black h-12">Joined</TableHead>
                      <TableHead className="text-[10px] font-black uppercase tracking-widest text-black h-12 text-right">Actions</TableHead>
                    </TableRow>
@@ -297,7 +298,7 @@ export default function NewsletterStudioPage() {
                  <TableBody>
                    {filteredSubscribers.length === 0 ? (
                      <TableRow>
-                       <TableCell colSpan={3} className="h-40 text-center font-bold uppercase text-gray-400 tracking-widest text-xs">No audience members found.</TableCell>
+                       <TableCell colSpan={4} className="h-40 text-center font-bold uppercase text-gray-400 tracking-widest text-xs">No audience members found.</TableCell>
                      </TableRow>
                    ) : (
                      filteredSubscribers.map((member) => (
@@ -307,6 +308,11 @@ export default function NewsletterStudioPage() {
                              <p className="font-black text-sm uppercase tracking-tight">{member.name || "Anonymous Member"}</p>
                              <p className="text-[10px] text-gray-500 font-medium lowercase italic">{member.email}</p>
                            </div>
+                         </TableCell>
+                         <TableCell>
+                            <span className="text-xs font-bold uppercase tracking-tight text-zinc-700 dark:text-zinc-300">
+                              {member.city || "Not Specified"}
+                            </span>
                          </TableCell>
                          <TableCell>
                             <div className="flex items-center gap-2 text-gray-500">

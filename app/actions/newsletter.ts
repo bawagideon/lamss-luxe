@@ -14,10 +14,13 @@ const getServiceSupabase = () => createClient(
 
 import { Resend } from 'resend';
 import { WelcomeEmail } from '@/emails/WelcomeEmail';
+import { render } from '@react-email/render';
+import * as React from 'react';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 import { validateAdminSession } from '@/lib/admin-auth';
+import { sendNewsletterEmail } from '@/lib/resend';
 
 export async function subscribeToNewsletter(email: string) {
   noStore();
@@ -61,11 +64,15 @@ export async function subscribeToNewsletter(email: string) {
       if (!process.env.RESEND_API_KEY) {
         console.warn("RESEND_API_KEY is missing. Skipping welcome email.");
       } else {
+        const htmlContent = await render(
+          React.createElement(WelcomeEmail, { discountCode })
+        );
+
         const emailResult = await resend.emails.send({
-          from: 'The Luxe Network <network@lamsseluxe.ca>',
+          from: 'The Luxe Network <network@lamsseluxe.com>',
           to: email.toLowerCase(),
           subject: "YOU'RE IN, QUEEN — Your 20% Discount is Here",
-          react: WelcomeEmail({ discountCode }),
+          html: htmlContent,
         });
         
         if (emailResult.error) {
@@ -122,18 +129,80 @@ export async function removeSubscriber(id: string): Promise<{ success: boolean; 
 export async function sendTestEmail(email: string, subject: string, content: string): Promise<{ success: boolean; error?: string }> {
   noStore();
   await validateAdminSession();
-  console.log(`[Newsletter] Sending test to ${email}: ${subject} | Payload size: ${content.length} chars`);
-  return { success: true };
+  try {
+    console.log(`[Newsletter] Sending test to ${email}: ${subject} | Payload size: ${content.length} chars`);
+    await sendNewsletterEmail(email, subject, content);
+    return { success: true };
+  } catch (error: any) {
+    console.error("Test Newsletter dispatch exception:", error);
+    
+    let errorMessage = "Failed to dispatch test.";
+    if (error && typeof error === 'object') {
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.error && typeof error.error === 'object' && error.error.message) {
+        errorMessage = error.error.message;
+      } else {
+        errorMessage = JSON.stringify(error);
+      }
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
+    return { success: false, error: errorMessage };
+  }
 }
 
 export async function sendLiveNewsletter(subject: string, content: string): Promise<{ success: boolean; count?: number; failures?: number; error?: string }> {
   noStore();
   await validateAdminSession();
-  console.log(`[Newsletter] BROADCASTING LIVE: ${subject} | Payload size: ${content.length} chars`);
-  
-  const supabase = getServiceSupabase();
-  const { data: subs } = await supabase.from('newsletter_subscribers').select('email');
-  const count = subs?.length || 0;
-
-  return { success: true, count, failures: 0 };
+  try {
+    console.log(`[Newsletter] BROADCASTING LIVE: ${subject} | Payload size: ${content.length} chars`);
+    
+    const supabase = getServiceSupabase();
+    const { data: subs, error: subsError } = await supabase.from('newsletter_subscribers').select('email');
+    if (subsError) throw new Error(subsError.message);
+    
+    if (!subs || subs.length === 0) {
+      return { success: true, count: 0, failures: 0 };
+    }
+    
+    let successCount = 0;
+    let failureCount = 0;
+    
+    const dispatches = subs.map(async (sub) => {
+      try {
+        await sendNewsletterEmail(sub.email, subject, content);
+        successCount++;
+      } catch (err) {
+        console.error(`Newsletter broadcast failed for ${sub.email}:`, err);
+        failureCount++;
+      }
+    });
+    
+    await Promise.allSettled(dispatches);
+    
+    return { success: true, count: successCount, failures: failureCount };
+  } catch (error: any) {
+    console.error("Critical Newsletter Broadcast Failure:", error);
+    
+    let errorMessage = "Failed to broadcast newsletter.";
+    if (error && typeof error === 'object') {
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.error && typeof error.error === 'object' && error.error.message) {
+        errorMessage = error.error.message;
+      } else {
+        errorMessage = JSON.stringify(error);
+      }
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
+    return { success: false, error: errorMessage };
+  }
 }

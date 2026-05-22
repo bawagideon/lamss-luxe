@@ -38,7 +38,7 @@ export async function signUpUser(data: SignUpData) {
   if (authData.user) {
     try {
       await resend.emails.send({
-        from: 'Lamssé Luxe <welcome@lamsseluxe.ca>',
+        from: 'Lamssé Luxe <welcome@lamsseluxe.com>',
         to: data.email,
         subject: 'Welcome to the Vault | Lamssé Luxe',
         html: `

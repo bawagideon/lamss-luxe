@@ -41,18 +41,21 @@ export async function POST(req: Request) {
 
     // Capture Shipping and Contact Details for Fulfillment
     const shippingDetails = session.shipping_details;
-    const customerName = session.customer_details?.name || shippingDetails?.name || 'Guest Customer';
+    const billingAddress = session.customer_details?.address;
+    const addressToUse = shippingDetails?.address || billingAddress;
+
+    const customerName = shippingDetails?.name || session.customer_details?.name || 'Guest Customer';
     const customerPhone = session.customer_details?.phone || 'N/A';
 
     const shippingAddress = {
       name: customerName,
       phone: customerPhone,
-      line1: shippingDetails?.address?.line1,
-      line2: shippingDetails?.address?.line2,
-      city: shippingDetails?.address?.city,
-      state: shippingDetails?.address?.state,
-      postal_code: shippingDetails?.address?.postal_code,
-      country: shippingDetails?.address?.country,
+      line1: addressToUse?.line1 || null,
+      line2: addressToUse?.line2 || null,
+      city: addressToUse?.city || null,
+      state: addressToUse?.state || null,
+      postal_code: addressToUse?.postal_code || null,
+      country: addressToUse?.country || null,
     };
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
@@ -63,6 +66,8 @@ export async function POST(req: Request) {
     const { data: order, error } = await supabase
       .from('orders')
       .insert({
+        stripe_session_id: session.id,
+        total: amountTotal,
         total_amount: amountTotal,
         subtotal: amountSubtotal,
         shipping_cost: amountShipping,
@@ -88,6 +93,7 @@ export async function POST(req: Request) {
             product_id: item.id,
             quantity: item.qty,
             price: paidPrice,
+            price_at_purchase: paidPrice,
             original_price: originalPrice,
             selected_size: item.size,
             selected_color: item.color
@@ -95,6 +101,30 @@ export async function POST(req: Request) {
         });
 
         await supabase.from('order_items').insert(orderItemsBatch);
+        
+        // Decrement product stock in database
+        for (const item of cartItems) {
+          if (item.id) {
+            const { data: prodData } = await supabase
+              .from('products')
+              .select('stock')
+              .eq('id', item.id)
+              .single();
+              
+            if (prodData) {
+              const currentStock = prodData.stock || 0;
+              const newStock = Math.max(0, currentStock - (item.qty || 1));
+              
+              await supabase
+                .from('products')
+                .update({ stock: newStock })
+                .eq('id', item.id);
+                
+              console.log(`[Webhook] Decremented stock for product ${item.id} from ${currentStock} to ${newStock}`);
+            }
+          }
+        }
+
         console.log(`Checkout ${session.id} organically processed into database. User Bound: ${userId}`);
       } catch (err) {
         console.error("Cart payload hydration failed", err);

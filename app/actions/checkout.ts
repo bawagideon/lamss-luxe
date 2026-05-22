@@ -127,3 +127,16 @@ export async function createCheckoutSession(cartItems: CheckoutCartItem[]) {
 
   return session.url!;
 }
+
+export async function clearServerCart() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { error } = await supabase.from('carts').delete().eq('user_id', user.id);
+    if (error) {
+      console.error("Failed to clear server-side cart:", error);
+      return { error: error.message };
+    }
+  }
+  return { success: true };
+}

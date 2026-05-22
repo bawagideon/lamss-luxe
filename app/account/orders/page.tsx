@@ -83,11 +83,11 @@ export default async function OrdersPage() {
                   </div>
                   <div className="ml-auto flex items-center gap-3">
                     <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                      order.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                      order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
+                      (order.order_status || order.status || '').toLowerCase() === 'delivered' ? 'bg-green-100 text-green-700' :
+                      (order.order_status || order.status || '').toLowerCase() === 'shipped' ? 'bg-black text-white' :
                       'bg-amber-100 text-amber-700'
                     }`}>
-                      {order.status || 'processing'}
+                      {order.order_status || order.status || 'processing'}
                     </span>
                     <Button variant="outline" size="sm" className="hidden sm:flex text-xs font-bold uppercase tracking-wider h-8">
                       View Details
@@ -97,29 +97,71 @@ export default async function OrdersPage() {
 
                 {/* Items Preview */}
                 <div className="p-4 sm:p-6">
-                 {order.order_items && order.order_items.length > 0 ? (
-                   <div className="flex gap-4 overflow-x-auto pb-2">
-                     {order.order_items.map((item: { id: string, quantity: number, products: { image_main: string } }) => (
-                       <div key={item.id} className="min-w-[80px] w-[80px]">
-                         <div className="aspect-[3/4] bg-gray-100 rounded-md overflow-hidden relative">
-                           {item.products?.image_main && (
-                             <Image 
-                               src={item.products.image_main} 
-                               alt="Product"
-                               fill 
-                               className="absolute inset-0 w-full h-full object-cover" 
-                             />
-                           )}
-                           <div className="absolute top-1 right-1 bg-white/90 text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                             {item.quantity}
-                           </div>
-                         </div>
-                       </div>
-                     ))}
-                   </div>
-                 ) : (
-                   <p className="text-xs text-gray-500 uppercase tracking-widest font-bold">No Items Detail</p>
-                 )}
+                  {order.order_items && order.order_items.length > 0 ? (
+                    <div className="flex gap-4 overflow-x-auto pb-2">
+                      {order.order_items.map((item: { id: string, quantity: number, products: { image_url?: string; image_main?: string } }) => {
+                        const previewImage = item.products?.image_url || item.products?.image_main || "/placeholder.jpg";
+                        return (
+                          <div key={item.id} className="min-w-[80px] w-[80px]">
+                            <div className="aspect-[3/4] bg-gray-100 rounded-md overflow-hidden relative">
+                              {previewImage && (
+                                <Image 
+                                  src={previewImage} 
+                                  alt="Product"
+                                  fill 
+                                  className="absolute inset-0 w-full h-full object-cover" 
+                                />
+                              )}
+                              <div className="absolute top-1 right-1 bg-white/90 text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                                {item.quantity}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-500 uppercase tracking-widest font-bold">No Items Detail</p>
+                  )}
+                </div>
+
+                {/* Fulfillment Status & Dynamic Tracking */}
+                <div className="bg-zinc-50 border-t border-zinc-100 p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <span className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">Fulfillment Status</span>
+                    <p className="text-sm font-black uppercase tracking-tight mt-0.5">{order.order_status || 'Processing'}</p>
+                  </div>
+                  <div className="flex-1 max-w-md sm:text-right">
+                    {order.tracking_number ? (
+                      <div>
+                        <span className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em] block">Tracking Info ({order.tracking_carrier || 'Canada Post'})</span>
+                        <a 
+                          href={
+                            (() => {
+                              const trackingNo = order.tracking_number;
+                              const carrierName = order.tracking_carrier || 'Canada Post';
+                              const norm = carrierName.toLowerCase().replace(/\s+/g, '');
+                              if (norm.includes('canadapost')) return `https://www.canadapost-postescanada.ca/track-reperage/en#/resultList?searchFor=${trackingNo}`;
+                              if (norm.includes('dhl')) return `https://www.dhl.com/en/express/tracking.html?AWB=${trackingNo}`;
+                              if (norm.includes('fedex')) return `https://www.fedex.com/apps/fedextrack/?tracknumbers=${trackingNo}`;
+                              if (norm.includes('ups')) return `https://www.ups.com/track?tracknum=${trackingNo}`;
+                              return `https://www.google.com/search?q=${encodeURIComponent(carrierName + ' tracking ' + trackingNo)}`;
+                            })()
+                          } 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-xs font-bold text-black uppercase tracking-widest underline decoration-2 hover:bg-black hover:text-white transition-all inline-block mt-0.5"
+                        >
+                          Track Shipment: {order.tracking_number} &rarr;
+                        </a>
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em] block">Tracking Info</span>
+                        <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider italic mt-0.5">Preparing for dispatch</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
               </div>

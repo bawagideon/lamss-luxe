@@ -173,15 +173,15 @@ export function ProductDisplay({ product }: { product: Product }) {
           <div className="flex flex-col gap-2 flex-1 max-w-[200px]">
             <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.2em]">
               <span className="text-muted-foreground">Availability</span>
-              <span className={product.stock <= 5 ? "text-red-600" : "text-foreground"}>
-                {product.stock <= 5 ? `${product.stock} Left` : "Limited"}
+              <span className={product.stock <= 5 ? "text-red-600 font-extrabold" : "text-foreground"}>
+                {product.stock <= 0 ? "SOLD OUT" : product.stock <= 5 ? `${product.stock} Left` : "Limited"}
               </span>
             </div>
             <div className="h-[2px] w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                <motion.div 
                  initial={{ width: 0 }}
-                 animate={{ width: `${Math.max(Math.min((product.stock / 20) * 100, 100), 10)}%` }}
-                 className={`h-full transition-colors duration-500 ${product.stock <= 5 ? "bg-red-600 animate-pulse" : "bg-black dark:bg-white"}`}
+                 animate={{ width: `${product.stock <= 0 ? 0 : Math.max(Math.min((product.stock / 20) * 100, 100), 10)}%` }}
+                 className={`h-full transition-colors duration-500 ${product.stock <= 0 ? "bg-zinc-300 dark:bg-zinc-800" : product.stock <= 5 ? "bg-red-600 animate-pulse" : "bg-black dark:bg-white"}`}
                />
             </div>
           </div>
@@ -366,7 +366,7 @@ export function ProductDisplay({ product }: { product: Product }) {
           
           <div className="border-t border-border pt-6 mt-8">
             <div className="flex items-center text-sm text-muted-foreground mb-2">
-              <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+              <span className={`w-2 h-2 rounded-full mr-2 ${product.stock > 0 ? "bg-green-500" : "bg-red-500 animate-pulse"}`}></span>
               {product.stock > 0 ? "In Stock - Ready to Ship" : "Currently Unavailable"}
             </div>
             <p className="text-sm text-muted-foreground">Free international shipping on orders over $150.</p>

@@ -145,12 +145,34 @@ export async function subscribeToNewsletter(formData: FormData) {
     if (!email) return { error: "Email is required." };
 
     const supabase = getAdminSupabase();
-    const { error } = await supabase.from('newsletter_subscribers').upsert({
-      email,
-      name,
-      city,
-      created_at: new Date().toISOString()
-    }, { onConflict: 'email' });
+    
+    let error;
+    try {
+      const result = await supabase.from('newsletter_subscribers').upsert({
+        email,
+        name,
+        city,
+        created_at: new Date().toISOString()
+      }, { onConflict: 'email' });
+      error = result.error;
+
+      // Handle missing column schema mismatch
+      if (error && (error.message.includes('city') || error.message.includes('name') || error.code === '42703')) {
+        console.warn("[Waitlist Fallback] Column missing. Inserting email only.");
+        const fallback = await supabase.from('newsletter_subscribers').upsert({
+          email,
+          created_at: new Date().toISOString()
+        }, { onConflict: 'email' });
+        error = fallback.error;
+      }
+    } catch (e) {
+      console.warn("[Waitlist Fallback] Catch handler triggered. Inserting email only.", e);
+      const fallback = await supabase.from('newsletter_subscribers').upsert({
+        email,
+        created_at: new Date().toISOString()
+      }, { onConflict: 'email' });
+      error = fallback.error;
+    }
 
     if (error) throw new Error(error.message);
 

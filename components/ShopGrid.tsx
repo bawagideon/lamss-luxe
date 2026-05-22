@@ -22,6 +22,7 @@ interface RawProduct {
   color_codes?: string[];
   marketing_message?: string;
   created_at?: string;
+  stock?: number;
 }
 
 interface ShopProduct {
@@ -35,6 +36,7 @@ interface ShopProduct {
   colors: string[];
   marketingMessage?: string;
   isNew?: boolean;
+  stock: number;
 }
 
 export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }) {
@@ -55,7 +57,8 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
       // Prioritize color_codes for the visual swatches per user request
       colors: p.color_codes && p.color_codes.length > 0 ? p.color_codes : (p.colors && p.colors.length > 0 ? p.colors : []),
       marketingMessage: p.marketing_message,
-      isNew: p.created_at ? (new Date().getTime() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false
+      isNew: p.created_at ? (new Date().getTime() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false,
+      stock: p.stock ?? 0
     });
 
     if (initialProducts) {
@@ -123,16 +126,18 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
             className={`grid ${getGridColsClass()} gap-x-1 gap-y-12 transition-all duration-700 ease-[0.23,1,0.32,1]`}
           >
             <AnimatePresence mode="popLayout">
-              {liveProducts.map((product, index) => (
-                <motion.div 
-                  layout
-                  key={product.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.4, delay: index * 0.02 }}
-                  className="group relative flex flex-col"
-                >
+              {liveProducts.map((product, index) => {
+                const isSoldOut = product.stock <= 0;
+                return (
+                  <motion.div 
+                    layout
+                    key={product.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.4, delay: index * 0.02 }}
+                    className="group relative flex flex-col"
+                  >
                   {/* Visual Stage (Massive & Taller) */}
                   <div className="relative aspect-[4/5] md:aspect-[0.8] overflow-hidden bg-slate-50 dark:bg-zinc-900/40 shadow-sm border border-border/10">
                     <Link href={`/product/${product.id}`} className="absolute inset-0 z-10">
@@ -158,6 +163,14 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                           sizes="(max-width: 640px) 50vw, 25vw"
                           className="object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 scale-105 group-hover:scale-100 filter contrast-[1.05] saturate-[0.95]"
                         />
+                        {/* Centered Monochromatic SOLD OUT Overlay Badge */}
+                        {isSoldOut && (
+                          <div className="absolute inset-0 z-30 bg-black/60 backdrop-blur-[2px] flex items-center justify-center">
+                            <span className="text-white text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] border-2 border-white px-3 py-1.5 bg-black/40">
+                              SOLD OUT
+                            </span>
+                          </div>
+                        )}
                         {/* Urgency Badge (Desktop Only) */}
                         <div className="hidden md:flex absolute top-3 left-3 z-30 flex-col gap-2">
                            {product.isNew && (
@@ -181,17 +194,24 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
 
                     {/* DESKTOP QUICK ADD (Fashion Nova Overlay) */}
                     <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out bg-white dark:bg-zinc-950 p-4 hidden md:block border-t border-border shadow-2xl">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 text-center text-black dark:text-zinc-50 italic">Secure Your Look</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 text-center text-black dark:text-zinc-50 italic">
+                        {isSoldOut ? "Currently Unavailable" : "Secure Your Look"}
+                      </p>
                       <div className="grid grid-cols-5 gap-1">
                         {product.sizes.slice(0, 5).map((size) => (
                           <button
                             key={size}
+                            disabled={isSoldOut}
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               handleQuickAdd(product, size);
                             }}
-                            className="h-8 text-[9px] font-black border border-border/80 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all rounded-[1px] flex items-center justify-center uppercase tracking-tighter shadow-sm"
+                            className={`h-8 text-[9px] font-black border transition-all rounded-[1px] flex items-center justify-center uppercase tracking-tighter shadow-sm ${
+                              isSoldOut
+                                ? "opacity-40 cursor-not-allowed bg-zinc-50 text-zinc-400 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-500"
+                                : "border-border/80 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+                            }`}
                           >
                             {size}
                           </button>
@@ -199,8 +219,8 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                       </div>
                     </div>
 
-                    {/* MOBILE QUICK ADD (Fashion Nova FAB Style) - Hidden on 4-cols */}
-                    <div className={`md:hidden absolute bottom-2 right-2 z-20 ${gridColumns === 4 ? 'hidden' : 'block'}`}>
+                    {/* MOBILE QUICK ADD (Fashion Nova FAB Style) - Hidden on 4-cols or if Sold Out */}
+                    <div className={`md:hidden absolute bottom-2 right-2 z-20 ${gridColumns === 4 || isSoldOut ? 'hidden' : 'block'}`}>
                       <button
                         onClick={(e) => {
                           e.preventDefault();
@@ -251,6 +271,14 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                         </p>
                       )}
 
+                      {/* Stock Quantity Details Layer (Always Visible, Never Fully Hidden) */}
+                      <div className="text-[10px] font-black uppercase tracking-widest flex justify-between items-center mt-1 border-t border-dashed border-border/40 pt-1">
+                        <span className="text-zinc-400">Inventory</span>
+                        <span className={product.stock <= 0 ? "text-red-500 font-extrabold" : product.stock <= 5 ? "text-amber-500 font-extrabold animate-pulse" : "text-zinc-500 font-semibold"}>
+                          {product.stock <= 0 ? "SOLD OUT" : `${product.stock} IN STOCK`}
+                        </span>
+                      </div>
+
                       {/* Swatch & Status Interaction */}
                       <div className="relative h-6 w-full flex items-center justify-between mt-2 overflow-hidden group/swatches">
                          {/* Swatch Presence */}
@@ -283,10 +311,15 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                          <div className="flex flex-col gap-0.5">
                            <h3 className="text-[8px] sm:text-[9px] font-black tracking-tight uppercase truncate text-black dark:text-white">{product.name}</h3>
                            <PriceDisplay priceCAD={product.rawPrice} className="text-[9px] sm:text-[10px] font-black tracking-tighter" />
-                           <div className="flex gap-0.5 items-center mt-0.5">
-                             {(product.colors.length > 0 ? product.colors : ['#000000']).slice(0, 2).map((color, cIdx) => (
-                               <div key={cIdx} className="w-2 h-2 rounded-full ring-[0.5px] ring-offset-[0.5px] ring-border/50 border border-black/5" style={{ backgroundColor: color }} />
-                             ))}
+                           <div className="flex justify-between items-center mt-0.5">
+                             <div className="flex gap-0.5 items-center">
+                               {(product.colors.length > 0 ? product.colors : ['#000000']).slice(0, 2).map((color, cIdx) => (
+                                 <div key={cIdx} className="w-2 h-2 rounded-full ring-[0.5px] ring-offset-[0.5px] ring-border/50 border border-black/5" style={{ backgroundColor: color }} />
+                               ))}
+                             </div>
+                             <span className={`text-[7px] font-black uppercase ${product.stock <= 0 ? "text-red-500 font-extrabold" : "text-zinc-400 font-bold"}`}>
+                               {product.stock <= 0 ? "SOLD OUT" : `${product.stock} left`}
+                             </span>
                            </div>
                          </div>
                        ) : (
@@ -312,6 +345,15 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                                <span className="text-[8px] font-bold text-muted-foreground">+{product.colors.length - 3}</span>
                              )}
                            </div>
+
+                           {/* Mobile Stock Level Display (Always Shown) */}
+                           <div className="text-[8px] font-black uppercase tracking-widest flex justify-between items-center mb-2 bg-zinc-50 dark:bg-zinc-900/60 p-1.5 rounded-sm border border-border/10">
+                             <span className="text-zinc-400">Stock</span>
+                             <span className={product.stock <= 0 ? "text-red-500 font-extrabold" : product.stock <= 5 ? "text-amber-500 font-extrabold" : "text-zinc-500 font-semibold"}>
+                               {product.stock <= 0 ? "SOLD OUT" : `${product.stock} LEFT`}
+                             </span>
+                           </div>
+
                            {/* Banners underneath as text */}
                            <div className="flex flex-col gap-0.5">
                               {product.isNew && (
@@ -329,9 +371,10 @@ export function ShopGrid({ initialProducts }: { initialProducts?: RawProduct[] }
                          </div>
                        )}
                      </Link>
-                  </div>
-                </motion.div>
-              ))}
+                   </div>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </motion.div>
         )}
