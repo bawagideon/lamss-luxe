@@ -17,7 +17,7 @@ export async function sendNewsletterEmail(email: string, subject: string, conten
     );
 
     const { error } = await resend.emails.send({
-      from: 'Lamssé Luxe <newsletter@lamsseluxe.com>',
+      from: 'Lamssé Luxe <newsletter@lamsseluxe.ca>',
       to: [email],
       subject: subject,
       html: htmlContent,
@@ -46,7 +46,7 @@ export async function sendOrderConfirmationEmail(email: string, orderDetails: Or
     const { amount, size, color } = orderDetails;
     
     const { error } = await resend.emails.send({
-      from: 'Lamssé Luxe <orders@lamsseluxe.com>',
+      from: 'Lamssé Luxe <orders@lamsseluxe.ca>',
       to: [email],
       subject: 'Order Confirmed! Your Lamssé Luxe Drop is Secured.',
       html: `
@@ -115,7 +115,7 @@ export async function sendShippingConfirmationEmail(
     }
 
     const { error } = await resend.emails.send({
-      from: 'Lamssé Luxe <shipping@lamsseluxe.com>',
+      from: 'Lamssé Luxe <shipping@lamsseluxe.ca>',
       to: [email],
       subject: 'Your Lamssé Luxe Order has Shipped!',
       html: `
@@ -176,7 +176,7 @@ export async function sendShippingConfirmationEmail(
             </div>
 
             <p style="color: #71717a; font-size: 13px; line-height: 1.6; margin-top: 30px;">
-              If you have any questions regarding your shipment or need specialized assistance, please reach out to us at <a href="mailto:contact@lamsseluxe.com" style="color: #000000; font-weight: bold; text-decoration: underline;">contact@lamsseluxe.com</a>.
+              If you have any questions regarding your shipment or need specialized assistance, please reach out to us at <a href="mailto:contact@lamsseluxe.ca" style="color: #000000; font-weight: bold; text-decoration: underline;">contact@lamsseluxe.ca</a>.
             </p>
           </div>
           
@@ -205,7 +205,7 @@ export async function sendContactFormEmail(data: { name: string; email: string; 
     const { name, email, subject, message } = data;
     
     await resend.emails.send({
-      from: 'Lamssé Luxe Contact <contact@lamsseluxe.com>',
+      from: 'Lamssé Luxe Contact <contact@lamsseluxe.ca>',
       to: ['lamsseluxe@gmail.com'],
       replyTo: email,
       subject: `[Contact Form] ${subject}`,

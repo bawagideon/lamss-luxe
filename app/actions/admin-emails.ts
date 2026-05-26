@@ -43,7 +43,7 @@ export async function sendAdminEmail({
     );
 
     const { data, error } = await resend.emails.send({
-      from: 'Lamssé Luxe <concierge@lamsseluxe.com>',
+      from: 'Lamssé Luxe <concierge@lamsseluxe.ca>',
       to: Array.isArray(to) ? to : [to],
       subject: subject,
       html: htmlContent,

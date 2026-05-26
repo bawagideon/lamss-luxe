@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS carts (
   quantity INTEGER DEFAULT 1,
   metadata JSONB, -- Optional data (name, price, image)
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  UNIQUE(user_id, variant_id)
 );
 
 -- Enable RLS

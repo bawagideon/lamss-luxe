@@ -69,7 +69,7 @@ export async function subscribeToNewsletter(email: string) {
         );
 
         const emailResult = await resend.emails.send({
-          from: 'The Luxe Network <network@lamsseluxe.com>',
+          from: 'The Luxe Network <network@lamsseluxe.ca>',
           to: email.toLowerCase(),
           subject: "YOU'RE IN, QUEEN — Your 20% Discount is Here",
           html: htmlContent,
