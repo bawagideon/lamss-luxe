@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Copy, MapPin, Phone, Mail, Package, ExternalLink, User, Heart } from "lucide-react";
 import Image from "next/image";
@@ -241,8 +241,8 @@ export default function AdminOrdersPage() {
                           <DialogTitle className="text-2xl font-black uppercase tracking-tighter italic flex items-center gap-2">
                             <Package className="w-6 h-6 text-zinc-100" /> Order Detail
                           </DialogTitle>
+                          <DialogDescription className="text-[10px] uppercase tracking-[0.3em] font-bold mt-2 text-zinc-400">Reference: {o.id}</DialogDescription>
                         </DialogHeader>
-                        <p className="text-[10px] uppercase tracking-[0.3em] font-bold mt-2 text-zinc-400">Reference: {o.id}</p>
                       </div>
                       
                       <div className="p-6 space-y-8">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { MessageCircle, Facebook, X as XIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 
@@ -49,6 +49,7 @@ export function ShareModal({ children, productId, productName }: { children: Rea
       <DialogContent className="max-w-[400px] w-[90vw] sm:w-[95vw] rounded-[24px] p-6 bg-white dark:bg-zinc-950 border-none shadow-2xl overflow-hidden flex flex-col min-w-0">
         <DialogHeader className="mb-2 min-w-0 w-full">
           <DialogTitle className="text-center text-[15px] font-black uppercase tracking-widest text-black dark:text-white truncate">Share This</DialogTitle>
+          <DialogDescription className="sr-only">Share this product link through copy link or via social platforms.</DialogDescription>
         </DialogHeader>
         
         <div className="flex flex-col gap-3 min-w-0 w-full">

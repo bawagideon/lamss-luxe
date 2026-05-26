@@ -3,6 +3,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -23,7 +24,7 @@ export function SizeGuideModal() {
         <div className="bg-black text-white p-6 md:p-8">
           <DialogHeader>
             <DialogTitle className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic">Size Guide</DialogTitle>
-            <p className="text-zinc-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mt-2">Find your perfect fit with Lamssé Luxe</p>
+            <DialogDescription className="text-zinc-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mt-2">Find your perfect fit with Lamssé Luxe</DialogDescription>
           </DialogHeader>
         </div>
 

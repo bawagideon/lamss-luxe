@@ -27,6 +27,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -240,7 +241,10 @@ export default function NewsletterStudioPage() {
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="rounded-none border-2 border-black p-0 overflow-hidden">
-                      <div className="bg-black text-white p-6"><DialogTitle className="font-black uppercase tracking-tight italic text-2xl">Quality Check</DialogTitle></div>
+                      <div className="bg-black text-white p-6">
+                        <DialogTitle className="font-black uppercase tracking-tight italic text-2xl">Quality Check</DialogTitle>
+                        <DialogDescription className="text-zinc-400 text-xs font-bold uppercase tracking-widest mt-1">Send a test proof to check brand style before live launch.</DialogDescription>
+                      </div>
                       <div className="p-8 space-y-6">
                         <Input placeholder="your-email@gmail.com" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} className="rounded-none border-black h-12" />
                         <Button onClick={handleTestSend} disabled={isPending} className="w-full bg-black text-white rounded-none h-12 font-black uppercase">{isPending ? "Dispatching..." : "Dispatch Test"}</Button>
@@ -255,7 +259,10 @@ export default function NewsletterStudioPage() {
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="rounded-none border-2 border-black p-0 overflow-hidden">
-                      <div className="bg-red-600 text-white p-6"><DialogTitle className="font-black uppercase tracking-tight italic text-2xl">Final Confirmation</DialogTitle></div>
+                      <div className="bg-red-600 text-white p-6">
+                        <DialogTitle className="font-black uppercase tracking-tight italic text-2xl">Final Confirmation</DialogTitle>
+                        <DialogDescription className="text-red-200 text-xs font-bold uppercase tracking-widest mt-1">Confirm and blast this campaign to all subscribers.</DialogDescription>
+                      </div>
                       <div className="p-8 space-y-6">
                         <div className="bg-zinc-50 p-6 border-l-4 border-red-600"><p className="text-sm font-black uppercase tracking-tight">Warning</p><p className="text-sm">You are about to blast this campaign to <strong>{stats.totalSubscribers}</strong> subscribers.</p></div>
                         <Button onClick={handleLiveSend} disabled={isPending} className="w-full bg-red-600 text-white rounded-none h-14 font-black uppercase">{isPending ? "BROADCASTING ACTIVE..." : "YES, DISPATCH LIVE"}</Button>
