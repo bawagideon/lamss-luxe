@@ -61,8 +61,13 @@ export function ProductDisplay({ product }: { product: Product }) {
     if (availableColors.length === 1) setSelectedColor(availableColors[0]);
   }, [product.sizes, product.colors]);
 
-  // 1. Resolve active image set based on selected color (JSONB variant data)
-  const activeVariant = product.color_images?.[selectedColor] || { main: null, front: null, side: null, back: null };
+  // 1. Resolve active image set based on selected color (case-insensitive JSONB variant data)
+  const activeVariantKey = product.color_images 
+    ? Object.keys(product.color_images).find(k => k.trim().toLowerCase() === selectedColor.trim().toLowerCase())
+    : null;
+  const activeVariant = activeVariantKey && product.color_images
+    ? product.color_images[activeVariantKey] 
+    : { main: null, front: null, side: null, back: null };
   
   // 2. High-End Fallback Engine: Specific Variant -> Global Angle -> Main Cover
   // This guarantees the UI never crashes and always shows the most relevant image.

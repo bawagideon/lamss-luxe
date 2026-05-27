@@ -28,7 +28,7 @@ export function ImmersiveVisuals({ images, productName }: ImmersiveVisualsProps)
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {visualSet.map((visual, idx) => (
             <motion.div
-              key={idx}
+              key={`${visual.url}-${idx}`}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}

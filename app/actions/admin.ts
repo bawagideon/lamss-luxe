@@ -223,6 +223,18 @@ export async function uploadSingleImage(formData: FormData) {
     return { error: error instanceof Error ? error.message : "Internal Upload Error" };
   }
 }
+
+// Resilient helper to look up color-specific form inputs in a case-insensitive and whitespace-insensitive manner
+function getResilientFormValue(formData: FormData, colorName: string, suffix: string) {
+  const formDataKeys = Array.from(formData.keys());
+  const targetKeyTrimmed = `variant_image_${colorName.trim()}_${suffix}`.toLowerCase();
+  const matchingKey = formDataKeys.find(k => {
+    const normalizedKey = k.trim().toLowerCase();
+    return normalizedKey === targetKeyTrimmed || normalizedKey.replace(/\s+/g, '') === targetKeyTrimmed.replace(/\s+/g, '');
+  });
+  return matchingKey ? formData.get(matchingKey) : null;
+}
+
 export async function addProduct(formData: FormData) {
   noStore();
   await validateAdminSession();
@@ -267,10 +279,10 @@ export async function addProduct(formData: FormData) {
     // 4. Variant Image Processing (JSONB)
     const color_images: Record<string, { main: string | null; front: string | null; side: string | null; back: string | null }> = {};
     for (const color of colors) {
-      const vMainUrl = formData.get(`variant_image_${color}_main`) as string | null;
-      const vFrontUrl = formData.get(`variant_image_${color}_front`) as string | null;
-      const vSideUrl = formData.get(`variant_image_${color}_side`) as string | null;
-      const vBackUrl = formData.get(`variant_image_${color}_back`) as string | null;
+      const vMainUrl = getResilientFormValue(formData, color, 'main') as string | null;
+      const vFrontUrl = getResilientFormValue(formData, color, 'front') as string | null;
+      const vSideUrl = getResilientFormValue(formData, color, 'side') as string | null;
+      const vBackUrl = getResilientFormValue(formData, color, 'back') as string | null;
 
       if (vMainUrl || vFrontUrl || vSideUrl || vBackUrl) {
         color_images[color] = {
@@ -427,10 +439,10 @@ export async function editProduct(formData: FormData) {
 
     // Update variant images for active colors
     for (const color of colors) {
-      const vMain = formData.get(`variant_image_${color}_main`);
-      const vFront = formData.get(`variant_image_${color}_front`);
-      const vSide = formData.get(`variant_image_${color}_side`);
-      const vBack = formData.get(`variant_image_${color}_back`);
+      const vMain = getResilientFormValue(formData, color, 'main');
+      const vFront = getResilientFormValue(formData, color, 'front');
+      const vSide = getResilientFormValue(formData, color, 'side');
+      const vBack = getResilientFormValue(formData, color, 'back');
       
       const isUrl = (v: unknown): v is string => typeof v === 'string' && v.startsWith('http');
       

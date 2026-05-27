@@ -18,6 +18,7 @@ export function ProductGallery({ images, productId = "", productName = "" }: Pro
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Sync main image when the images array changes (e.g. color variant switch)
+  const imagesJoined = images.join(",");
   useEffect(() => {
     if (images.length > 0) {
       setMainImage(images[0]);
@@ -26,7 +27,8 @@ export function ProductGallery({ images, productId = "", productName = "" }: Pro
         scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
       }
     }
-  }, [images]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagesJoined]);
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
