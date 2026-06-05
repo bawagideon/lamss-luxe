@@ -10,12 +10,12 @@ import { sendAdminEmail } from "@/app/actions/admin-emails";
 import toast from "react-hot-toast";
 
 interface AdminEmailDialogProps {
-  emails: string[];
+  recipients: { email: string; name?: string }[];
   trigger?: React.ReactNode;
   onSuccess?: () => void;
 }
 
-export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialogProps) {
+export function AdminEmailDialog({ recipients, trigger, onSuccess }: AdminEmailDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [testEmail, setTestEmail] = useState("");
@@ -30,14 +30,18 @@ export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (emails.length === 0) {
+    if (recipients.length === 0) {
       toast.error("No recipients selected.");
+      return;
+    }
+    if (!formData.subject || !formData.title || !formData.message) {
+      toast.error("Please fill out the subject, headline, and message fields.");
       return;
     }
 
     setLoading(true);
     const res = await sendAdminEmail({
-      to: emails,
+      recipients: recipients,
       ...formData
     });
     setLoading(false);
@@ -45,7 +49,7 @@ export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialo
     if (res.error) {
       toast.error(res.error);
     } else {
-      toast.success(`Email dispatched to ${emails.length} recipient(s).`);
+      toast.success(`Email dispatched to ${recipients.length} recipient(s).`);
       setIsOpen(false);
       setFormData({ subject: "", title: "", message: "", buttonText: "", buttonUrl: "" });
       onSuccess?.();
@@ -61,7 +65,7 @@ export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialo
 
     setTestLoading(true);
     const res = await sendAdminEmail({
-      to: [testEmail],
+      recipients: [{ email: testEmail, name: "Admin" }],
       ...formData
     });
     setTestLoading(false);
@@ -92,7 +96,7 @@ export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialo
           </div>
           <DialogTitle className="text-3xl font-black uppercase tracking-tight">Compose Brand Outreach</DialogTitle>
           <DialogDescription className="text-sm font-medium">
-            You are sending this email to <span className="text-black font-black">{emails.length}</span> recipient(s).
+            You are sending this email to <span className="text-black font-black">{recipients.length}</span> recipient(s).
           </DialogDescription>
         </DialogHeader>
 
@@ -101,7 +105,6 @@ export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialo
             <div>
               <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">Email Subject</label>
               <Input 
-                required 
                 placeholder="e.g. Exclusive Access: The Soft Life Drop is Here" 
                 value={formData.subject}
                 onChange={(e) => setFormData({...formData, subject: e.target.value})}
@@ -112,7 +115,6 @@ export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialo
             <div>
               <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">Email Headline (H1)</label>
               <Input 
-                required 
                 placeholder="e.g. YOU'RE INVITED, QUEEN." 
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
@@ -123,7 +125,6 @@ export function AdminEmailDialog({ emails, trigger, onSuccess }: AdminEmailDialo
             <div>
               <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">Body Message</label>
               <Textarea 
-                required 
                 placeholder="Craft your premium message here..." 
                 value={formData.message}
                 onChange={(e) => setFormData({...formData, message: e.target.value})}

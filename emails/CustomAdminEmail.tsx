@@ -12,6 +12,7 @@ interface CustomAdminEmailProps {
   message: string;
   buttonText?: string;
   buttonUrl?: string;
+  firstName?: string;
 }
 
 export const CustomAdminEmail = ({
@@ -19,9 +20,11 @@ export const CustomAdminEmail = ({
   message,
   buttonText,
   buttonUrl,
+  firstName,
 }: CustomAdminEmailProps) => (
   <LuxeEmailLayout previewText={title}>
     <Heading style={heading}>{title}</Heading>
+    {firstName && <Text style={greetingText}>Hi {firstName},</Text>}
     <Text style={paragraph}>{message}</Text>
     
     {buttonText && buttonUrl && (
@@ -53,6 +56,13 @@ const paragraph = {
   color: "#333333",
   margin: "0 0 20px",
   textAlign: "center" as const,
+};
+
+const greetingText = {
+  ...paragraph,
+  fontWeight: "bold",
+  margin: "0 0 10px",
+  textAlign: "left" as const,
 };
 
 const buttonContainer = {

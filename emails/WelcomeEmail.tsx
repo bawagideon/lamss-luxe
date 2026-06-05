@@ -24,7 +24,8 @@ export const WelcomeEmail = ({
   return (
     <Html>
       <Head>
-        <style dangerouslySetInnerHTML={{ __html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           @import url('https://fonts.googleapis.com/css2?family=Italiana&family=Montserrat:wght@300;400;500;600;700;800&family=Playball&display=swap');
         `}} />
       </Head>
@@ -101,7 +102,7 @@ export const WelcomeEmail = ({
             </Text>
 
             <Text style={paragraphPurple}>
-              For now? Go secure your faves before somebody else does 😭💜
+              For now? Go secure your faves before somebody else does 😭♥
             </Text>
 
             {/* Signature Block */}

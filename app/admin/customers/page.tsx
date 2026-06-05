@@ -191,6 +191,20 @@ export default function AdminCustomersPage() {
     });
   };
 
+  const getSelectedRecipients = () => {
+    return selectedEmails.map(email => {
+      const customer = customers.find(c => c.email === email);
+      if (customer) {
+        return { email, name: customer.full_name?.split(' ')[0] || '' };
+      }
+      const subscriber = subscribers.find(s => s.email === email);
+      if (subscriber) {
+        return { email, name: subscriber.name?.split(' ')[0] || '' };
+      }
+      return { email };
+    });
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -202,7 +216,7 @@ export default function AdminCustomersPage() {
         <div className="flex items-center space-x-2 w-full sm:w-auto">
           {selectedEmails.length > 0 && (
             <AdminEmailDialog 
-              emails={selectedEmails} 
+              recipients={getSelectedRecipients()} 
               onSuccess={() => setSelectedEmails([])}
               trigger={
                 <Button className="bg-zinc-100 text-black font-black uppercase text-[10px] tracking-widest hover:bg-zinc-200 transition-all rounded-none h-10">
@@ -319,7 +333,7 @@ export default function AdminCustomersPage() {
                               <SheetTitle className="text-3xl font-black uppercase tracking-tight text-zinc-100">{c.full_name || c.email.split('@')[0]}</SheetTitle>
                               <SheetDescription className="text-sm text-zinc-400">Comprehensive breakdown of customer data and lifecycle.</SheetDescription>
                               <div className="pt-4">
-                                <AdminEmailDialog emails={[c.email]} />
+                                <AdminEmailDialog recipients={[{ email: c.email, name: c.full_name?.split(' ')[0] || '' }]} />
                               </div>
                             </SheetHeader>
 
