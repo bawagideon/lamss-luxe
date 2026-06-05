@@ -41,7 +41,7 @@ export function AdminEmailDialog({ recipients, trigger, onSuccess }: AdminEmailD
 
     setLoading(true);
     const res = await sendAdminEmail({
-      recipients: recipients,
+      to: recipients.map(r => r.email),
       ...formData
     });
     setLoading(false);
@@ -65,7 +65,7 @@ export function AdminEmailDialog({ recipients, trigger, onSuccess }: AdminEmailD
 
     setTestLoading(true);
     const res = await sendAdminEmail({
-      recipients: [{ email: testEmail, name: "Admin" }],
+      to: [testEmail],
       ...formData
     });
     setTestLoading(false);
